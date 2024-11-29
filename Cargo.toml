@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+
+members = [ 
+    "core_iban_valid",
+    "python_wrapper",
+    "wasm_wrapper",
+    "polars_plugin"
+]
+

@@ -1,0 +1,16 @@
+[package]
+name = "polars_plugin"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "iban_expression_lib"
+crate-type = ["cdylib"]
+
+[dependencies]
+core_iban_valid = {path = "../core_iban_valid" }
+# need 0.21 as required from pyo3-polars
+pyo3 = {version = "0.21" ,  features = ["extension-module"] }
+pyo3-polars = {version = "0.18" ,  features = ["derive", "dtype-struct", "dtype-array"] }
+serde = {version = "*" ,  features = ["derive"] }
+polars = {version = "*", features = ["dtype-struct", "dtype-array"] }
