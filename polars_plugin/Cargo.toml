@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "iban_expression_lib"
+name = "expression_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
