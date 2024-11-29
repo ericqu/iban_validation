@@ -27,7 +27,7 @@ fn process_iban_str_str(value: &str, iban_valid: &mut String) {
             iban_valid.push_str(valid_iban.iban_bank_id.map(|x| x.to_string()).unwrap_or(String::from("")).as_str());
             iban_valid.push_str(",");
             iban_valid.push_str(valid_iban.iban_branch_id.map(|x| x.to_string()).unwrap_or(String::from("")).as_str());
-            eprintln!("in process_iban_str_str {}", iban_valid);
+            // eprintln!("in process_iban_str_str {}", iban_valid);
         }
         Err(_) => {
                 *iban_valid = String::from("");
