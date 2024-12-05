@@ -1,6 +1,5 @@
-use pyo3::prelude::*; // For Python bindings
-use core_iban_valid; 
-// use pyo3::exceptions::PyValueError;
+use core_iban_valid;
+use pyo3::prelude::*;
 
 /// indicate if the iban is valid or not
 #[pyfunction]
@@ -14,10 +13,14 @@ fn validate_iban(iban_t: &str) -> PyResult<bool> {
     }
 }
 
+/// Provide a python class to encapsulate the results
 #[pyclass]
 pub struct PyVIban {
+    /// the IBAN when it is a valid one, otherwise None
     stored_iban: Option<String>,
+    /// the Bank Id when there is a valid one, and when it is a valid IBAN
     iban_bank_id: Option<Option<String>>, // Outer Option for validation
+    /// the branch ID when there is a valid one and whn there is a valid IBAN
     iban_branch_id: Option<Option<String>>,
 }
 
@@ -59,7 +62,7 @@ impl PyVIban {
     }
 }
 
-
+/// wrap the class and function into the module for python
 #[pymodule]
 fn py_viban(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
