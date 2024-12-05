@@ -1,5 +1,4 @@
 use serde_derive::{Deserialize, Serialize};
-use serde_json; 
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
@@ -135,8 +134,7 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
 /// division method for modulo 97 >> faster than regular modulo
 fn division_mod97(x: u32) -> u32 {
     let q = x / 97; // Quotient 
-    let r = x - q * 97; // Remainder
-    r
+    x - q * 97 // Remainder
 }
 
 // /// Standard modulo for comparison and validation
@@ -206,7 +204,7 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
                 }
             }
         };
-        acc = acc * if m97digit < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers) 
+        acc *= if m97digit < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers) 
         acc = division_mod97(acc + (m97digit as u32));  // and add new digit
         
     }
@@ -233,7 +231,7 @@ pub struct Iban<'a> {
 /// building a valid Iban (validate and take the relavant slices).
 impl<'a> Iban<'a> {
     pub fn new(s: &'a str) -> Result<Self, ValidationError> {
-        let _is_valid: bool = match validate_iban_str(&s) {
+        let _is_valid: bool = match validate_iban_str(s) {
             Ok(r) => r,
             Err(e) => return Err(e),
         };
@@ -244,7 +242,7 @@ impl<'a> Iban<'a> {
         };
 
         let iban_data: &IbanFields = match &IB_REG.get(identified_country) {
-            Some(pattern) => &pattern,
+            Some(pattern) => pattern,
             None => return Err(ValidationError::InvalidCountry),
         };
 
