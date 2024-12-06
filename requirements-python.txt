@@ -1,0 +1,8 @@
+# build
+maturin == 1.7.1
+pip
+patchelf; platform_system == 'Linux'
+
+# tools
+pytest
+polars
