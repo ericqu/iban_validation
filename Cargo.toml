@@ -3,7 +3,8 @@ resolver = "2"
 
 members = [ 
     "core_iban_valid",
-    "python_wrapper"
+    "python_wrapper",
+    "polars_plugin"
 ]
 default-members = ["core_iban_valid"]
 
