@@ -89,6 +89,7 @@ enum ValidationLetterError {
 
 /// internal utility
 /// Check the character is a digit and return the value of that digit.
+#[inline]
 fn simple_contains_n(c: char) -> Result<u8, ValidationLetterError> {
     if c.is_ascii_digit() {
         Ok((c as u8) - 48) // 48 is the ascii value of '0'
@@ -99,6 +100,7 @@ fn simple_contains_n(c: char) -> Result<u8, ValidationLetterError> {
 
 /// internal utility
 /// check the character is an uppercase A-Z and return a value between 10-36
+#[inline]
 fn simple_contains_a(c: char) -> Result<u8, ValidationLetterError> {
     if c.is_ascii_uppercase() {
         Ok((c as u8) - 55) // 55 is to get a 10 from a 'A'
@@ -109,6 +111,7 @@ fn simple_contains_a(c: char) -> Result<u8, ValidationLetterError> {
 
 /// internal utility
 /// Check the character is alphanumeric an return the value (0-9 for digit,) 10-36 for letters.
+#[inline]
 fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
     if c.is_ascii_digit() {
         Ok((c as u8) - 48)
@@ -121,17 +124,9 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
     }
 }
 
-// /// Internal utility
-// /// Optimized modulo 97 calculation using multiplication trick
-// /// overall slow to be deprecated. 
-// fn fast_mod97(x: u32) -> u32 {
-//     let q = (((x as u64) * 44278013) >> 32) as u32; 
-//     let remainder = x - q * 97; 
-//     if remainder >= 97 { remainder - 97 } else { remainder}
-// }
-
 /// internal utility 
 /// division method for modulo 97 >> faster than regular modulo
+#[inline]
 fn division_mod97(x: u32) -> u32 {
     let q = x / 97; // Quotient 
     x - q * 97 // Remainder
@@ -483,39 +478,13 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn test_mod97_equivalence() {
-    //     // Test range of values to ensure equivalence
-    //     for x in 0..10_000 {
-    //         assert_eq!(fast_mod97(x), standard_mod97(x), "Failed for value {}", x);
-    //         assert_eq!(division_mod97(x), standard_mod97(x), "Failed for value {}", x);
-    //     }
-    // }
-
-    // #[test]
-    // fn test_large_values() {
-    //     let large_values = [
-    //         u32::MAX, 
-    //         u32::MAX - 97, 
-    //         u32::MAX / 2, 
-    //         u32::MAX / 3
-    //     ];
-
-    //     for &x in &large_values {
-    //         assert_eq!(fast_mod97(x), standard_mod97(x), "Large value test failed");
-    //         assert_eq!(division_mod97(x), standard_mod97(x), "Large value test failed");
-    //     }
-    // }
-
-    // #[test]
-    // fn test_edge_cases() {
-    //     let edge_cases = [0, 1, 96, 97, 98, 195, 196];
-        
-    //     for &x in &edge_cases {
-    //         assert_eq!(fast_mod97(x), standard_mod97(x), "Edge case test failed");   
-    //         assert_eq!(division_mod97(x), standard_mod97(x) , "Edge case test failed");
-    //     }
-    // }
+    #[test]
+    fn test_mod97_equivalence() {
+        // Test range of values to ensure equivalence
+        for x in 0..10_000 {
+            assert_eq!(division_mod97(x), x % 97, "Failed for value {}", x);
+        }
+    }
 
 
 }

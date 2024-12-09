@@ -3,7 +3,7 @@ use core_iban_valid::validate_iban_str;
 
 pub fn valid_001(c: &mut Criterion) {
     c.bench_function("valid 001", |b| b.iter(|| 
-        validate_iban_str(black_box("AL47212110090000000235698741"))));
+        validate_iban_str(black_box("DE44500105175407324931"))));
 }
 
 pub fn valid_002(c: &mut Criterion) {

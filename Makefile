@@ -98,6 +98,7 @@ test:
 	cargo test
 	$(VENV_BIN)/maturin develop -m polars_plugin/Cargo.toml 
 	$(VENV_BIN)/pytest polars_plugin/tests/test_polars_plugin.py
+	$(VENV_BIN)/pytest registry_preprocess/test_pre_process.py
 
 
 

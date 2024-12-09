@@ -67,5 +67,6 @@ impl PyVIban {
 fn py_viban(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
     m.add_class::<PyVIban>()?;
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }

@@ -1,5 +1,6 @@
 import py_viban
 from py_viban import PyVIban
+print (py_viban.__version__)
 
 print(py_viban.validate_iban('AL47212110090000000235698741'))
 print(py_viban.validate_iban('AL47212110090000000235698741VV'))
