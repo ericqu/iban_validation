@@ -9,7 +9,7 @@ use std::sync::LazyLock;
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IbanFields {
     /// two-letter country codes as per ISO 3166-1 
-    // TODO check if [u8;2] would be better no trivial as the rest of the comparison is on String
+    // TODO check if [u8;2] would be better not trivial as the rest of the comparison is on String
     pub ctry_cd: String,
     /// IBAN length, intentionnaly short, the length is sufficient but if something changes it will raise error quickly
     pub iban_len: u8,
@@ -132,9 +132,14 @@ fn division_mod97(x: u32) -> u32 {
     x - q * 97 // Remainder
 }
 
-// /// Standard modulo for comparison and validation
-// fn standard_mod97(x: u32) -> u32 {
-//     x % 97
+
+// #[inline]
+// fn bitwise_mod97(x: u32) -> u32 {
+//     let mut n = x;
+//     while n >= 97 {
+//         n -= 97;
+//     }
+//     n
 // }
 
 /// Validate than an Iban is valid according to the registry information
@@ -485,6 +490,5 @@ mod tests {
             assert_eq!(division_mod97(x), x % 97, "Failed for value {}", x);
         }
     }
-
 
 }
