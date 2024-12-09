@@ -96,9 +96,11 @@ build_polars_plugin_release:
 test:
 	$(MAKE) requirements
 	cargo test
-	$(VENV_BIN)/maturin develop -m polars_plugin/Cargo.toml 
-	$(VENV_BIN)/pytest polars_plugin/tests/test_polars_plugin.py
-	$(VENV_BIN)/pytest registry_preprocess/test_pre_process.py
+	$(VENV_BIN)/maturin develop -m polars_plugin/Cargo.toml
+	$(VENV_BIN)/maturin develop -m python_wrapper/Cargo.toml
+	$(VENV_BIN)/pytest
+	# $(VENV_BIN)/pytest polars_plugin/tests/test_polars_plugin.py
+	# $(VENV_BIN)/pytest registry_preprocess/test_pre_process.py
 
 
 
