@@ -1,10 +1,10 @@
 import polars as pl
-from py_viban_pl import process_ibans
+from iban_validation_polars import process_ibans
 import os
 # print('debug', pl.__version__)
 
-inputfile = r'core_iban_valid/data/IBAN Examples.txt'
-outputfile = r'polars_plugin/examples/test_file.csv'
+inputfile = r'iban_validation_core/data/IBAN Examples.txt'
+outputfile = r'iban_validation_polars/examples/test_file.csv'
 
 # File generation 
 df = pl.read_csv(inputfile).sample(10000000, with_replacement=True)

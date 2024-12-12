@@ -40,63 +40,64 @@ requirements:	.venv
 	$(VENV_BIN)/uv pip install --upgrade --compile-bytecode --no-build -r requirements-python.txt
 
 
-.PHONY: registry_preprocess
-registry_preprocess:
+.PHONY: iban_validation_preprocess
+iban_validation_preprocess:
 	$(MAKE) requirements
-	$(VENV_BIN)/python registry_preprocess/pre_process_registry.py
+	$(VENV_BIN)/python iban_validation_preprocess/pre_process_registry.py
 
-.PHONY: core_iban_valid
-core_iban_valid:
-	cargo build -p core_iban_valid
+.PHONY: iban_validation_core
+iban_validation_core:
+	cargo build -p iban_validation_core
 
-.PHONY: core_iban_valid_release
-core_iban_valid_release:
-	cargo build -p core_iban_valid -r
+.PHONY: iban_validation_core_release
+iban_validation_core_release:
+	cargo build -p iban_validation_core -r
 
 .PHONY: clean
 clean:
 	cargo clean
 	rm -rf .venv/
+	rm -rf .pytest_cache/
 
-.PHONY: python_wrapper
-python_wrapper:
+.PHONY: iban_validation_py
+iban_validation_py:
 	$(MAKE) requirements
-	cd python_wrapper
-	$(VENV_BIN)/maturin develop -m python_wrapper/Cargo.toml
+	cd iban_validation_py
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 
-.PHONY: python_wrapper_release
-python_wrapper_release:
+.PHONY: iban_validation_py_release
+iban_validation_py_release:
 	$(MAKE) requirements
-	cd python_wrapper
-	$(VENV_BIN)/maturin develop -m python_wrapper/Cargo.toml --release
+	cd iban_validation_py
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release
 
-.PHONY: build_python_wrapper
-build_python_wrapper:
+.PHONY: build_iban_validation_py
+build_iban_validation_py:
 	$(MAKE) requirements
-	cd python_wrapper
-	$(VENV_BIN)/maturin build -m python_wrapper/Cargo.toml
+	cd iban_validation_py
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml
 
-.PHONY: build_python_wrapper_release
-build_python_wrapper_release:
+.PHONY: build_iban_validation_py_release
+build_iban_validation_py_release:
 	$(MAKE) requirements
-	cd python_wrapper
-	$(VENV_BIN)/maturin build -m python_wrapper/Cargo.toml --release
+	cd iban_validation_py
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release
 
-.PHONY: build_polars_plugin
-build_polars_plugin:
+.PHONY: build_iban_validation_polars
+build_iban_validation_polars:
 	$(MAKE) requirements
-	$(VENV_BIN)/maturin build -m polars_plugin/Cargo.toml 
+	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml 
 
-.PHONY: build_polars_plugin_release
-build_polars_plugin_release:
+.PHONY: build_iban_validation_polars_release
+build_iban_validation_polars_release:
 	$(MAKE) requirements
-	$(VENV_BIN)/maturin build -m polars_plugin/Cargo.toml --release
+	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release
 
 .PHONY: test
 test:
 	$(MAKE) requirements
 	cargo test
-	$(VENV_BIN)/maturin develop -m polars_plugin/Cargo.toml
-	$(VENV_BIN)/maturin develop -m python_wrapper/Cargo.toml
+	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest
 

@@ -1,14 +1,14 @@
 [package]
-name = "py_iban_polars_plugin"
+name = "iban_validation_polars"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "py_viban_pl"
+name = "iban_validation_polars"
 crate-type = ["cdylib"]
 
 [dependencies]
-core_iban_valid = {path = "../core_iban_valid" }
+iban_validation_core = {path = "../iban_validation_core" }
 # need 0.21 as required from pyo3-polars
 pyo3 = {version = "0.21" ,  features = ["extension-module"] }
 pyo3-polars = {version = "0.18" ,  features = ["derive", "dtype-struct", "dtype-array"] }

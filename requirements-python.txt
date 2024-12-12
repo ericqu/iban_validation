@@ -1,6 +1,7 @@
 # build
 maturin == 1.7.1
 pip
+twine
 patchelf; platform_system == 'Linux'
 
 # tools

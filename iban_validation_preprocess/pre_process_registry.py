@@ -1,8 +1,8 @@
 import polars as pl
 pl.Config.set_tbl_cols(15)
 pl.Config.set_tbl_rows(45)
-inputfile = 'registry_preprocess/iban_registry_v98.txt'
-output_iban_file = 'core_iban_valid/data/iban_definitions.json'
+inputfile = 'iban_validation_preprocess/iban_registry_v98.txt'
+output_iban_file = 'iban_validation_core/data/iban_definitions.json'
 
 def pre_process(inputfile, output_iban_file):
     df = pl.scan_csv(inputfile, separator='\t', quote_char='"', n_rows=25)

@@ -1,10 +1,10 @@
-use core_iban_valid;
+use iban_validation_core;
 use pyo3::prelude::*;
 
 /// indicate if the iban is valid or not
 #[pyfunction]
 fn validate_iban(iban_t: &str) -> PyResult<bool> {
-    match core_iban_valid::validate_iban_str(iban_t) {
+    match iban_validation_core::validate_iban_str(iban_t) {
         Ok(_) => Ok(true),
         Err(e) => {
             eprintln!("IBAN Validation failed: {}", e);
@@ -15,7 +15,7 @@ fn validate_iban(iban_t: &str) -> PyResult<bool> {
 
 /// Provide a python class to encapsulate the results
 #[pyclass]
-pub struct PyVIban {
+pub struct IbanValidation {
     /// the IBAN when it is a valid one, otherwise None
     stored_iban: Option<String>,
     /// the Bank Id when there is a valid one, and when it is a valid IBAN
@@ -25,11 +25,11 @@ pub struct PyVIban {
 }
 
 #[pymethods]
-impl PyVIban {
+impl IbanValidation {
     /// Constructor for PyIban. Returns a dictionary-like object for Python.
     #[new]
     pub fn new(s: &str) -> PyResult<Self> {
-        match core_iban_valid::Iban::new(s) {
+        match iban_validation_core::Iban::new(s) {
             Ok(iban) => Ok(Self {
                 stored_iban: Some(iban.get_iban().to_string()),
                 iban_bank_id: Some(iban.iban_bank_id.map(|x| x.to_string())),
@@ -64,9 +64,9 @@ impl PyVIban {
 
 /// wrap the class and function into the module for python
 #[pymodule]
-fn py_viban(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn iban_validation_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
-    m.add_class::<PyVIban>()?;
+    m.add_class::<IbanValidation>()?;
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }

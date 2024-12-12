@@ -2,10 +2,10 @@
 resolver = "2"
 
 members = [ 
-    "core_iban_valid",
-    "python_wrapper",
-    "polars_plugin"
+    "iban_validation_core",
+    "iban_validation_py",
+    "iban_validation_polars"
 ]
-default-members = ["core_iban_valid"]
+default-members = ["iban_validation_core"]
 
 
