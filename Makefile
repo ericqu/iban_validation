@@ -32,7 +32,6 @@ endif
 
 .venv:	# Setup Python virtual env
 	python3 -m venv .venv
-	$(MAKE) requirements
 
 .PHONY: requirements
 requirements:	.venv
