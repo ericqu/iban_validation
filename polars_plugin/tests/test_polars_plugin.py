@@ -1,7 +1,6 @@
 import polars as pl
 from polars.testing import assert_frame_equal
-from expression_lib import process_ibans
-# import pytest
+from py_viban_pl import process_ibans
 
 df = pl.DataFrame(
         {"ibans":["AT611904300234573201", "CY17002001280000001200527600", "Test to fail"]}
