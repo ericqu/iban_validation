@@ -10,24 +10,33 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: ['3.9', '3.10', '3.12']
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set Up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Make and Dependencies
+    - name: Install Make and Dependencies (Linux)
+      if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get install -y make
+        make requirements
+        make iban_validation_preprocess
+
+    - name: Install Dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        choco install make
         make requirements
         make iban_validation_preprocess
 
