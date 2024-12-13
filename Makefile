@@ -1,5 +1,3 @@
-
-
 ifeq ($(OS),Windows_NT)
 	VENV_BIN=.venv/Scripts
 else
@@ -44,13 +42,13 @@ iban_validation_preprocess:
 	$(MAKE) requirements
 	$(VENV_BIN)/python iban_validation_preprocess/pre_process_registry.py
 
-.PHONY: iban_validation_core
-iban_validation_core:
-	cargo build -p iban_validation_core
+.PHONY: iban_validation_rs
+iban_validation_rs:
+	cargo build -p iban_validation_rs
 
-.PHONY: iban_validation_core_release
-iban_validation_core_release:
-	cargo build -p iban_validation_core -r
+.PHONY: iban_validation_rs_release
+iban_validation_rs_release:
+	cargo build -p iban_validation_rs -r
 
 .PHONY: clean
 clean:

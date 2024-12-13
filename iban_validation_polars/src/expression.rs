@@ -1,11 +1,11 @@
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
-use iban_validation_core;
+use iban_validation_rs;
 
 fn process_iban_str_str(value: &str, iban_valid: &mut String) {
     *iban_valid = String::from("");
 
-    match iban_validation_core::Iban::new(value) {
+    match iban_validation_rs::Iban::new(value) {
         Ok(valid_iban) => {
             iban_valid.push_str(valid_iban.get_iban());
             iban_valid.push_str(",");

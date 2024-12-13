@@ -1,10 +1,10 @@
-use iban_validation_core;
+use iban_validation_rs;
 use pyo3::prelude::*;
 
 /// indicate if the iban is valid or not
 #[pyfunction]
 fn validate_iban(iban_t: &str) -> PyResult<bool> {
-    match iban_validation_core::validate_iban_str(iban_t) {
+    match iban_validation_rs::validate_iban_str(iban_t) {
         Ok(_) => Ok(true),
         Err(e) => {
             eprintln!("IBAN Validation failed: {}", e);
@@ -29,7 +29,7 @@ impl IbanValidation {
     /// Constructor for PyIban. Returns a dictionary-like object for Python.
     #[new]
     pub fn new(s: &str) -> PyResult<Self> {
-        match iban_validation_core::Iban::new(s) {
+        match iban_validation_rs::Iban::new(s) {
             Ok(iban) => Ok(Self {
                 stored_iban: Some(iban.get_iban().to_string()),
                 iban_bank_id: Some(iban.iban_bank_id.map(|x| x.to_string())),

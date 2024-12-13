@@ -1,5 +1,5 @@
 [package]
-name = "iban_validation_core"
+name = "iban_validation_rs"
 version = "0.1.0"
 edition = "2021"
 

@@ -44,5 +44,8 @@ jobs:
         make requirements
         make iban_validation_preprocess
 
-    - name: Build Using Makefile
+    - name: Build Python Wrapper Using Makefile
       run: make iban_validation_py
+
+    - name: Build Polars plugin Using Makefile
+      run: make build_iban_validation_polars

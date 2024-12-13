@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use iban_validation_core::validate_iban_str;
+use iban_validation_rs::validate_iban_str;
 
 pub fn valid_001(c: &mut Criterion) {
     c.bench_function("valid 001", |b| b.iter(|| 

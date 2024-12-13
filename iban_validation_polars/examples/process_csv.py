@@ -3,7 +3,7 @@ from iban_validation_polars import process_ibans
 import os
 # print('debug', pl.__version__)
 
-inputfile = r'iban_validation_core/data/IBAN Examples.txt'
+inputfile = r'iban_validation_rs/data/IBAN Examples.txt'
 outputfile = r'iban_validation_polars/examples/test_file.csv'
 
 # File generation 
