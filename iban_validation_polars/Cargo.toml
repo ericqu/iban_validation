@@ -11,6 +11,6 @@ crate-type = ["cdylib"]
 iban_validation_rs = {path = "../iban_validation_rs" }
 # need 0.21 as required from pyo3-polars
 pyo3 = {version = "0.21" ,  features = ["extension-module"] }
-pyo3-polars = {version = "0.18" ,  features = ["derive", "dtype-struct", "dtype-array"] }
+pyo3-polars = {version = "0.18" ,  features = ["derive"] }
 serde = {version = "*" ,  features = ["derive"] }
-polars = {version = "*", features = ["dtype-struct", "dtype-array"] }
+polars = {version = "0.44.2" }
