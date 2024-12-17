@@ -7,6 +7,10 @@ def test_validate_iban():
     assert(iban_validation_py.validate_iban('AL47212110090000000235698741VV') is False)
     assert(iban_validation_py.validate_iban('AL47212110090000000235658741') is False)
 
+    result, message = iban_validation_py.validate_iban_with_error('AL47212110090000000235698741VV')
+    assert(result is False)
+    assert(message == 'IBAN Validation failed: The length of the input Iban does match the length for that country')   
+
 def test_iban():
     # # Valid IBAN
     iban = IbanValidation('AL47212110090000000235698741')

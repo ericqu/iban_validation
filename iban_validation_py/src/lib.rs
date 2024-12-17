@@ -6,10 +6,17 @@ use pyo3::prelude::*;
 fn validate_iban(iban_t: &str) -> PyResult<bool> {
     match iban_validation_rs::validate_iban_str(iban_t) {
         Ok(_) => Ok(true),
-        Err(e) => {
-            eprintln!("IBAN Validation failed: {}", e);
-            Ok(false)
-        }
+        Err(_) => Ok(false)
+    }
+}
+
+/// indicate if the iban is valid or not and provide an explanation when there is an error
+/// Validate the IBAN and return a tuple of (bool, String)
+#[pyfunction]
+fn validate_iban_with_error(iban_t: &str) -> PyResult<(bool, String)> {
+    match iban_validation_rs::validate_iban_str(iban_t) {
+        Ok(_) => Ok((true, String::new())),
+        Err(e) => Ok((false, format!("IBAN Validation failed: {}", e))),
     }
 }
 
@@ -66,6 +73,7 @@ impl IbanValidation {
 #[pymodule]
 fn iban_validation_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
+    m.add_function(wrap_pyfunction!(validate_iban_with_error, m)?)?;
     m.add_class::<IbanValidation>()?;
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
