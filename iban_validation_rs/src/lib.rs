@@ -76,9 +76,6 @@ static IB_REG: LazyLock<HashMap<String, IbanFields>> = LazyLock::new(|| {
         .expect("Failed parsing JSON data into a HashMap")
 });
 
-// const ALLOWED_N: &str = "0123456789";
-// const ALLOWED_A: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-// const ALLOWED_C: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const ALLOWED_E: &str = " ";
 
 /// potential error for the per letter validation
@@ -132,15 +129,10 @@ fn division_mod97(x: u32) -> u32 {
     x - q * 97 // Remainder
 }
 
-
-// #[inline]
-// fn bitwise_mod97(x: u32) -> u32 {
-//     let mut n = x;
-//     while n >= 97 {
-//         n -= 97;
-//     }
-//     n
-// }
+/// indicate which file was used a source
+pub const fn get_source_file() -> &'static str {
+    include_str!("../data/iban_sourcefile.txt")
+}
 
 /// Validate than an Iban is valid according to the registry information
 /// return true when Iban is fine, otherwise returns Error.
@@ -489,6 +481,11 @@ mod tests {
         for x in 0..10_000 {
             assert_eq!(division_mod97(x), x % 97, "Failed for value {}", x);
         }
+    }
+
+    #[test]
+    fn test_filename() {
+        assert_eq!( get_source_file(), "iban_registry_v98.txt");
     }
 
 }

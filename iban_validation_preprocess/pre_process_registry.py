@@ -3,6 +3,15 @@ pl.Config.set_tbl_cols(15)
 pl.Config.set_tbl_rows(45)
 inputfile = 'iban_validation_preprocess/iban_registry_v98.txt'
 output_iban_file = 'iban_validation_rs/data/iban_definitions.json'
+output_source_file = 'iban_validation_rs/data/iban_sourcefile.txt'
+
+def pre_process_filename(inputfile, output_source_file) :
+    from pathlib import Path
+    file_path = Path(inputfile)
+    filename = file_path.name     # Get the filename from the path
+    with open(output_source_file, "w") as f:
+        f.write(filename)
+
 
 def pre_process(inputfile, output_iban_file):
     df = pl.scan_csv(inputfile, separator='\t', quote_char='"', n_rows=25)
@@ -47,3 +56,4 @@ def pre_process(inputfile, output_iban_file):
 
 if __name__ == "__main__":
     pre_process(inputfile, output_iban_file)
+    pre_process_filename(inputfile, output_source_file)
