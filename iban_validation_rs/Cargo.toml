@@ -6,7 +6,6 @@ authors = [ "Eric Quéré" ]
 readme = "README.md"
 homepage = "https://github.com/ericqu/iban_validation"
 license = "MIT"
-license-file = "LICENSE"
 repository = "https://github.com/ericqu/iban_validation"
 
 [dependencies]
