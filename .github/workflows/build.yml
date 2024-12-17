@@ -44,6 +44,9 @@ jobs:
         make requirements
         make iban_validation_preprocess
 
+    - name: Run Tests
+      run: make test
+
     - name: Build Python Wrapper Using Makefile
       run: make iban_validation_py
 
