@@ -56,7 +56,7 @@ clean:
 	cargo clean
 	rm -rf .venv/
 	rm -rf .pytest_cache/
-	rm -rf target/wheels/
+	rm -rf target/
 
 .PHONY: iban_validation_py
 iban_validation_py:
