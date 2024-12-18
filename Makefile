@@ -78,29 +78,29 @@ iban_validation_py:
 iban_validation_py_release:
 	$(MAKE) requirements
 	cd iban_validation_py
-	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release --skip-existing
 
 .PHONY: build_iban_validation_py
 build_iban_validation_py:
 	$(MAKE) requirements
 	cd iban_validation_py
-	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --skip-existing
 
 .PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:
 	$(MAKE) requirements
 	cd iban_validation_py
-	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR)
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR) --skip-existing
 
 .PHONY: build_iban_validation_polars
 build_iban_validation_polars:
 	$(MAKE) requirements
-	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml 
+	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --skip-existing
 
 .PHONY: build_iban_validation_polars_release
 build_iban_validation_polars_release:
 	$(MAKE) requirements
-	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR)
+	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR) --skip-existing
 
 .PHONY: publish_iban_validation_rs
 publish_iban_validation_rs:
