@@ -4,6 +4,7 @@ DIST_DIR ?= dist
 ifeq ($(OS),Windows_NT)
 	VENV_BIN := .venv/Scripts
 	RMRF := powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+	RMRF := rm -rf
 else
 	VENV_BIN := .venv/bin
 	RMRF := rm -rf
