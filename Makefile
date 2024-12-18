@@ -33,30 +33,6 @@ else
     endif
 endif
 
-# Detect CPU architecture.
-ifeq ($(OS),Windows_NT)
-    ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-		ARCH := amd64
-	else ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-		ARCH := x86
-	else ifeq ($(PROCESSOR_ARCHITECTURE),ARM64)
-		ARCH := arm64
-	else
-		ARCH := unknown
-	endif
-else
-    UNAME_P := $(shell uname -p)
-    ifeq ($(UNAME_P),x86_64)
-		ARCH := amd64
-	else ifneq ($(filter %86,$(UNAME_P)),)
-		ARCH := x86
-	else ifneq ($(filter arm%,$(UNAME_P)),)
-		ARCH := arm64
-	else
-		ARCH := unknown
-	endif
-endif
-
 .venv:
 	python3 -m venv .venv
 
@@ -82,7 +58,7 @@ iban_validation_rs_release:
 clean:
 	cargo clean
 	$(MAKE) clean_wheels
-	$(RMRF) .pytest_cache
+#	$(RMRF) .pytest_cache
 	$(RMRF) .venv
 	$(RMRF) target
 
