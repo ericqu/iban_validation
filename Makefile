@@ -3,7 +3,7 @@ DIST_DIR ?= dist
 # OS Specific command
 ifeq ($(OS),Windows_NT)
 	VENV_BIN := .venv/Scripts
-	RMRF := powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+#	RMRF := powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 	RMRF := rm -rf
 else
 	VENV_BIN := .venv/bin
@@ -59,7 +59,7 @@ iban_validation_rs_release:
 clean:
 	cargo clean
 	$(MAKE) clean_wheels
-#	$(RMRF) .pytest_cache
+	$(RMRF) .pytest_cache
 	$(RMRF) .venv
 	$(RMRF) target
 
