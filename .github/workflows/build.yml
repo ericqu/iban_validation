@@ -49,8 +49,8 @@ jobs:
     - name: Run Tests
       run: make test
 
-    - name: Build Python Wrapper Using Makefile
+    - name: Build Python Wrapper Using  Makefile
       run: make build_iban_validation_py_release DIST_DIR=dist
 
-    - name: Build Polars plugin Using Makefile
+    - name: Build Polars plugin Using  Makefile
       run: make build_iban_validation_polars_release DIST_DIR=dist
