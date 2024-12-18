@@ -82,9 +82,9 @@ iban_validation_rs_release:
 clean:
 	cargo clean
 	$(MAKE) clean_wheels
-# $(RMRF) .pytest_cache/
-	$(RMRF) .venv/
-	$(RMRF) target/
+	$(RMRF) .pytest_cache
+	$(RMRF) .venv
+	$(RMRF) target
 
 .PHONY: clean_wheels
 clean_wheels:
