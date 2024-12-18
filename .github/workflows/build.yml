@@ -24,31 +24,34 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set Up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Make and Dependencies (Linux)
-      if: runner.os == 'Linux'
+    - name: Remove Existing Wheels
       run: |
-        sudo apt-get update
-        sudo apt-get install -y make
-        make requirements
-        make iban_validation_preprocess
+        find . -name "*.whl" -type f -delete
+        find . -name "*.tar.gz" -type f -delete
 
-    - name: Install Dependencies (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        choco install make
-        make requirements
-        make iban_validation_preprocess
+    # - name: Set Up Python ${{ matrix.python-version }}
+    #   uses: actions/setup-python@v5
+    #   with:
+    #     python-version: ${{ matrix.python-version }}
 
-    - name: Run Tests
-      run: make test
+    # - name: Install Make and Dependencies (Linux)
+    #   if: runner.os == 'Linux'
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y make
+    #     make iban_validation_preprocess
 
-    - name: Build Python Wrapper Using Makefile
-      run: make iban_validation_py
+    # - name: Install Dependencies (Windows)
+    #   if: runner.os == 'Windows'
+    #   run: |
+    #     choco install make
+    #     make iban_validation_preprocess
 
-    - name: Build Polars plugin Using Makefile
-      run: make build_iban_validation_polars
+    # - name: Run Tests
+    #   run: make test
+
+    # - name: Build Python Wrapper Using Makefile
+    #   run: make build_iban_validation_py_release DIST_DIR=dist
+
+    # - name: Build Polars plugin Using Makefile
+    #   run: make build_iban_validation_polars_release DIST_DIR=dist

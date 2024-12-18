@@ -1,3 +1,5 @@
+DIST_DIR ?= dist
+
 ifeq ($(OS),Windows_NT)
 	VENV_BIN=.venv/Scripts
 else
@@ -35,7 +37,6 @@ endif
 requirements:	.venv
 	$(VENV_BIN)/python -m pip install --upgrade uv
 	$(VENV_BIN)/uv pip install --upgrade --compile-bytecode --no-build -r requirements-python.txt
-
 
 .PHONY: iban_validation_preprocess
 iban_validation_preprocess:
@@ -78,7 +79,7 @@ build_iban_validation_py:
 build_iban_validation_py_release:
 	$(MAKE) requirements
 	cd iban_validation_py
-	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR)
 
 .PHONY: build_iban_validation_polars
 build_iban_validation_polars:
@@ -88,7 +89,12 @@ build_iban_validation_polars:
 .PHONY: build_iban_validation_polars_release
 build_iban_validation_polars_release:
 	$(MAKE) requirements
-	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release
+	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR)
+
+.PHONY: publish_iban_validation_rs
+publish_iban_validation_rs:
+	$(MAKE) requirements
+	cargo publish -p iban_validation_rs 
 
 .PHONY: test
 test:
