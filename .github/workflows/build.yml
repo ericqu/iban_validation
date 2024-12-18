@@ -24,46 +24,29 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Remove Existing Wheels
-    run: |
-    python -c "
-import glob
-import os
-import shutil
+    - name: Set Up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
 
-wheel_files = glob.glob('**/*.whl', recursive=True)
-tar_files = glob.glob('**/*.tar.gz', recursive=True)
+    - name: Install Make and Dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make
+        make iban_validation_preprocess
 
-for file in wheel_files + tar_files:
-    try:
-        os.remove(file)
-    except Exception as e:
-        print(f'Could not remove {file}: {e}')
-"
+    - name: Install Dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        choco install make
+        make iban_validation_preprocess
 
-    # - name: Set Up Python ${{ matrix.python-version }}
-    #   uses: actions/setup-python@v5
-    #   with:
-    #     python-version: ${{ matrix.python-version }}
+    - name: Run Tests
+      run: make test
 
-    # - name: Install Make and Dependencies (Linux)
-    #   if: runner.os == 'Linux'
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y make
-    #     make iban_validation_preprocess
+    - name: Build Python Wrapper Using Makefile
+      run: make build_iban_validation_py_release DIST_DIR=dist
 
-    # - name: Install Dependencies (Windows)
-    #   if: runner.os == 'Windows'
-    #   run: |
-    #     choco install make
-    #     make iban_validation_preprocess
-
-    # - name: Run Tests
-    #   run: make test
-
-    # - name: Build Python Wrapper Using Makefile
-    #   run: make build_iban_validation_py_release DIST_DIR=dist
-
-    # - name: Build Polars plugin Using Makefile
-    #   run: make build_iban_validation_polars_release DIST_DIR=dist
+    - name: Build Polars plugin Using Makefile
+      run: make build_iban_validation_polars_release DIST_DIR=dist
