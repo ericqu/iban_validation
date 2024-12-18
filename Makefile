@@ -83,8 +83,8 @@ clean:
 	cargo clean
 	$(MAKE) clean_wheels
 # $(RMRF) .pytest_cache/
-	$(RMRF) target/
 	$(RMRF) .venv/
+	$(RMRF) target/
 
 .PHONY: clean_wheels
 clean_wheels:
