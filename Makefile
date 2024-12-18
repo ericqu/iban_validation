@@ -89,11 +89,11 @@ clean:
 .PHONY: clean_wheels
 clean_wheels:
 	@echo "Cleaning wheels, distribution files, and Python extension modules..."
-	ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT)
 		powershell -Command "Get-ChildItem -Path . -Recurse -Include *.whl,*.tar.gz,*.pyd | Remove-Item -Force"
-	else
+else
 		find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
-	endif
+endif
 
 .PHONY: iban_validation_py
 iban_validation_py:
@@ -122,9 +122,9 @@ build_iban_validation_polars:
 .PHONY: build_iban_validation_polars_release
 build_iban_validation_polars_release:
 	$(MAKE) requirements
-	ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT)
 		powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue";
-	endif
+endif
 	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR) 
 
 .PHONY: publish_iban_validation_rs
