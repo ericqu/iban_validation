@@ -27,9 +27,22 @@ jobs:
         override: true
 
     - name: Remove Existing Wheels
-      run: |
-        find . -name "*.whl" -type f -delete
-        find . -name "*.tar.gz" -type f -delete
+- name: Remove Existing Wheels
+  run: |
+    python -c "
+import glob
+import os
+import shutil
+
+wheel_files = glob.glob('**/*.whl', recursive=True)
+tar_files = glob.glob('**/*.tar.gz', recursive=True)
+
+for file in wheel_files + tar_files:
+    try:
+        os.remove(file)
+    except Exception as e:
+        print(f'Could not remove {file}: {e}')
+"
 
     - name: Install Dependencies
       run: |
