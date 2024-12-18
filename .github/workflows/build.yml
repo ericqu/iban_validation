@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest] # [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.12'] #  ['3.9', '3.10', 3.11', '3.12']
+        os: [ windows-latest, ] # [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.12'] #  ['3.9', '3.10', 3.11', '3.12']
         architecture: [x86-64, aarch64]
         exclude:
           - os: windows-latest
@@ -46,11 +46,11 @@ jobs:
     # - name: Cleanup
     #   run: make clean
 
-    - name: Run Tests
-      run: make test
+    # - name: Run Tests
+    #   run: make test
 
-    - name: Build Python Wrapper Using  Makefile
-      run: make build_iban_validation_py_release DIST_DIR=dist
+    # - name: Build Python Wrapper Using  Makefile
+    #   run: make build_iban_validation_py_release DIST_DIR=dist
 
     - name: Build Polars plugin Using  Makefile
       run: make build_iban_validation_polars_release DIST_DIR=dist

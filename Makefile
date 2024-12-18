@@ -101,7 +101,8 @@ build_iban_validation_polars:
 build_iban_validation_polars_release:
 	$(MAKE) requirements
 ifeq ($(OS),Windows_NT)
-	powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue";
+# powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue"
+	powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force"
 endif
 	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR) 
 
