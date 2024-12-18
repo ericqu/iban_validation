@@ -1,9 +1,36 @@
 DIST_DIR ?= dist
 
+# OS Specific command
 ifeq ($(OS),Windows_NT)
-	VENV_BIN=.venv/Scripts
+	VENV_BIN := .venv/Scripts
+	RMRF := powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 else
-	VENV_BIN=.venv/bin
+	VENV_BIN := .venv/bin
+	RMRF := rm -rf
+endif
+
+# Detect CPU architecture
+ifeq ($(OS),Windows_NT)
+    ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+        ARCH := amd64
+    else ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+        ARCH := x86
+    else ifeq ($(PROCESSOR_ARCHITECTURE),ARM64)
+        ARCH := arm64
+    else
+        ARCH := unknown
+    endif
+else
+    UNAME_P := $(shell uname -p)
+    ifeq ($(UNAME_P),x86_64)
+        ARCH := amd64
+    else ifneq ($(filter %86,$(UNAME_P)),)
+        ARCH := x86
+    else ifneq ($(filter arm%,$(UNAME_P)),)
+        ARCH := arm64
+    else
+        ARCH := unknown
+    endif
 endif
 
 # Detect CPU architecture.
@@ -16,7 +43,7 @@ ifeq ($(OS),Windows_NT)
 		ARCH := arm64
 	else
 		ARCH := unknown
-    endif
+	endif
 else
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)
@@ -27,10 +54,10 @@ else
 		ARCH := arm64
 	else
 		ARCH := unknown
-    endif
+	endif
 endif
 
-.venv:	# Setup Python virtual env
+.venv:
 	python3 -m venv .venv
 
 .PHONY: requirements
@@ -54,48 +81,38 @@ iban_validation_rs_release:
 .PHONY: clean
 clean:
 	cargo clean
-		@if [ "$(OS)" = "Windows_NT" ]; then \
-		powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue .venv"; \
-		powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue .pytest_cache"; \
-		powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue target"; \
-	else \
-		rm -rf .venv/; \
-		rm -rf .pytest_cache/; \
-		rm -rf target/; \
-	fi
+	$(RMRF) .venv/
+	$(RMRF) .pytest_cache
+	$(RMRF) target/
 	$(MAKE) clean_wheels
 
 .PHONY: clean_wheels
 clean_wheels:
 	@echo "Cleaning wheels, distribution files, and Python extension modules..."
-	@if [ "$(OS)" = "Windows_NT" ]; then \
-		powershell -Command "Get-ChildItem -Path . -Recurse -Include *.whl,*.tar.gz,*.pyd | Remove-Item -Force"; \
-	else \
-		find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete; \
-	fi
+	ifeq ($(OS),Windows_NT)
+		powershell -Command "Get-ChildItem -Path . -Recurse -Include *.whl,*.tar.gz,*.pyd | Remove-Item -Force"
+	else
+		find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
+	endif
 
 .PHONY: iban_validation_py
 iban_validation_py:
 	$(MAKE) requirements
-	cd iban_validation_py
-	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
+	cd iban_validation_py && $(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 
 .PHONY: iban_validation_py_release
 iban_validation_py_release:
 	$(MAKE) requirements
-	cd iban_validation_py
-	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
+	cd iban_validation_py && $(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
 .PHONY: build_iban_validation_py
 build_iban_validation_py:
 	$(MAKE) requirements
-	cd iban_validation_py
-	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml 
+	cd iban_validation_py && $(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml 
 
 .PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:
 	$(MAKE) requirements
-	cd iban_validation_py
-	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR) 
+	cd iban_validation_py && $(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR) 
 
 .PHONY: build_iban_validation_polars
 build_iban_validation_polars:
@@ -105,9 +122,9 @@ build_iban_validation_polars:
 .PHONY: build_iban_validation_polars_release
 build_iban_validation_polars_release:
 	$(MAKE) requirements
-	@if [ "$(OS)" = "Windows_NT" ]; then \
-		powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue"; \
-	fi
+	ifeq ($(OS),Windows_NT)
+		powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue";
+	endif
 	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR) 
 
 .PHONY: publish_iban_validation_rs
@@ -122,4 +139,3 @@ test:
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest
-
