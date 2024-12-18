@@ -81,38 +81,39 @@ iban_validation_rs_release:
 .PHONY: clean
 clean:
 	cargo clean
-	$(RMRF) .venv/
-	$(RMRF) .pytest_cache/
-	$(RMRF) target/
 	$(MAKE) clean_wheels
+# $(RMRF) .pytest_cache/
+	$(RMRF) target/
+	$(RMRF) .venv/
 
 .PHONY: clean_wheels
 clean_wheels:
 	@echo "Cleaning wheels, distribution files, and Python extension modules..."
 ifeq ($(OS),Windows_NT)
-		powershell -Command "Get-ChildItem -Path . -Recurse -Include *.whl,*.tar.gz,*.pyd | Remove-Item -Force"
+	powershell -Command "Get-ChildItem -Path . -Recurse -Include *.whl,*.tar.gz,*.pyd | Remove-Item -Force"
 else
-		find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
+	find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
 endif
 
 .PHONY: iban_validation_py
 iban_validation_py:
 	$(MAKE) requirements
-	cd iban_validation_py && $(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 
 .PHONY: iban_validation_py_release
 iban_validation_py_release:
 	$(MAKE) requirements
-	cd iban_validation_py && $(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
+
 .PHONY: build_iban_validation_py
 build_iban_validation_py:
 	$(MAKE) requirements
-	cd iban_validation_py && $(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml 
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml 
 
 .PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:
 	$(MAKE) requirements
-	cd iban_validation_py && $(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR) 
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR) 
 
 .PHONY: build_iban_validation_polars
 build_iban_validation_polars:
@@ -123,7 +124,7 @@ build_iban_validation_polars:
 build_iban_validation_polars_release:
 	$(MAKE) requirements
 ifeq ($(OS),Windows_NT)
-		powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue";
+	powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue";
 endif
 	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR) 
 
