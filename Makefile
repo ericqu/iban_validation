@@ -57,6 +57,16 @@ clean:
 	rm -rf .venv/
 	rm -rf .pytest_cache/
 	rm -rf target/
+	$(MAKE) clean_wheels
+
+.PHONY: clean_wheels
+clean_wheels:
+	@echo "Cleaning wheels, distribution files, and Python extension modules..."
+	@if [ "$(OS)" = "Windows_NT" ]; then \
+		powershell -Command "Get-ChildItem -Path . -Recurse -Include *.whl,*.tar.gz,*.pyd | Remove-Item -Force"; \
+	else \
+		find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete; \
+	fi
 
 .PHONY: iban_validation_py
 iban_validation_py:
