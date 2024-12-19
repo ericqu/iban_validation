@@ -1,0 +1,235 @@
+name: Release Python
+
+on:
+  workflow_dispatch:
+    inputs:
+      # Latest commit to include with the release. If omitted, use the latest commit on the main branch.
+      sha:
+        description: Commit SHA
+        type: string
+      # Create the sdist and build the wheels, but do not publish to PyPI / GitHub.
+      dry-run:
+        description: Dry run
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: '3.9'
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-sdist:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [iban_validation_polars, iban_validation_py]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Create source distribution iban_validation_py
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: >
+            --manifest-path iban_validation_py/Cargo.toml 
+            --release
+            --out dist
+          maturin-version: 1.7.1
+
+      - name: Test sdist
+        run: |
+          pip install --force-reinstall --verbose dist/iban_validation_py*.tar.gz
+          python -c 'import iban_validation_py'
+
+      - name: Create source distribution iban_validation_polars
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: >
+            --manifest-path iban_validation_polars/Cargo.toml 
+            --release
+            --out dist
+          maturin-version: 1.7.1
+
+      - name: Test sdist
+        run: |
+          pip install --force-reinstall --verbose dist/iban_validation_polars*.tar.gz
+          python -c 'import iban_validation_polars'
+
+      - name: Upload sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist-${{ matrix.package }}
+          path: dist/*.tar.gz
+
+  build-wheels:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [iban_validation_polars, iban_validation_py]
+        os: [ubuntu-latest, windows-latest]
+        architecture: [x86-64, aarch64]
+        exclude:
+          - os: windows-latest
+            architecture: aarch64
+
+    steps:
+
+      - name: Set up Python iban_validation_py
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Build wheel iban_validation_py
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          target: ${{ steps.target.outputs.target }}
+          args: >
+            --profile dist-release
+            --manifest-path iban_validation_py/Cargo.toml
+            --out dist
+          manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}
+          maturin-version: 1.7.1
+
+      - name: Test wheel iban_validation_py
+        # Only test on x86-64 for now as this matches the runner architecture
+        if: matrix.architecture == 'x86-64'
+        run: |
+          pip install --force-reinstall --verbose dist/iban_validation_py*.whl
+          python -c 'import iban_validation_py'
+        
+      - name: Build wheel iban_validation_polars
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          target: ${{ steps.target.outputs.target }}
+          args: >
+            --profile dist-release
+            --manifest-path iban_validation_polars/Cargo.toml
+            --out dist
+          manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}
+          maturin-version: 1.7.1
+
+      - name: Test wheel iban_validation_polars
+        # Only test on x86-64 for now as this matches the runner architecture
+        if: matrix.architecture == 'x86-64'
+        run: |
+          pip install --force-reinstall --verbose dist/iban_validation_polars*.whl
+          python -c 'import iban_validation_polars'
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.package }}-${{ matrix.os }}-${{ matrix.architecture }}
+          path: dist/*.whl
+
+  publish-to-pypi:
+    needs: [create-sdist, build-wheels]
+    environment:
+      name: release-python
+      url: https://pypi.org/project/polars
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download sdists and wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        if: inputs.dry-run == false
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+
+  # publish-to-github:
+  #   needs: publish-to-pypi
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: ${{ inputs.sha }}
+
+  #     - name: Download sdist
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: sdist-polars
+  #         path: dist
+
+  #     - name: Get version from Cargo.toml
+  #       id: version
+  #       working-directory: py-polars
+  #       run: |
+  #         VERSION=$(grep -m 1 -oP 'version = "\K[^"]+' Cargo.toml)
+  #         if [[ "$VERSION" == *"-"* ]]; then
+  #           IS_PRERELEASE=true
+  #         else
+  #           IS_PRERELEASE=false
+  #         fi
+  #         echo "version=$VERSION" >> $GITHUB_OUTPUT
+  #         echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+
+  #     - name: Create GitHub release
+  #       id: github-release
+  #       uses: release-drafter/release-drafter@v6
+  #       with:
+  #         config-name: release-drafter-python.yml
+  #         name: Python Polars ${{ steps.version.outputs.version }}
+  #         tag: py-${{ steps.version.outputs.version }}
+  #         version: ${{ steps.version.outputs.version }}
+  #         prerelease: ${{ steps.version.outputs.is_prerelease }}
+  #         commitish: ${{ inputs.sha || github.sha }}
+  #         disable-autolabeler: true
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Upload sdist to GitHub release
+  #       run: gh release upload $TAG $FILES --clobber
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         TAG: ${{ steps.github-release.outputs.tag_name }}
+  #         FILES: dist/polars-*.tar.gz
+
+  #     - name: Publish GitHub release
+  #       if: inputs.dry-run == false
+  #       run: gh release edit $TAG --draft=false
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         TAG: ${{ steps.github-release.outputs.tag_name }}
+
+  #     - name: Trigger other workflows related to the release
+  #       if: inputs.dry-run == false
+  #       uses: peter-evans/repository-dispatch@v3
+  #       with:
+  #         event-type: python-release
+  #         client-payload: >
+  #           {
+  #             "version": "${{ steps.version.outputs.version }}",
+  #             "is_prerelease": "${{ steps.version.outputs.is_prerelease }}",
+  #             "tag": "${{ steps.github-release.outputs.tag_name }}",
+  #             "sha": "${{ inputs.sha || github.sha }}"
+  #           }
