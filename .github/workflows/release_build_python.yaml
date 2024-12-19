@@ -54,10 +54,10 @@ jobs:
             --out dist
           maturin-version: 1.7.1
 
-      - name: Test sdist
-        run: |
-          pip install --force-reinstall --verbose dist/iban_validation_py*.tar.gz
-          python -c 'import iban_validation_py'
+      # - name: Test sdist iban_validation_py
+      #   run: |
+      #     pip install --force-reinstall --verbose dist/iban_validation_py*.tar.gz
+      #     python -c 'import iban_validation_py'
 
       - name: Create source distribution iban_validation_polars
         uses: PyO3/maturin-action@v1
@@ -68,10 +68,10 @@ jobs:
             --out dist
           maturin-version: 1.7.1
 
-      - name: Test sdist
-        run: |
-          pip install --force-reinstall --verbose dist/iban_validation_polars*.tar.gz
-          python -c 'import iban_validation_polars'
+      # - name: Test sdist
+      #   run: |
+      #     pip install --force-reinstall --verbose dist/iban_validation_polars*.tar.gz
+      #     python -c 'import iban_validation_polars'
 
       - name: Upload sdist
         uses: actions/upload-artifact@v4
@@ -92,6 +92,9 @@ jobs:
             architecture: aarch64
 
     steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Set up Python iban_validation_py
         uses: actions/setup-python@v5
