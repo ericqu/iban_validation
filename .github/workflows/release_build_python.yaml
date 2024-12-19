@@ -95,11 +95,13 @@ jobs:
 
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      - run: pip install -r requirements-python-release.txt
+        run: pip install -r requirements-python-release.txt
 
       - name: Build wheel ${{ matrix.package }}
         uses: PyO3/maturin-action@v1
