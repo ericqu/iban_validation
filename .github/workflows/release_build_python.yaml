@@ -129,8 +129,9 @@ jobs:
 
   publish_them:
     needs: [create-sdist, build-wheels]
+    runs-on: ubuntu-latest
     steps:
-    
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
