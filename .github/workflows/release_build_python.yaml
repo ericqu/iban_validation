@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PYTHON_VERSION: '3.9'
+  PYTHON_VERSION: '3.12'
   CARGO_INCREMENTAL: 0
   CARGO_NET_RETRY: 10
   RUSTUP_MAX_RETRIES: 10
@@ -96,48 +96,30 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python iban_validation_py
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Build wheel iban_validation_py
+      - name: Build wheel ${{ matrix.package }}
         uses: PyO3/maturin-action@v1
         with:
           command: build
           target: ${{ steps.target.outputs.target }}
           args: >
             --release
-            --manifest-path iban_validation_py/Cargo.toml
+            -i python${{ env.PYTHON_VERSION }}
+            --manifest-path ${{ matrix.package }}/Cargo.toml
             --out dist
           manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}
           maturin-version: 1.7.1
 
-      - name: Test wheel iban_validation_py
+      - name: Test wheel ${{ matrix.package }}
         # Only test on x86-64 for now as this matches the runner architecture
         if: matrix.architecture == 'x86-64'
         run: |
-          pip install --force-reinstall --verbose dist/iban_validation_py*.whl
-          python -c 'import iban_validation_py'
-        
-      - name: Build wheel iban_validation_polars
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          target: ${{ steps.target.outputs.target }}
-          args: >
-            --release
-            --manifest-path iban_validation_polars/Cargo.toml
-            --out dist
-          manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}
-          maturin-version: 1.7.1
-
-      - name: Test wheel iban_validation_polars
-        # Only test on x86-64 for now as this matches the runner architecture
-        if: matrix.architecture == 'x86-64'
-        run: |
-          pip install --force-reinstall --verbose dist/iban_validation_polars*.whl
-          python -c 'import iban_validation_polars'
+          pip install --force-reinstall --verbose dist/${{ matrix.package }}*.whl
+          python -c 'import ${{ matrix.package }}'
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
