@@ -1,0 +1,26 @@
+package:
+  name: "iban_validation_polars"
+  version: "0.1.1"
+
+source:
+  - url: https://files.pythonhosted.org/packages/4e/76/6a471d47585ca286597975a3fefaa90145b04c0acb2b8925b75252a7ffb5/iban_validation_polars-0.1.1-cp312-cp312-macosx_11_0_arm64.whl
+    sha256: 76fba899b7db198be865d4b3d5c36bea33137649a72f60aab9558ab7cc39d7d0
+    selectors:
+      - osx
+      - python >=3.12
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps -vv iban_validation_polars*.whl"
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+about:
+  home: "https://github.com/ericqu/iban_validation"  # Replace with your repository
+  license: "MIT"
+  summary: "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
