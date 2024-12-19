@@ -127,27 +127,27 @@ jobs:
           name: wheel-${{ matrix.package }}-${{ matrix.os }}-${{ matrix.architecture }}
           path: dist/*.whl
 
-  publish_them:
-    needs: [create-sdist, build-wheels]
-    runs-on: ubuntu-latest
-    steps:
+  # publish_them:
+  #   needs: [create-sdist, build-wheels]
+  #   runs-on: ubuntu-latest
+  #   steps:
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v${{ github.event.inputs.version }}
-        files: |
-          dist/*.whl
-          dist/*.tar.gz
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   - name: Create GitHub Release
+  #     uses: softprops/action-gh-release@v1
+  #     with:
+  #       tag_name: v${{ github.event.inputs.version }}
+  #       files: |
+  #         dist/*.whl
+  #         dist/*.tar.gz
+  #       generate_release_notes: true
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Publish to Crates.io
-      env:
-        CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      run: |
-        cargo publish -p iban_validation_rs
+  #   - name: Publish to Crates.io
+  #     env:
+  #       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+  #     run: |
+  #       cargo publish -p iban_validation_rs
 
 
   # publish-to-pypi:
