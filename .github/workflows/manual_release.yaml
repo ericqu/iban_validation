@@ -29,14 +29,14 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Publish to PyPI
-      env:
-        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        pip install twine
-        twine upload dist/*.whl \
-          --username __token__ \
-          --password ${{ secrets.PYPI_TOKEN }}
+    # - name: Publish to PyPI
+    #   env:
+    #     PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+    #   run: |
+    #     pip install twine
+    #     twine upload dist/*.whl \
+    #       --username __token__ \
+    #       --password ${{ secrets.PYPI_TOKEN }}
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
