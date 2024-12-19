@@ -1,0 +1,8 @@
+# build
+pip
+twine
+patchelf; platform_system == 'Linux'
+
+# tools
+pytest
+polars
