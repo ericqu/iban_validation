@@ -3,9 +3,9 @@ name: Release Python
 on:
   workflow_dispatch:
     inputs:
-      # Latest commit to include with the release. If omitted, use the latest commit on the main branch.
-      sha:
-        description: Commit SHA
+      version:
+        description: 'Release version (e.g., 0.1.0)'
+        required: true
         type: string
       # Create the sdist and build the wheels, but do not publish to PyPI / GitHub.
       dry-run:
@@ -107,7 +107,7 @@ jobs:
           command: build
           target: ${{ steps.target.outputs.target }}
           args: >
-            --profile dist-release
+            --release
             --manifest-path iban_validation_py/Cargo.toml
             --out dist
           manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}
@@ -126,7 +126,7 @@ jobs:
           command: build
           target: ${{ steps.target.outputs.target }}
           args: >
-            --profile dist-release
+            --release
             --manifest-path iban_validation_polars/Cargo.toml
             --out dist
           manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}

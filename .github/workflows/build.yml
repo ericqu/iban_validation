@@ -46,15 +46,15 @@ jobs:
     # - name: Cleanup
     #   run: make clean
 
-    # - name: Run Tests
-    #   run: make test
+    - name: Run Tests
+      run: make test
 
-    - name: Build Python Wrapper Using  Makefile
-      run: make build_iban_validation_py_release DIST_DIR=dist
+    # - name: Build Python Wrapper Using  Makefile
+    #   run: make build_iban_validation_py_release DIST_DIR=dist
 
-    - name: Build Polars plugin Using  Makefile
-      run: make build_iban_validation_polars_release DIST_DIR=dist
+    # - name: Build Polars plugin Using  Makefile
+    #   run: make build_iban_validation_polars_release DIST_DIR=dist
 
-    - name: Rust Lib Using  Makefile
-      run: make iban_validation_rs_release
+    # - name: Build Rust Lib Using Makefile
+    #   run: make iban_validation_rs_release
 
