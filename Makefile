@@ -90,7 +90,8 @@ build_iban_validation_py:
 .PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:
 	$(MAKE) requirements
-	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR) 
+	$(VENV_BIN)/maturin build -m iban_validation_py/Cargo.toml --release --out $(DIST_DIR)
+	$(VENV_BIN)/maturin sdist -m iban_validation_py/Cargo.toml --out $(DIST_DIR)
 
 .PHONY: build_iban_validation_polars
 build_iban_validation_polars:
@@ -104,7 +105,8 @@ ifeq ($(OS),Windows_NT)
 # powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force -ErrorAction SilentlyContinue"
 	powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force"
 endif
-	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR) 
+	$(VENV_BIN)/maturin build -m iban_validation_polars/Cargo.toml --release --out $(DIST_DIR)
+	$(VENV_BIN)/maturin sdist -m iban_validation_polars/Cargo.toml --out $(DIST_DIR)
 
 .PHONY: publish_iban_validation_rs
 publish_iban_validation_rs:
@@ -118,3 +120,13 @@ test:
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest
+
+# only manual when local dist is filled with the artifacts
+.PHONY: publishing_pipy
+publishing_pipy:
+	$(VENV_BIN)/python3 -m twine upload dist/* --verbose
+
+# only manual when local dist is filled with the artifacts
+.PHONY: publishing_testpipy
+publishing_testpipy:
+	$(VENV_BIN)/python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose

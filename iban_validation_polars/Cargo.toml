@@ -2,6 +2,20 @@
 name = "iban_validation_polars"
 version = { workspace = true }
 edition = "2021"
+description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
+long_description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    "Eric" 
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+license = "MIT" 
+Homepage = "https://github.com/ericqu/iban_validation"
+Issues = "https://github.com/ericqu/iban_validation/issues"
 
 [lib]
 name = "iban_validation_polars"
