@@ -101,6 +101,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
+
+      - name: Setup python requirements
         run: pip install -r requirements-python-release.txt
 
       - name: Build wheel ${{ matrix.package }}
