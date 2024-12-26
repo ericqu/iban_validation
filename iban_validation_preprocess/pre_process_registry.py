@@ -48,10 +48,14 @@ def pre_process(inputfile, output_iban_file):
             .with_columns(
                 pl.col('IBAN electronic format example').str.slice(3+pl.col('bank_id_pos_s'), pl.col('bank_id_pos_e')+1-pl.col('bank_id_pos_s')).alias('bank_id')
             ).rename({'IBAN prefix country code (ISO 3166)':'ctry_cd', 'IBAN length':'iban_len'})\
+            .with_columns(
+                 pl.col('ctry_cd').map_elements(lambda x: [ord(c) for c in x])
+            )\
             .select(['ctry_cd', 'iban_len', 'bank_id_pos_s','bank_id_pos_e', 'branch_id_pos_s', 'branch_id_pos_e', 'iban_struct' ])
     
     pre_df.write_json(output_iban_file)
     print(f'preprocessing: {inputfile} -> completed', )
+    print(pre_df['ctry_cd'])
     return pre_df
 
 if __name__ == "__main__":

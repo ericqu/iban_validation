@@ -10,7 +10,7 @@ use std::sync::LazyLock;
 pub struct IbanFields {
     /// two-letter country codes as per ISO 3166-1 
     // TODO check if [u8;2] would be better not trivial as the rest of the comparison is on String
-    pub ctry_cd: String,
+    pub ctry_cd: [u8;2],
     /// IBAN length, intentionnaly short, the length is sufficient but if something changes it will raise error quickly
     pub iban_len: u8,
     /// position of bank identifier starting point
@@ -58,11 +58,11 @@ impl Error for ValidationError {}
 /// utility function to load the registry (as json) into a Hashmap
 fn convert_to_hashmap(
     json_str: &str,
-) -> Result<HashMap<String, IbanFields>, serde_json::Error> {
+) -> Result<HashMap<[u8;2], IbanFields>, serde_json::Error> {
 
     let items: Vec<IbanFields> = serde_json::from_str(json_str)?;
 
-    let map: HashMap<String, IbanFields> =  items.into_iter()
+    let map: HashMap<[u8;2], IbanFields> =  items.into_iter()
         .map(|item| (item.ctry_cd.clone(), item))
         .collect();
 
@@ -71,7 +71,7 @@ fn convert_to_hashmap(
 
 /// trigger the loading of the registry once need, and only once.
 /// panics if failing as there is no other way forward.
-static IB_REG: LazyLock<HashMap<String, IbanFields>> = LazyLock::new(|| {
+static IB_REG: LazyLock<HashMap<[u8;2], IbanFields>> = LazyLock::new(|| {
     convert_to_hashmap(include_str!("../data/iban_definitions.json"))
         .expect("Failed parsing JSON data into a HashMap")
 });
@@ -137,11 +137,11 @@ pub const fn get_source_file() -> &'static str {
 /// Validate than an Iban is valid according to the registry information
 /// return true when Iban is fine, otherwise returns Error.
 pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
-    let identified_country = match input_iban.get(..2) {
-        Some(value) => value,
+    let identified_country:[u8; 2] = match input_iban.get(..2) {
+        Some(value) => value.as_bytes().try_into().map_err(|_| ValidationError::InvalidCountry)?,
         None => return Err(ValidationError::MissingCountry),
     };
-    let pattern: &String = match &IB_REG.get(identified_country) {
+    let pattern: &String = match &IB_REG.get(&identified_country) {
         Some(pattern) => &pattern.iban_struct,
         None => return Err(ValidationError::InvalidCountry),
     };
@@ -151,8 +151,9 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
     }
 
     // There is a potental panic but it should be a dead code, as we should never find a non 2-letter country code given we search for 2-leter country code and found something before
-    let pattern_start = pattern
-        .get(..2)
+    let pattern_start:[u8; 2]= pattern
+        .get(..2).unwrap()
+        .as_bytes().try_into().map_err(|_| ValidationError::InvalidCountry)
         .expect("Error the built-in pattern is not starting with at least two characters");
 
     // first two letters do not match
@@ -228,12 +229,12 @@ impl<'a> Iban<'a> {
             Err(e) => return Err(e),
         };
 
-        let identified_country = match s.get(..2) {
-            Some(value) => value,
+        let identified_country:[u8; 2] = match s.get(..2) {
+            Some(value) => value.as_bytes().try_into().map_err(|_| ValidationError::InvalidCountry)?,
             None => return Err(ValidationError::MissingCountry),
         };
 
-        let iban_data: &IbanFields = match &IB_REG.get(identified_country) {
+        let iban_data: &IbanFields = match &IB_REG.get(&identified_country) {
             Some(pattern) => pattern,
             None => return Err(ValidationError::InvalidCountry),
         };
@@ -420,7 +421,7 @@ mod tests {
 
     #[test]
     fn check_map() {
-        match IB_REG.get("FR") {
+        match IB_REG.get(&[b'F', b'R']) {
             Some(ib_data) => {
                 println!("FR : {}", ib_data.iban_struct);
                 assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
@@ -429,7 +430,7 @@ mod tests {
         }
 
         let al_ib_struct = &IB_REG
-            .get("AL")
+            .get(&[b'A', b'L'])
             .expect("country does not existin in registry")
             .iban_struct;
         assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
