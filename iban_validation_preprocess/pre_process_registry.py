@@ -55,7 +55,6 @@ def pre_process(inputfile, output_iban_file):
     
     pre_df.write_json(output_iban_file)
     print(f'preprocessing: {inputfile} -> completed', )
-    print(pre_df['ctry_cd'])
     return pre_df
 
 if __name__ == "__main__":
