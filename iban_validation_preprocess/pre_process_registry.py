@@ -49,7 +49,7 @@ def pre_process(inputfile, output_iban_file):
                 pl.col('IBAN electronic format example').str.slice(3+pl.col('bank_id_pos_s'), pl.col('bank_id_pos_e')+1-pl.col('bank_id_pos_s')).alias('bank_id')
             ).rename({'IBAN prefix country code (ISO 3166)':'ctry_cd', 'IBAN length':'iban_len'})\
             .with_columns(
-                 pl.col('ctry_cd').map_elements(lambda x: [ord(c) for c in x])
+                 pl.col('ctry_cd').map_elements(lambda x: [ord(c) for c in x], return_dtype=pl.List(pl.UInt16))
             )\
             .select(['ctry_cd', 'iban_len', 'bank_id_pos_s','bank_id_pos_e', 'branch_id_pos_s', 'branch_id_pos_e', 'iban_struct' ])
     
