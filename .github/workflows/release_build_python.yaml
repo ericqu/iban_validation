@@ -7,7 +7,7 @@ on:
         description: 'Release version (e.g., 0.1.0)'
         required: true
         type: string
-      # Create the sdist and build the wheels, but do not publish to PyPI / GitHub.
+      # Create the sdist and build the wheels, do not publish to PyPI.
       dry-run:
         description: Dry run
         type: boolean

@@ -20,6 +20,12 @@ fn validate_iban_with_error(iban_t: &str) -> PyResult<(bool, String)> {
     }
 }
 
+/// Get original source file used
+#[pyfunction]
+fn iban_source_file() -> PyResult<&'static str> {
+    Ok(iban_validation_rs::get_source_file())
+}
+
 /// Provide a python class to encapsulate the results
 #[pyclass]
 pub struct IbanValidation {
@@ -74,6 +80,7 @@ impl IbanValidation {
 fn iban_validation_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
     m.add_function(wrap_pyfunction!(validate_iban_with_error, m)?)?;
+    m.add_function(wrap_pyfunction!(iban_source_file, m)?)?;
     m.add_class::<IbanValidation>()?;
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())

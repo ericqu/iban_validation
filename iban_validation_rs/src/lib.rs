@@ -9,7 +9,6 @@ use std::sync::LazyLock;
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IbanFields {
     /// two-letter country codes as per ISO 3166-1 
-    // TODO check if [u8;2] would be better not trivial as the rest of the comparison is on String
     pub ctry_cd: [u8;2],
     /// IBAN length, intentionnaly short, the length is sufficient but if something changes it will raise error quickly
     pub iban_len: u8,
