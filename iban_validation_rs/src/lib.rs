@@ -1,5 +1,5 @@
+use rustc_hash::FxHashMap;
 use serde_derive::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 use std::sync::LazyLock;
@@ -54,10 +54,10 @@ impl fmt::Display for ValidationError {
 impl Error for ValidationError {}
 
 /// utility function to load the registry (as json) into a Hashmap
-fn convert_to_hashmap(json_str: &str) -> Result<HashMap<[u8; 2], IbanFields>, serde_json::Error> {
+fn convert_to_hashmap(json_str: &str) -> Result<FxHashMap<[u8; 2], IbanFields>, serde_json::Error> {
     let items: Vec<IbanFields> = serde_json::from_str(json_str)?;
 
-    let map: HashMap<[u8; 2], IbanFields> =
+    let map: FxHashMap<[u8; 2], IbanFields> =
         items.into_iter().map(|item| (item.ctry_cd, item)).collect();
 
     Ok(map)
@@ -65,7 +65,7 @@ fn convert_to_hashmap(json_str: &str) -> Result<HashMap<[u8; 2], IbanFields>, se
 
 /// trigger the loading of the registry once need, and only once.
 /// panics if failing as there is no other way forward.
-static IB_REG: LazyLock<HashMap<[u8; 2], IbanFields>> = LazyLock::new(|| {
+static IB_REG: LazyLock<FxHashMap<[u8; 2], IbanFields>> = LazyLock::new(|| {
     convert_to_hashmap(include_str!("../data/iban_definitions.json"))
         .expect("Failed parsing JSON data into a HashMap")
 });
@@ -286,6 +286,12 @@ impl<'a> Iban<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn mini_test() {
+        let al_test = "DE44500105175407324931";
+        assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+    }
 
     #[test]
     fn al_iban() {
