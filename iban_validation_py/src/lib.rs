@@ -6,7 +6,7 @@ use pyo3::prelude::*;
 fn validate_iban(iban_t: &str) -> PyResult<bool> {
     match iban_validation_rs::validate_iban_str(iban_t) {
         Ok(_) => Ok(true),
-        Err(_) => Ok(false)
+        Err(_) => Ok(false),
     }
 }
 

@@ -2,8 +2,9 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use iban_validation_rs::validate_iban_str;
 
 pub fn valid_001(c: &mut Criterion) {
-    c.bench_function("valid 001", |b| b.iter(|| 
-        validate_iban_str(black_box("DE44500105175407324931"))));
+    c.bench_function("valid 001", |b| {
+        b.iter(|| validate_iban_str(black_box("DE44500105175407324931")))
+    });
 }
 
 pub fn valid_002(c: &mut Criterion) {
@@ -111,14 +112,13 @@ pub fn valid_002(c: &mut Criterion) {
         "DE89370400440532013000",
     ];
 
-    c.bench_function("valid 002", |b| b.iter(|| 
-        {
+    c.bench_function("valid 002", |b| {
+        b.iter(|| {
             for iban in &tc {
                 let _ = validate_iban_str(black_box(iban));
             }
-        }
-    ));
-
+        })
+    });
 }
 
 criterion_group!(benches, valid_001, valid_002);

@@ -4,12 +4,11 @@ use std::error::Error;
 use std::fmt;
 use std::sync::LazyLock;
 
-
 /// indicate which information is expected from the Iban Registry and in the record.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IbanFields {
-    /// two-letter country codes as per ISO 3166-1 
-    pub ctry_cd: [u8;2],
+    /// two-letter country codes as per ISO 3166-1
+    pub ctry_cd: [u8; 2],
     /// IBAN length, intentionnaly short, the length is sufficient but if something changes it will raise error quickly
     pub iban_len: u8,
     /// position of bank identifier starting point
@@ -55,22 +54,18 @@ impl fmt::Display for ValidationError {
 impl Error for ValidationError {}
 
 /// utility function to load the registry (as json) into a Hashmap
-fn convert_to_hashmap(
-    json_str: &str,
-) -> Result<HashMap<[u8;2], IbanFields>, serde_json::Error> {
-
+fn convert_to_hashmap(json_str: &str) -> Result<HashMap<[u8; 2], IbanFields>, serde_json::Error> {
     let items: Vec<IbanFields> = serde_json::from_str(json_str)?;
 
-    let map: HashMap<[u8;2], IbanFields> =  items.into_iter()
-        .map(|item| (item.ctry_cd.clone(), item))
-        .collect();
+    let map: HashMap<[u8; 2], IbanFields> =
+        items.into_iter().map(|item| (item.ctry_cd, item)).collect();
 
     Ok(map)
 }
 
 /// trigger the loading of the registry once need, and only once.
 /// panics if failing as there is no other way forward.
-static IB_REG: LazyLock<HashMap<[u8;2], IbanFields>> = LazyLock::new(|| {
+static IB_REG: LazyLock<HashMap<[u8; 2], IbanFields>> = LazyLock::new(|| {
     convert_to_hashmap(include_str!("../data/iban_definitions.json"))
         .expect("Failed parsing JSON data into a HashMap")
 });
@@ -120,11 +115,11 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
     }
 }
 
-/// internal utility 
+/// internal utility
 /// division method for modulo 97 >> faster than regular modulo
 #[inline]
 fn division_mod97(x: u32) -> u32 {
-    let q = x / 97; // Quotient 
+    let q = x / 97; // Quotient
     x - q * 97 // Remainder
 }
 
@@ -136,8 +131,11 @@ pub const fn get_source_file() -> &'static str {
 /// Validate than an Iban is valid according to the registry information
 /// return true when Iban is fine, otherwise returns Error.
 pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
-    let identified_country:[u8; 2] = match input_iban.get(..2) {
-        Some(value) => value.as_bytes().try_into().map_err(|_| ValidationError::InvalidCountry)?,
+    let identified_country: [u8; 2] = match input_iban.get(..2) {
+        Some(value) => value
+            .as_bytes()
+            .try_into()
+            .map_err(|_| ValidationError::InvalidCountry)?,
         None => return Err(ValidationError::MissingCountry),
     };
     let pattern: &String = match &IB_REG.get(&identified_country) {
@@ -150,9 +148,12 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
     }
 
     // There is a potental panic but it should be a dead code, as we should never find a non 2-letter country code given we search for 2-leter country code and found something before
-    let pattern_start:[u8; 2]= pattern
-        .get(..2).unwrap()
-        .as_bytes().try_into().map_err(|_| ValidationError::InvalidCountry)
+    let pattern_start: [u8; 2] = pattern
+        .get(..2)
+        .unwrap()
+        .as_bytes()
+        .try_into()
+        .map_err(|_| ValidationError::InvalidCountry)
         .expect("Error the built-in pattern is not starting with at least two characters");
 
     // first two letters do not match
@@ -185,7 +186,8 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
                 true => 0,
                 _ => return Err(ValidationError::StructureIncorrectForCountry),
             },
-            _ => { // the 2-letter country code should match
+            _ => {
+                // the 2-letter country code should match
                 if p == t {
                     match simple_contains_a(t) {
                         Ok(value) => value,
@@ -196,12 +198,11 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
                 }
             }
         };
-        acc *= if m97digit < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers) 
-        acc = division_mod97(acc + (m97digit as u32));  // and add new digit
-        
+        acc *= if m97digit < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers)
+        acc = division_mod97(acc + (m97digit as u32)); // and add new digit
     }
     if acc == 1 {
-            Ok(true)
+        Ok(true)
     } else {
         Err(ValidationError::ModuloIncorrect)
     }
@@ -228,8 +229,11 @@ impl<'a> Iban<'a> {
             Err(e) => return Err(e),
         };
 
-        let identified_country:[u8; 2] = match s.get(..2) {
-            Some(value) => value.as_bytes().try_into().map_err(|_| ValidationError::InvalidCountry)?,
+        let identified_country: [u8; 2] = match s.get(..2) {
+            Some(value) => value
+                .as_bytes()
+                .try_into()
+                .map_err(|_| ValidationError::InvalidCountry)?,
             None => return Err(ValidationError::MissingCountry),
         };
 
@@ -240,8 +244,8 @@ impl<'a> Iban<'a> {
 
         let bank_id = if let Some(start) = iban_data.bank_id_pos_s {
             if let Some(end) = iban_data.bank_id_pos_e {
-                if start <= end && (4+start+(end-start)) <= s.len() {
-                    Some(&s[start+3..4+start+(end-start)])
+                if start <= end && (4 + start + (end - start)) <= s.len() {
+                    Some(&s[start + 3..4 + start + (end - start)])
                 } else {
                     None // Indices are invalid
                 }
@@ -254,8 +258,8 @@ impl<'a> Iban<'a> {
 
         let branch_id = if let Some(start) = iban_data.branch_id_pos_s {
             if let Some(end) = iban_data.branch_id_pos_e {
-                if start <= end && (4+start+(end-start)) <= s.len() {
-                    Some(&s[start+3..4+start+(end-start)])
+                if start <= end && (4 + start + (end - start)) <= s.len() {
+                    Some(&s[start + 3..4 + start + (end - start)])
                 } else {
                     None // Indices are invalid
                 }
@@ -465,7 +469,6 @@ mod tests {
         assert_eq!(the_test.get_iban(), "GE29NB0000000101904917");
         assert_eq!(the_test.iban_bank_id.unwrap(), "NB");
         assert_eq!(the_test.iban_branch_id, None);
-
     }
 
     #[test]
@@ -485,7 +488,6 @@ mod tests {
 
     #[test]
     fn test_filename() {
-        assert_eq!( get_source_file(), "iban_registry_v98.txt");
+        assert_eq!(get_source_file(), "iban_registry_v98.txt");
     }
-
 }
