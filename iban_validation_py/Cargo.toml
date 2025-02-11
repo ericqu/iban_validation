@@ -4,19 +4,11 @@ version = { workspace = true }
 edition = "2021"
 
 description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a python package"
-long_description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a python package"
 readme = "README.md"
-requires-python = ">=3.9"
 authors = [
     "Eric" 
 ]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-]
 license = "MIT" 
-Homepage = "https://github.com/ericqu/iban_validation"
-Issues = "https://github.com/ericqu/iban_validation/issues"
 
 [lib]
 name = "iban_validation_py"
@@ -25,5 +17,5 @@ crate-type = ["cdylib"]
 [dependencies]
 iban_validation_rs = {path = "../iban_validation_rs" }
 maturin = "=1.7.1"
-pyo3 = {version = "0.21" ,  features = ["extension-module"] }
+pyo3 = {version = "0.21" ,  features = ["extension-module", "generate-import-lib"] }
 ureq = "=2.9.7"

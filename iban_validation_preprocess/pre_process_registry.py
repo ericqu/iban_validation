@@ -1,7 +1,7 @@
 import polars as pl
 pl.Config.set_tbl_cols(15)
 pl.Config.set_tbl_rows(45)
-inputfile = 'iban_validation_preprocess/iban_registry_v98.txt'
+inputfile = 'iban_validation_preprocess/iban_registry_v99.txt'
 output_iban_file = 'iban_validation_rs/data/iban_definitions.json'
 output_source_file = 'iban_validation_rs/data/iban_sourcefile.txt'
 

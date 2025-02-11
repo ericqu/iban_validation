@@ -2,6 +2,9 @@
 maturin == 1.7.1
 pip
 twine
+setuptools
+uv
+ziglang
 patchelf; platform_system == 'Linux'
 
 # tools

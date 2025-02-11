@@ -6,3 +6,6 @@ The main validation logic is written in Rust in the iban_validation_rs project. 
 
 # Credits
 Some of the Makefile were inspired by the makefiles on the [Polars project](https://github.com/pola-rs/polars)
+
+# Changes
+ - Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024

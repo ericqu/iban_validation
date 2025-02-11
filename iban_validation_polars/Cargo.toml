@@ -3,19 +3,11 @@ name = "iban_validation_polars"
 version = { workspace = true }
 edition = "2021"
 description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
-long_description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
 readme = "README.md"
-requires-python = ">=3.9"
 authors = [
     "Eric" 
 ]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-]
 license = "MIT" 
-Homepage = "https://github.com/ericqu/iban_validation"
-Issues = "https://github.com/ericqu/iban_validation/issues"
 
 [lib]
 name = "iban_validation_polars"
@@ -24,7 +16,7 @@ crate-type = ["cdylib"]
 [dependencies]
 iban_validation_rs = {path = "../iban_validation_rs" }
 # need 0.21 as required from pyo3-polars
-pyo3 = {version = "0.21" ,  features = ["extension-module"] }
+pyo3 = {version = "0.21" ,  features = ["extension-module", "generate-import-lib"] }
 pyo3-polars = {version = "0.18" ,  features = ["derive"] }
 serde = {version = "*" ,  features = ["derive"] }
 polars = {version = "0.44.2" }

@@ -397,6 +397,7 @@ mod tests {
             "NL91ABNA0417164300",
             "NO9386011117947",
             "OM810180000001299123456",
+            "PK36SCBL0000001123456702",
             "PL61109010140000071219812874",
             "PS92PALS000000000400123456702",
             "PT50000201231234567890154",
@@ -421,6 +422,7 @@ mod tests {
             "XK051212012345678906",
             "YE15CBYE0001018861234567891234",
             "GB82WEST12345698765432",
+            "HN88CABF00000000000250005469",
         ];
 
         for al_test in &tc {
@@ -494,6 +496,6 @@ mod tests {
 
     #[test]
     fn test_filename() {
-        assert_eq!(get_source_file(), "iban_registry_v98.txt");
+        assert_eq!(get_source_file(), "iban_registry_v99.txt");
     }
 }
