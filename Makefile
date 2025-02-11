@@ -11,30 +11,6 @@ else
 	RMRF := rm -rf
 endif
 
-# # Detect CPU architecture
-# ifeq ($(OS),Windows_NT)
-#     ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-#         ARCH := amd64
-#     else ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-#         ARCH := x86
-#     else ifeq ($(PROCESSOR_ARCHITECTURE),ARM64)
-#         ARCH := arm64
-#     else
-#         ARCH := unknown
-#     endif
-# else
-#     UNAME_P := $(shell uname -p)
-#     ifeq ($(UNAME_P),x86_64)
-#         ARCH := amd64
-#     else ifneq ($(filter %86,$(UNAME_P)),)
-#         ARCH := x86
-#     else ifneq ($(filter arm%,$(UNAME_P)),)
-#         ARCH := arm64
-#     else
-#         ARCH := unknown
-#     endif
-# endif
-
 # Cross-compilation targets
 MACOS_TARGETS := aarch64-apple-darwin x86_64-apple-darwin
 LINUX_TARGETS := x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
@@ -103,19 +79,19 @@ build_iban_validation_py_release:
 	$(foreach target,$(MACOS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --strip --target $(target) --out $(DIST_DIR) ;\
 		)\
 	)
 	$(foreach target,$(LINUX_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --target $(target) --manylinux 2014 --zig --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_DIR) ;\
 		)\
 	)
 	$(foreach target,$(WINDOWS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_DIR) ;\
 		)\
 	)
 
@@ -129,19 +105,19 @@ endif
 	$(foreach target,$(MACOS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --strip --target $(target) --out $(DIST_DIR) ;\
 		)\
 	)
 	$(foreach target,$(LINUX_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --target $(target) --manylinux 2014 --zig --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_DIR) ;\
 		)\
 	)
 	$(foreach target,$(WINDOWS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_DIR) ;\
 		)\
 	)
 
