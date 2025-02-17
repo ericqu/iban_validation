@@ -286,7 +286,7 @@ impl<'a> Iban<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
+   
     #[test]
     fn mini_test() {
         let al_test = "DE44500105175407324931";
@@ -295,6 +295,12 @@ mod tests {
 
     #[test]
     fn al_iban() {
+        let al_test = "";
+        assert_eq!(validate_iban_str(al_test).unwrap_err(), 
+            ValidationError::MissingCountry);
+            let al_test = "DE44500105175407324931DE44500105175407324931";
+        assert_eq!(validate_iban_str(al_test).unwrap_err(), 
+            ValidationError::InvalidSizeForCountry);
         let al_test = "AL47212110090000000235698741";
         assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
         let al_test = "A7212110090000000235698741";
