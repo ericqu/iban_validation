@@ -224,10 +224,7 @@ pub struct Iban<'a> {
 /// building a valid Iban (validate and take the relavant slices).
 impl<'a> Iban<'a> {
     pub fn new(s: &'a str) -> Result<Self, ValidationError> {
-        let _is_valid: bool = match validate_iban_str(s) {
-            Ok(r) => r,
-            Err(e) => return Err(e),
-        };
+        let _is_valid: bool = validate_iban_str(s)?;
 
         let identified_country: [u8; 2] = match s.get(..2) {
             Some(value) => value
