@@ -133,6 +133,12 @@ test:
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest
 
+.PHONY: clippy
+clippy:
+	cargo clippy -p iban_validation_rs
+	cargo clippy -p iban_validation_py
+	cargo clippy -p iban_validation_polars
+
 # only manual when local dist is filled with the artifacts
 .PHONY: publishing_pipy
 publishing_pipy:

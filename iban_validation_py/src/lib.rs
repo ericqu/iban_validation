@@ -1,4 +1,3 @@
-use iban_validation_rs;
 use pyo3::prelude::*;
 
 /// indicate if the iban is valid or not

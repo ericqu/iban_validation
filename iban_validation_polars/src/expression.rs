@@ -1,4 +1,3 @@
-use iban_validation_rs;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
 
@@ -8,7 +7,7 @@ fn process_iban_str_str(value: &str, iban_valid: &mut String) {
     match iban_validation_rs::Iban::new(value) {
         Ok(valid_iban) => {
             iban_valid.push_str(valid_iban.get_iban());
-            iban_valid.push_str(",");
+            iban_valid.push(',');
             iban_valid.push_str(
                 valid_iban
                     .iban_bank_id
@@ -16,7 +15,7 @@ fn process_iban_str_str(value: &str, iban_valid: &mut String) {
                     .unwrap_or(String::from(""))
                     .as_str(),
             );
-            iban_valid.push_str(",");
+            iban_valid.push(',');
             iban_valid.push_str(
                 valid_iban
                     .iban_branch_id
