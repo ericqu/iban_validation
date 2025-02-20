@@ -8,4 +8,5 @@ The main validation logic is written in Rust in the iban_validation_rs project. 
 Some of the Makefile were inspired by the makefiles on the [Polars project](https://github.com/pola-rs/polars)
 
 # Changes
- - Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024
+ - 0.14: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
+ - 0.13: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024

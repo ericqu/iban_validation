@@ -17,5 +17,5 @@ crate-type = ["cdylib"]
 [dependencies]
 iban_validation_rs = {path = "../iban_validation_rs" }
 maturin = "=1.7.1"
-pyo3 = {version = "0.21" ,  features = ["extension-module", "generate-import-lib"] }
+pyo3 = {version = "*" ,  features = ["extension-module", "generate-import-lib"] }
 ureq = "=2.9.7"

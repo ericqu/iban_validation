@@ -30,3 +30,6 @@ print(df.collect(streaming=True))
 # cleanup
 os.remove(outputfile)
 ```
+
+# Changes
+ - 0.14: technical update; updated polars dependency to polars 0.46.0, pyo3-polars 0.20, and py03 0.23.

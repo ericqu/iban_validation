@@ -72,7 +72,7 @@ iban_validation_py_release:
 	$(call create_venv)
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
 
-.PHONY: ma
+.PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:
 	$(call create_venv)
 	$(VENV_BIN)/maturin sdist -m iban_validation_py/Cargo.toml --out $(DIST_DIR)
