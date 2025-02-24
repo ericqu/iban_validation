@@ -15,7 +15,7 @@ endif
 MACOS_TARGETS := aarch64-apple-darwin x86_64-apple-darwin
 LINUX_TARGETS := x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
 WINDOWS_TARGETS := x86_64-pc-windows-msvc
-PYTHON_VERSIONS := 3.9 3.10 3.11 3.12
+PYTHON_VERSIONS := 3.9 3.10 3.11 3.12 3.13
 
 # Create a virtual environment for a specific platform
 define create_venv
