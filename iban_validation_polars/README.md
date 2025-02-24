@@ -1,5 +1,5 @@
 # iban_validation_polars
-A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin.
+A package to facilitate validation of IBANs and getting bank identifier and branch identifier as a Polars plugin.
 
 Leveraging Polars Multi-threaded feature to split IBANs
 
@@ -30,6 +30,9 @@ print(df.collect(streaming=True))
 # cleanup
 os.remove(outputfile)
 ```
+## Credits
+Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
-# Changes
- - 0.14: technical update; updated polars dependency to polars 0.46.0, pyo3-polars 0.20, and py03 0.23.
+## Changes
+ - 0.1.5: add support to Python 3.13
+ - 0.1.4: technical update; updated polars dependency to polars 0.46.0, pyo3-polars 0.20, and py03 0.23.

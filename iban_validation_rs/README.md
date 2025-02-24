@@ -1,5 +1,5 @@
 # Iban Validation rs
-Facilitate validation of ibans and selecting Bank_id and Branch_id in Rust.
+Facilitate validation of ibans and getting the bank identifier and branch identifier in Rust.
 
 See documentation for implementation details and a short example.
 
@@ -11,5 +11,6 @@ In contrast, the intention is to provide a quick, correct validation of the IBAN
 For now, parallelisation is not in the scope of the core library as usage through other libraries is likely to provide that, like in the polars plugin.
 
 # Changes
- - 0.14: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
- - 0.13: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024
+ - 0.1.5: improved documentation
+ - 0.1.4: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
+ - 0.1.3: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024

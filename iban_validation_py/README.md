@@ -1,9 +1,9 @@
 # iban_validation_py
-A package to facilitate validation of IBANs and selecting Bank_id and Branch_id in Python.
+A package to facilitate validation of IBANs and getting the bank identifier and branch identifier in Python.
 
 ## Short examples
 
-There are three way to interact with the API:
+There are three ways to interact with the API:
  - Validate the iban with `validate_iban` this does not indicate what is incorrect when the iban in invalid.
  - Validate the iban with `validate_iban_with_error` does the same and give an error message when the iban is invalid.
  - create an `IbanValidation` which allows to select the validated iban, the branch_id and bank_id when relevant.
@@ -28,5 +28,9 @@ assert('AL47212110090000000235698741' == iban.stored_iban)
 assert('212' == iban.iban_bank_id)
 assert('11009' == iban.iban_branch_id)
 ```
-# Changes
- - 0.14: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
+## Credit
+Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
+
+## Changes
+ - 0.1.5: added support to Python 3.13
+ - 0.1.4: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
