@@ -3,7 +3,7 @@
 //! ```
 //! extern crate iban_validation_rs;
 //! use iban_validation_rs::{validate_iban_str, Iban};
-//! 
+//!
 //! // This function attempts to create an IBAN from the input string and prints the IBAN, bank ID, and branch ID if successful — or an error message if the creation fails.
 //! fn print_iban_or_error(s: &str){
 //!     match Iban::new(s) {
@@ -21,7 +21,7 @@
 //!         Err(e) => println!("Failed to create IBAN due to {:?} for input: {:?}", e, s),
 //!     }
 //! }
-//! 
+//!
 //! fn main() {
 //!     println!("okay? {:?}", validate_iban_str("DE44500105175407324931"));
 //!     print_iban_or_error("DE44500105175407324931");
@@ -314,7 +314,7 @@ impl<'a> Iban<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-   
+
     #[test]
     fn mini_test() {
         let al_test = "DE44500105175407324931";
@@ -324,11 +324,15 @@ mod tests {
     #[test]
     fn al_iban() {
         let al_test = "";
-        assert_eq!(validate_iban_str(al_test).unwrap_err(), 
-            ValidationError::MissingCountry);
-            let al_test = "DE44500105175407324931DE44500105175407324931";
-        assert_eq!(validate_iban_str(al_test).unwrap_err(), 
-            ValidationError::InvalidSizeForCountry);
+        assert_eq!(
+            validate_iban_str(al_test).unwrap_err(),
+            ValidationError::MissingCountry
+        );
+        let al_test = "DE44500105175407324931DE44500105175407324931";
+        assert_eq!(
+            validate_iban_str(al_test).unwrap_err(),
+            ValidationError::InvalidSizeForCountry
+        );
         let al_test = "AL47212110090000000235698741";
         assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
         let al_test = "A7212110090000000235698741";

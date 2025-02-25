@@ -42,7 +42,7 @@ iban_validation_rs:
 	cargo build -p iban_validation_rs
 
 .PHONY: iban_validation_rs_release
-iban_validation_rs_release:
+iban_validation_rs_release:	clippy
 	cargo build -p iban_validation_rs -r
 
 .PHONY: clean
@@ -68,12 +68,12 @@ iban_validation_py:
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 
 .PHONY: iban_validation_py_release
-iban_validation_py_release:
+iban_validation_py_release:	clippy
 	$(call create_venv)
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
 
 .PHONY: build_iban_validation_py_release
-build_iban_validation_py_release:
+build_iban_validation_py_release:	clippy
 	$(call create_venv)
 	$(VENV_BIN)/maturin sdist -m iban_validation_py/Cargo.toml --out $(DIST_DIR)
 	$(foreach target,$(MACOS_TARGETS),\
@@ -96,7 +96,7 @@ build_iban_validation_py_release:
 	)
 
 .PHONY: build_iban_validation_polars_release
-build_iban_validation_polars_release:
+build_iban_validation_polars_release:	clippy
 ifeq ($(OS),Windows_NT)
 	powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force"
 endif
@@ -126,7 +126,7 @@ publish_iban_validation_rs:
 	cargo publish -p iban_validation_rs 
 
 .PHONY: test
-test:
+test:	clippy
 	cargo test
 	$(call create_venv)
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
@@ -135,6 +135,10 @@ test:
 
 .PHONY: clippy
 clippy:
+	cargo update
+	cargo fmt -p iban_validation_rs
+	cargo fmt -p iban_validation_py
+	cargo fmt -p iban_validation_polars
 	cargo clippy -p iban_validation_rs
 	cargo clippy -p iban_validation_py
 	cargo clippy -p iban_validation_polars
