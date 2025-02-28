@@ -34,5 +34,6 @@ os.remove(outputfile)
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
+ - 0.1.6: improve performance related to the Iban structure
  - 0.1.5: add support to Python 3.13
  - 0.1.4: technical update; updated polars dependency to polars 0.46.0, pyo3-polars 0.20, and py03 0.23.

@@ -32,5 +32,6 @@ assert('11009' == iban.iban_branch_id)
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.6: improve performance related to the Iban structure
  - 0.1.5: added support to Python 3.13
  - 0.1.4: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.

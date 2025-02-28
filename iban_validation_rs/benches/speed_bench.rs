@@ -121,5 +121,11 @@ pub fn valid_002(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, valid_001, valid_002);
+pub fn iban_validation_new_struct(c: &mut Criterion) {
+    c.bench_function("iban_validation_new_struct", |b| {
+        b.iter(|| iban_validation_rs::Iban::new(black_box("DE44500105175407324931")))
+    });
+}
+
+criterion_group!(benches, valid_001, valid_002, iban_validation_new_struct);
 criterion_main!(benches);

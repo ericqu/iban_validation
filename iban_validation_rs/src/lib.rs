@@ -243,9 +243,11 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
 /// A owned String for the iban, so that if the String we tested is out of scope we have our own copy. TODO is it an issue?
 /// If valid for the country the slice of the Iban representing the bank_id bank identifier.
 /// If valid for the country the slice of the Iban representing the branch_id Branch identifier.
+#[derive(Debug)]
 pub struct Iban<'a> {
-    /// owned String not accessible to ensure read-only through reader
-    stored_iban: String,
+    // /// owned String not accessible to ensure read-only through reader
+    // stored_iban: String,
+    stored_iban: &'a str,
     /// Bank identifier when relevant
     pub iban_bank_id: Option<&'a str>,
     /// Branch identifier when relevant
@@ -270,36 +272,12 @@ impl<'a> Iban<'a> {
             None => return Err(ValidationError::InvalidCountry),
         };
 
-        let bank_id = if let Some(start) = iban_data.bank_id_pos_s {
-            if let Some(end) = iban_data.bank_id_pos_e {
-                if start <= end && (4 + start + (end - start)) <= s.len() {
-                    Some(&s[start + 3..4 + start + (end - start)])
-                } else {
-                    None // Indices are invalid
-                }
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-
-        let branch_id = if let Some(start) = iban_data.branch_id_pos_s {
-            if let Some(end) = iban_data.branch_id_pos_e {
-                if start <= end && (4 + start + (end - start)) <= s.len() {
-                    Some(&s[start + 3..4 + start + (end - start)])
-                } else {
-                    None // Indices are invalid
-                }
-            } else {
-                None
-            }
-        } else {
-            None
-        };
+        let bank_id = Self::extract_identifier(s, iban_data.bank_id_pos_s, iban_data.bank_id_pos_e);
+        let branch_id =
+            Self::extract_identifier(s, iban_data.branch_id_pos_s, iban_data.branch_id_pos_e);
 
         Ok(Self {
-            stored_iban: s.to_string(),
+            stored_iban: s,
             iban_bank_id: bank_id,
             iban_branch_id: branch_id,
         })
@@ -307,7 +285,22 @@ impl<'a> Iban<'a> {
 
     /// get read-only access to the Iban
     pub fn get_iban(&self) -> &str {
-        &self.stored_iban
+        self.stored_iban
+    }
+
+    /// helper function to fill the bank_id and branch_id
+    #[inline]
+    fn extract_identifier(
+        s: &'a str,
+        start_pos: Option<usize>,
+        end_pos: Option<usize>,
+    ) -> Option<&'a str> {
+        match (start_pos, end_pos) {
+            (Some(start), Some(end)) if start <= end && (4 + start + (end - start)) <= s.len() => {
+                Some(&s[start + 3..4 + start + (end - start)])
+            }
+            _ => None,
+        }
     }
 }
 
@@ -515,6 +508,8 @@ mod tests {
         assert_eq!(the_test.get_iban(), "GE29NB0000000101904917");
         assert_eq!(the_test.iban_bank_id.unwrap(), "NB");
         assert_eq!(the_test.iban_branch_id, None);
+        let the_test = Iban::new("DEFR").unwrap_err();
+        assert_eq!(the_test, ValidationError::InvalidSizeForCountry);
     }
 
     #[test]

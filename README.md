@@ -13,6 +13,7 @@ In contrast, the intention is to provide a quick, correct validation of the IBAN
 Some of the Makefile were inspired by the makefiles on the [Polars project](https://github.com/pola-rs/polars).
 
 ## Changes
+ - 0.1.6: improve performance related to the Iban structure
  - 0.1.5: improve documentation and add support to Python 3.13.
  - 0.1.4: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
  - 0.1.3: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024
