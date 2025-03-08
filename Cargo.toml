@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-edition = "2024"
+
 
 members = [ 
     "iban_validation_rs",
@@ -12,3 +12,4 @@ default-members = ["iban_validation_rs"]
 
 [workspace.package]
 version = "0.1.6"
+edition = "2024"
