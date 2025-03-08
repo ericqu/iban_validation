@@ -13,7 +13,7 @@ In contrast, the intention is to provide a quick, correct validation of the IBAN
 Some of the Makefile were inspired by the makefiles on the [Polars project](https://github.com/pola-rs/polars).
 
 ## Comparison with similar libraries
-In the iban_validation_bench_rs, benchmark of similar crates published on crates.io is presented. While this library is the fastest other libraries can provide additional features that are more relevant to your use-cases.
+In the iban_validation_bench_rs, benchmark of similar crates published on crates.io is presented. While this library is the fastest other libraries can provide additional features that are more relevant to your use-cases. See [details](iban_validation_bench_rs/README.md).
 
 ## Changes
  - 0.1.6: improve performance related to the Iban structure
