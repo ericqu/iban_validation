@@ -2,7 +2,7 @@
 name = "iban_validation_py"
 version = { workspace = true }
 edition = { workspace = true }
-description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a python package"
+description = "A package to facilitate validation of IBANs and selecting Bank identifier and Branch identifier as a python package"
 readme = "README.md"
 authors = [
     "Eric" 
