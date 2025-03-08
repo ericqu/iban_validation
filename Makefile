@@ -17,7 +17,7 @@ LINUX_TARGETS := x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
 WINDOWS_TARGETS := x86_64-pc-windows-msvc
 PYTHON_VERSIONS := 3.9 3.10 3.11 3.12 3.13
 
-# Create a virtual environment for a specific platform
+# Create a virtual environment
 define create_venv
 	$(RMRF) $(VENV_DIR)
 	uv venv $(VENV_DIR)
