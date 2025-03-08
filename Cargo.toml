@@ -4,7 +4,8 @@ resolver = "2"
 members = [ 
     "iban_validation_rs",
     "iban_validation_py",
-    "iban_validation_polars"
+    "iban_validation_polars",
+    "iban_validation_bench_rs"
 ]
 default-members = ["iban_validation_rs"]
 

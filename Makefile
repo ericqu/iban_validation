@@ -5,10 +5,12 @@ ifeq ($(OS),Windows_NT)
 	VENV_DIR := .venv
 	VENV_BIN := .venv/Scripts
 	RMRF := rm -rf
+	MVF := move /Y
 else
 	VENV_DIR := .venv
 	VENV_BIN := .venv/bin
 	RMRF := rm -rf
+	MVF := mv -f
 endif
 
 # Cross-compilation targets
@@ -139,9 +141,11 @@ clippy:
 	cargo fmt -p iban_validation_rs
 	cargo fmt -p iban_validation_py
 	cargo fmt -p iban_validation_polars
+	cargo fmt -p iban_validation_bench_rs
 	cargo clippy -p iban_validation_rs
 	cargo clippy -p iban_validation_py
 	cargo clippy -p iban_validation_polars
+	cargo clippy -p iban_validation_bench_rs
 
 # only manual when local dist is filled with the artifacts
 .PHONY: publishing_pipy
@@ -152,3 +156,10 @@ publishing_pipy:
 .PHONY: publishing_testpipy
 publishing_testpipy:
 	$(VENV_BIN)/python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
+
+# to execute the bench against other libraries
+.PHONY: iban_validation_bench_rs
+iban_validation_bench_rs:
+	cargo bench -p iban_validation_bench_rs
+	$(RMRF) iban_validation_bench_rs/criterion
+	$(MVF) target/criterion iban_validation_bench_rs/criterion

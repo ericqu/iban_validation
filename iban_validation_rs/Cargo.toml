@@ -7,7 +7,7 @@ readme = "README.md"
 homepage = "https://github.com/ericqu/iban_validation"
 license = "MIT"
 repository = "https://github.com/ericqu/iban_validation"
-description = "Facilitate validation of ibans and selecting Bank_id and Branch_id in Rust."
+description = "Facilitate validation of ibans and selecting Bank identifier and Branch identifier in Rust."
 exclude = ["benches/", "data/IBAN Examples.txt", "examples/"]
 
 [dependencies]
@@ -17,7 +17,7 @@ serde_derive = "1.0"
 serde_json = "1.0"
 
 [dev-dependencies]
-criterion = "0.5.1"
+criterion = "0.5"
 
 [[bench]]
 name = "speed_bench"
