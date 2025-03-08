@@ -4,29 +4,11 @@ To give a perspective on how the rust crate performs with regards to other simil
 Here is the output from Criterion:
 
 ```
-iban_validate_sd        time:   [107.07 ns 107.17 ns 107.29 ns]
-Found 11 outliers among 100 measurements (11.00%)
-  3 (3.00%) low severe
-  5 (5.00%) high mild
-  3 (3.00%) high severe
-
-iban_short_sd           time:   [138.93 ns 139.38 ns 139.80 ns]
-Found 2 outliers among 100 measurements (2.00%)
-  1 (1.00%) low mild
-  1 (1.00%) high mild
-
-iban_parser_sd          time:   [884.90 ns 890.01 ns 895.08 ns]
-Found 2 outliers among 100 measurements (2.00%)
-  2 (2.00%) low mild
-
-schwifty_sd             time:   [54.516 µs 54.623 µs 54.741 µs]
-Found 2 outliers among 100 measurements (2.00%)
-  2 (2.00%) low mild
-
-iban_validation_rs_sd   time:   [59.322 ns 59.436 ns 59.559 ns]
-Found 2 outliers among 100 measurements (2.00%)
-  1 (1.00%) high mild
-  1 (1.00%) high severe
+iban_validate_sd        time:   [106.96 ns 107.04 ns 107.14 ns]
+iban_short_sd           time:   [133.89 ns 134.15 ns 134.40 ns]
+iban_parser_sd          time:   [877.51 ns 880.07 ns 882.81 ns]
+schwifty_sd             time:   [53.839 µs 54.002 µs 54.176 µs]
+iban_validation_rs_sd   time:   [57.994 ns 58.075 ns 58.156 ns]
 ```
 
 - iban_validate_sd refers to [iban_validate](https://crates.io/crates/iban_validate) in version 5.0
