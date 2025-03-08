@@ -1,7 +1,7 @@
 [package]
 name = "iban_validation_bench_rs"
 version = { workspace = true }
-edition = "2021"
+edition = { workspace = true }
 authors = [ "Eric Quéré" ]
 readme = "README.md"
 homepage = "https://github.com/ericqu/iban_validation"

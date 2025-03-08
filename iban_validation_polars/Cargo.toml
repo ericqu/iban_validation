@@ -1,7 +1,7 @@
 [package]
 name = "iban_validation_polars"
 version = { workspace = true }
-edition = "2021"
+edition = { workspace = true }
 description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
 readme = "README.md"
 authors = [
