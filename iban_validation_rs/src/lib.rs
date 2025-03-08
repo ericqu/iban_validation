@@ -73,12 +73,31 @@ pub enum ValidationError {
 impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ValidationError::TooShort(len) => write!(f, "The input Iban is too short to be an IBAN {} (minimum length is 4)", len),
-            ValidationError::MissingCountry => write!(f, "The input Iban does not appear to start with 2 letters representing a two-letter country code"),
-            ValidationError::InvalidCountry => write!(f,"the input Iban the first two-letter do not mathc a valid country"),
-            ValidationError::StructureIncorrectForCountry => write!(f, "The characters founds in teh input Iban do not follow the country's Iban structure"),
-            ValidationError::InvalidSizeForCountry => write!(f, "The length of the input Iban does match the length for that country"),
-            ValidationError::ModuloIncorrect => write!(f, "The calculated mod97 for the iban indicates an incorrect Iban"),
+            ValidationError::TooShort(len) => write!(
+                f,
+                "The input Iban is too short to be an IBAN {} (minimum length is 4)",
+                len
+            ),
+            ValidationError::MissingCountry => write!(
+                f,
+                "The input Iban does not appear to start with 2 letters representing a two-letter country code"
+            ),
+            ValidationError::InvalidCountry => write!(
+                f,
+                "the input Iban the first two-letter do not mathc a valid country"
+            ),
+            ValidationError::StructureIncorrectForCountry => write!(
+                f,
+                "The characters founds in teh input Iban do not follow the country's Iban structure"
+            ),
+            ValidationError::InvalidSizeForCountry => write!(
+                f,
+                "The length of the input Iban does match the length for that country"
+            ),
+            ValidationError::ModuloIncorrect => write!(
+                f,
+                "The calculated mod97 for the iban indicates an incorrect Iban"
+            ),
         }
     }
 }
@@ -218,7 +237,7 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
                 _ => return Err(ValidationError::StructureIncorrectForCountry),
             },
             _ => {
-                // the 2-letter country code should match
+                // the 2-letter country code should match, although it is unlikely to not match (still needed to compute the m97)
                 if p == t {
                     match simple_contains_a(t) {
                         Ok(value) => value,
@@ -463,6 +482,33 @@ mod tests {
     }
 
     #[test]
+    fn lower_case_ibans() {
+        let mt_test = "MT84MALT011000012345MTLCAST001S";
+        assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+
+        let mt_test = "MT84MALT011000012345MTLCAST001s";
+        assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+
+        let mt_test = "MT84MALT011000012345mtlCAST001s";
+        assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+
+        let mt_test = "MT84MALT011000012345mtlcast001s";
+        assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+
+        let mt_test = "MT84malt011000012345mtlcast001s";
+        assert_eq!(
+            validate_iban_str(mt_test).unwrap_err(),
+            ValidationError::StructureIncorrectForCountry
+        );
+
+        let mt_test = "MT84MALT0110000%2345MTLCAST001S"; // the percent is not a digit or letter
+        assert_eq!(
+            validate_iban_str(mt_test).unwrap_err(),
+            ValidationError::StructureIncorrectForCountry
+        );
+    }
+
+    #[test]
     fn check_map() {
         match IB_REG.get(&[b'F', b'R']) {
             Some(ib_data) => {
@@ -511,6 +557,10 @@ mod tests {
         assert_eq!(the_test.iban_branch_id, None);
         let the_test = Iban::new("DEFR").unwrap_err();
         assert_eq!(the_test, ValidationError::InvalidSizeForCountry);
+        let the_test = Iban::new("D").unwrap_err();
+        assert_eq!(the_test, ValidationError::MissingCountry);
+        let the_test = Iban::new("").unwrap_err();
+        assert_eq!(the_test, ValidationError::MissingCountry);
     }
 
     #[test]
@@ -531,5 +581,43 @@ mod tests {
     #[test]
     fn test_filename() {
         assert_eq!(get_source_file(), "iban_registry_v99.txt");
+    }
+
+    #[test]
+    fn test_fmt_display() {
+        let error = ValidationError::TooShort(3);
+        assert_eq!(
+            format!("{}", error),
+            "The input Iban is too short to be an IBAN 3 (minimum length is 4)"
+        );
+        let error = ValidationError::MissingCountry;
+        assert_eq!(
+            format!("{}", error),
+            "The input Iban does not appear to start with 2 letters representing a two-letter country code"
+        );
+        let error = ValidationError::InvalidCountry;
+        assert_eq!(
+            format!("{}", error),
+            "the input Iban the first two-letter do not mathc a valid country"
+        );
+        let error = ValidationError::StructureIncorrectForCountry;
+        assert_eq!(
+            format!("{}", error),
+            "The characters founds in teh input Iban do not follow the country's Iban structure"
+        );
+        let error = ValidationError::InvalidSizeForCountry;
+        assert_eq!(
+            format!("{}", error),
+            "The length of the input Iban does match the length for that country"
+        );
+    }
+
+    #[test]
+    fn test_modulo_incorrect() {
+        let error = ValidationError::ModuloIncorrect;
+        assert_eq!(
+            format!("{}", error),
+            "The calculated mod97 for the iban indicates an incorrect Iban"
+        );
     }
 }

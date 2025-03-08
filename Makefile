@@ -49,6 +49,8 @@ iban_validation_rs_release:	clippy
 
 .PHONY: clean
 clean:
+	rustup update
+	rustup component add llvm-tools-preview
 	cargo clean
 	$(MAKE) clean_wheels
 	$(RMRF) .pytest_cache
@@ -134,6 +136,10 @@ test:	clippy
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest
+
+.PHONY: coverage
+coverage:
+	cargo llvm-cov --html
 
 .PHONY: clippy
 clippy:

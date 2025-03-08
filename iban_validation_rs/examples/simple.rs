@@ -1,5 +1,5 @@
 extern crate iban_validation_rs;
-use iban_validation_rs::{validate_iban_str, Iban};
+use iban_validation_rs::{Iban, validate_iban_str};
 
 /// This function attempts to create an IBAN from the input string and prints the IBAN, bank ID, and branch ID if successful — or an error message if the creation fails.
 fn print_iban_or_error(s: &str) {
