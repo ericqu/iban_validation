@@ -1,6 +1,13 @@
 ## Benchmark iban_validation_py and iban_validation_polars against similar libraries
 To give a perspective on how the python wrapper performs with regards to other similar libraries. The other libraries can have additional features that iban_validation_py does not have. Only creating an Iban structure with the validated iban, the bank identifier when present and the branch identifier when present is test.
 
+## Outcome
+For now I tested only schiwty as this is the most prominent Python library. 
+In the context of a single call through the python api, the iban_validation_py package is about 30 times faster.
+In the context of calls through the Pandas dataframe, the iban_validation_py package is only 1.5 times faster.
+In the context of calls through the Polars dataframe, the iban_validation_py packahe is about 3 times faster.
+In the context of calls through the Polars dataframe, but using the iban_validation_polars plugin, then the plugin is about 75 times faster than the iban_validation_py, and about 200 times faster than schwifty.
+
 Here is the output from pytest:
 ```
 ------------------------------------------------------------------------- benchmark 'pandas': 2 tests -------------------------------------------------------------------------
