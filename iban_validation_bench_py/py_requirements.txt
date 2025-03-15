@@ -1,0 +1,9 @@
+uv
+pytest
+pytest-benchmark
+iban_validation_py
+iban_validation_polars
+schwifty
+polars
+pandas
+pyarrow

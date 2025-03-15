@@ -179,8 +179,8 @@ pub const fn get_source_file() -> &'static str {
 }
 
 /// Validate than an Iban is valid according to the registry information
-/// return true when Iban is fine, otherwise returns Error.
-pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
+/// return true when Iban is fine, together with information about the fields (so that it does not need to be looked up again later)
+pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), ValidationError> {
     let identified_country: [u8; 2] = match input_iban.get(..2) {
         Some(value) => value
             .as_bytes()
@@ -188,10 +188,13 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
             .map_err(|_| ValidationError::InvalidCountry)?,
         None => return Err(ValidationError::MissingCountry),
     };
-    let pattern: &String = match &IB_REG.get(&identified_country) {
-        Some(pattern) => &pattern.iban_struct,
+
+    let iban_data: &IbanFields = match &IB_REG.get(&identified_country) {
+        Some(pattern) => pattern,
         None => return Err(ValidationError::InvalidCountry),
     };
+
+    let pattern = &iban_data.iban_struct;
 
     if pattern.len() != input_iban.len() {
         return Err(ValidationError::InvalidSizeForCountry);
@@ -252,10 +255,16 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
         acc = division_mod97(acc + (m97digit as u32)); // and add new digit
     }
     if acc == 1 {
-        Ok(true)
+        Ok((iban_data, true))
     } else {
         Err(ValidationError::ModuloIncorrect)
     }
+}
+
+/// Validate than an Iban is valid according to the registry information
+/// return true when Iban is fine, otherwise returns Error.
+pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
+    validate_iban_with_data(input_iban).map(|(_, is_valid)| is_valid)
 }
 
 /// indicate how a valid Iban is stored.
@@ -276,20 +285,7 @@ pub struct Iban<'a> {
 /// building a valid Iban (validate and take the relavant slices).
 impl<'a> Iban<'a> {
     pub fn new(s: &'a str) -> Result<Self, ValidationError> {
-        let _is_valid: bool = validate_iban_str(s)?;
-
-        let identified_country: [u8; 2] = match s.get(..2) {
-            Some(value) => value
-                .as_bytes()
-                .try_into()
-                .map_err(|_| ValidationError::InvalidCountry)?,
-            None => return Err(ValidationError::MissingCountry),
-        };
-
-        let iban_data: &IbanFields = match &IB_REG.get(&identified_country) {
-            Some(pattern) => pattern,
-            None => return Err(ValidationError::InvalidCountry),
-        };
+        let (iban_data, _) = validate_iban_with_data(s)?;
 
         let bank_id = Self::extract_identifier(s, iban_data.bank_id_pos_s, iban_data.bank_id_pos_e);
         let branch_id =

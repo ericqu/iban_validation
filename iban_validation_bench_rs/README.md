@@ -1,5 +1,5 @@
 ## Benchmark iban_validation_rs against similar libraries
-To give a perspective on how the rust crate performs with regards to other similar crates. The other crates can have additional feature that iban_validation_rs does not have. Only creating an Iban structure with the validated iban, the bank identifier when present and the branch identifier when present is test.
+To give a perspective on how the rust crate performs with regards to other similar crates. The other crates can have additional features that iban_validation_rs does not have. Only creating an Iban structure with the validated iban, the bank identifier when present and the branch identifier when present is test.
 
 Here is the output from Criterion:
 

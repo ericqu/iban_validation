@@ -8,3 +8,5 @@ target/
 *.pyc
 __pycache__/
 dist/
+iban_validation_bench_py/data/test_file.csv
+
