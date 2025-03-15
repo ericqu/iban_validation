@@ -16,7 +16,8 @@ Some of the Makefile were inspired by the makefiles on the [Polars project](http
 In the iban_validation_bench_rs, benchmark of similar crates published on crates.io is presented. While this library is the fastest other libraries can provide additional features that are more relevant to your use-cases. See [details](iban_validation_bench_rs/README.md). Similar benchmarking was done on Python libraries see [details](iban_validation_bench_py/README.md).
 
 ## Changes
- - 0.1.6: improve performance related to the Iban structure
+ - 0.1.7: improve performance related to the Iban structure again.
+ - 0.1.6: improve performance related to the Iban structure.
  - 0.1.5: improve documentation and add support to Python 3.13.
  - 0.1.4: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
  - 0.1.3: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024
