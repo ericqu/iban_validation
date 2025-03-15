@@ -135,7 +135,7 @@ test:	clippy
 	$(call create_venv)
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
-	$(VENV_BIN)/pytest
+	$(VENV_BIN)/pytest --ignore=iban_validation_bench_py
 
 .PHONY: coverage
 coverage:
