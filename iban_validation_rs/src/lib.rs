@@ -165,12 +165,18 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
     }
 }
 
-/// internal utility
-/// division method for modulo 97 >> faster than regular modulo
+static M97_ARRAY: LazyLock<[u32; 10000]> = LazyLock::new(|| {
+    let mut array = [0; 10000];
+    for (i, item) in array.iter_mut().enumerate() {
+        *item = (i as u32) % 97;
+    }
+    array
+});
+
 #[inline]
-fn division_mod97(x: u32) -> u32 {
-    let q = x / 97; // Quotient
-    x - q * 97 // Remainder
+fn div_arr_mod97(x: u32) -> u32 {
+    let index = x as usize;
+    M97_ARRAY[index]
 }
 
 /// indicate which file was used a source
@@ -236,7 +242,7 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
             }
         };
         acc *= if m97digit < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers)
-        acc = division_mod97(acc + (m97digit as u32)); // and add new digit
+        acc = div_arr_mod97(acc + (m97digit as u32)); // and add new digit
     }
     if acc == 1 {
         Ok((iban_data, true))
@@ -554,7 +560,7 @@ mod tests {
     fn test_mod97_equivalence() {
         // Test range of values to ensure equivalence
         for x in 0..10_000 {
-            assert_eq!(division_mod97(x), x % 97, "Failed for value {}", x);
+            assert_eq!(div_arr_mod97(x), x % 97, "Failed for value {}", x);
         }
     }
 
