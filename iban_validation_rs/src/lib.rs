@@ -311,8 +311,8 @@ impl<'a> Iban<'a> {
         end_pos: Option<usize>,
     ) -> Option<&'a str> {
         match (start_pos, end_pos) {
-            (Some(start), Some(end)) if start <= end && (4 + start + (end - start)) <= s.len() => {
-                Some(&s[start + 3..4 + start + (end - start)])
+            (Some(start), Some(end)) if start <= end && (4 + end) <= s.len() => {
+                Some(&s[start + 3 .. end + 4])
             }
             _ => None,
         }
