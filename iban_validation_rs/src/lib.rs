@@ -200,22 +200,6 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         return Err(ValidationError::InvalidSizeForCountry);
     }
 
-    // There is a potental panic but it should be a dead code, as we should never find a non 2-letter country code given we search for 2-leter country code and found something before
-    let pattern_start: [u8; 2] = pattern
-        .get(..2)
-        .unwrap()
-        .as_bytes()
-        .try_into()
-        .map_err(|_| ValidationError::InvalidCountry)
-        .expect("Error the built-in pattern is not starting with at least two characters");
-
-    // first two letters do not match
-    // technically unnecessary but performance is impacted negativey when not present
-    match (pattern_start, identified_country) {
-        (p_start, t_start) if p_start != t_start => return Err(ValidationError::InvalidCountry),
-        _ => {}
-    }
-
     let pat_re = pattern[4..].chars().chain(pattern[..4].chars());
     let input_re = input_iban[4..].chars().chain(input_iban[..4].chars());
 
@@ -312,7 +296,7 @@ impl<'a> Iban<'a> {
     ) -> Option<&'a str> {
         match (start_pos, end_pos) {
             (Some(start), Some(end)) if start <= end && (4 + end) <= s.len() => {
-                Some(&s[start + 3 .. end + 4])
+                Some(&s[start + 3..end + 4])
             }
             _ => None,
         }
