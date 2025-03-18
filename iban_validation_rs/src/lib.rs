@@ -84,7 +84,7 @@ impl fmt::Display for ValidationError {
             ),
             ValidationError::InvalidCountry => write!(
                 f,
-                "the input Iban the first two-letter do not mathc a valid country"
+                "the input Iban the first two-letter do not match a valid country"
             ),
             ValidationError::StructureIncorrectForCountry => write!(
                 f,
@@ -594,7 +594,7 @@ mod tests {
         let error = ValidationError::InvalidCountry;
         assert_eq!(
             format!("{}", error),
-            "the input Iban the first two-letter do not mathc a valid country"
+            "the input Iban the first two-letter do not match a valid country"
         );
         let error = ValidationError::StructureIncorrectForCountry;
         assert_eq!(
