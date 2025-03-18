@@ -74,7 +74,12 @@ iban_validation_py:
 .PHONY: iban_validation_py_release
 iban_validation_py_release:	clippy
 	$(call create_venv)
-	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release 
+	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml --release
+
+.PHONY: iban_validation_polars_release
+iban_validation_polars_release:	clippy
+	$(call create_venv)
+	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml --release 
 
 .PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:	clippy
