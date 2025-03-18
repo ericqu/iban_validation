@@ -132,6 +132,7 @@ endif
 
 .PHONY: publish_iban_validation_rs
 publish_iban_validation_rs:
+	cargo doc
 	cargo publish -p iban_validation_rs 
 
 .PHONY: test
