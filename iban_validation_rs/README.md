@@ -11,7 +11,7 @@ In contrast, the intention is to provide a quick, correct validation of the IBAN
 For now, parallelisation is not in the scope of the core library as usage through other libraries is likely to provide that, like in the polars plugin.
 
 # Changes
- - 0.1.8: improve mod97 perf (cpu memory tradeof).
+ - 0.1.8: improve mod97 perf (cpu memory tradeoff).
  - 0.1.7: improve performance related to the Iban structure again.
  - 0.1.6: improve performance related to the Iban structure.
  - 0.1.5: improved documentation
