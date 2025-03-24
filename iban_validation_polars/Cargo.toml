@@ -18,5 +18,5 @@ iban_validation_rs = {path = "../iban_validation_rs" }
 pyo3 = {version = "0.23" ,  features = ["extension-module", "generate-import-lib"] }
 pyo3-polars = {version = "*" ,  features = ["derive"] }
 serde = {version = "*" ,  features = ["derive"] }
-polars = {version = "0.46.0", default-features = false }
+polars = {version = "0.46.0" }
 polars-arrow = {version = "0.46.0" }
