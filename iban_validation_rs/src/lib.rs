@@ -165,7 +165,7 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
     }
 }
 
-/// internal utility 
+/// internal utility
 /// build an array of precomputed modulo operations
 /// the maximum should be 9635 (96 the largest previous, 35 a Z the largest possible)
 const fn generate_m97_array() -> [u8; 9700] {
