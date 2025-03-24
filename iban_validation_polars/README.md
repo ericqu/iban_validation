@@ -34,6 +34,7 @@ os.remove(outputfile)
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
+ - 0.1.9: improve mod97 perf (reduce memory needed)
  - 0.1.8: improve mod97 perf (cpu memory tradeoff).
  - 0.1.7: improve performance related to the Iban structure again.
  - 0.1.6: improve performance related to the Iban structure.
