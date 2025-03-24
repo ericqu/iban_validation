@@ -165,18 +165,20 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
     }
 }
 
-static M97_ARRAY: LazyLock<[u32; 10000]> = LazyLock::new(|| {
+/// internal utility to build an array of precomputer modulo
+static M97_ARRAY: LazyLock<[u8; 10000]> = LazyLock::new(|| {
     let mut array = [0; 10000];
     for (i, item) in array.iter_mut().enumerate() {
-        *item = (i as u32) % 97;
+        *item = ((i as u32) % 97) as u8;
     }
     array
 });
 
+/// internal utility to use an array of precomputer modulo
 #[inline]
 fn div_arr_mod97(x: u32) -> u32 {
     let index = x as usize;
-    M97_ARRAY[index]
+    M97_ARRAY[index] as u32
 }
 
 /// indicate which file was used a source
