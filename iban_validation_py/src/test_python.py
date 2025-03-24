@@ -32,6 +32,24 @@ def test_iban():
     assert invalid_iban.iban_bank_id is None
     assert invalid_iban.iban_branch_id is None
 
+    # # Invalid IBAN
+    invalid_iban = IbanValidation("")
+    assert invalid_iban.stored_iban is None
+    assert invalid_iban.iban_bank_id is None
+    assert invalid_iban.iban_branch_id is None
+
+    # # Invalid IBAN
+    invalid_iban = IbanValidation("HN88CABF00000000000250005469HN88CABF00000000000250005469")
+    assert invalid_iban.stored_iban is None
+    assert invalid_iban.iban_bank_id is None
+    assert invalid_iban.iban_branch_id is None
+
+    # # Invalid IBAN
+    invalid_iban = IbanValidation("HN88ZZZZ00000000000250005469HN88CABF00000000000250005469")
+    assert invalid_iban.stored_iban is None
+    assert invalid_iban.iban_bank_id is None
+    assert invalid_iban.iban_branch_id is None
+
     iban = IbanValidation("AE070331234567890123456")
     assert "AE070331234567890123456" == iban.stored_iban
     assert "033" == iban.iban_bank_id
