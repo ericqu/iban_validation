@@ -166,13 +166,19 @@ fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
 }
 
 /// internal utility to build an array of precomputer modulo
-static M97_ARRAY: LazyLock<[u8; 10000]> = LazyLock::new(|| {
-    let mut array = [0; 10000];
-    for (i, item) in array.iter_mut().enumerate() {
-        *item = ((i as u32) % 97) as u8;
+/// the maximum should be 9635 (96 the largest previous, 35 a Z the largest possible)
+const fn generate_m97_array() -> [u8; 9700] {
+    let mut array = [0u8; 9700];
+    let mut i = 0;
+    while i < 9700 {
+        array[i] = (i as u32 % 97) as u8;
+        i += 1;
     }
     array
-});
+}
+
+/// storage for the modulo operations
+const M97_ARRAY: [u8; 9700] = generate_m97_array();
 
 /// internal utility to use an array of precomputer modulo
 #[inline]
@@ -561,7 +567,7 @@ mod tests {
     #[test]
     fn test_mod97_equivalence() {
         // Test range of values to ensure equivalence
-        for x in 0..10_000 {
+        for x in 0..9_700 {
             assert_eq!(div_arr_mod97(x), x % 97, "Failed for value {}", x);
         }
     }
