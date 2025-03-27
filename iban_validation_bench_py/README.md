@@ -5,8 +5,8 @@ To give a perspective on how the python wrapper performs with regards to other s
 For now I tested only schiwty as this is the most prominent Python library. 
 In the context of a single call through the python api, the iban_validation_py package is about 30 times faster.
 In the context of calls through the Pandas dataframe, the iban_validation_py package is only 1.5 times faster.
-In the context of calls through the Polars dataframe, the iban_validation_py packahe is about 3 times faster.
-In the context of calls through the Polars dataframe, but using the iban_validation_polars plugin, then the plugin is about 75 times faster than the iban_validation_py, and about 200 times faster than schwifty.
+In the context of calls through the Polars dataframe, the iban_validation_py package is about 3 times faster.
+In the context of calls through the Polars dataframe, but using the iban_validation_polars plugin, then the plugin is about 75 times faster than the iban_validation_py, and about 200 times faster than schwifty. Which is were the real gain is, and the reason why the polars plugin exists.
 
 Here is the output from pytest:
 ```
