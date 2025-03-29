@@ -4,6 +4,6 @@ pytest-benchmark
 iban_validation_py
 iban_validation_polars
 schwifty
-polars
+polars==1.25.2
 pandas
 pyarrow
