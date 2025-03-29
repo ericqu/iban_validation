@@ -113,7 +113,7 @@ def pre_process_to_json(inputfile, output_iban_file):
 def pre_process_to_rust(inputfile, output_rust_codegen):
     pre_df = get_df_from_input(inputfile)
 
-    rs_code = """// Auto-generated from Polars DataFrame, do not edit manually
+    rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::IbanFields;
 
 pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
@@ -121,17 +121,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
 
     for row in pre_df.iter_rows(named=True):
         # Extract values and handle None values
-        ctry_cd = row['ctry_cd']
-        iban_len = row['iban_len']
-        bank_id_pos_s = f"Some({row['bank_id_pos_s']})" if row['bank_id_pos_s'] is not None else "None"
-        bank_id_pos_e = f"Some({row['bank_id_pos_e']})" if row['bank_id_pos_e'] is not None else "None"
-        branch_id_pos_s = f"Some({row['branch_id_pos_s']})" if row['branch_id_pos_s'] is not None else "None"
-        branch_id_pos_e = f"Some({row['branch_id_pos_e']})" if row['branch_id_pos_e'] is not None else "None"
-        iban_struct = row['iban_struct']
-        
+        ctry_cd = row["ctry_cd"]
+        iban_len = row["iban_len"]
+        bank_id_pos_s = (
+            f"Some({row['bank_id_pos_s']})"
+            if row["bank_id_pos_s"] is not None
+            else "None"
+        )
+        bank_id_pos_e = (
+            f"Some({row['bank_id_pos_e']})"
+            if row["bank_id_pos_e"] is not None
+            else "None"
+        )
+        branch_id_pos_s = (
+            f"Some({row['branch_id_pos_s']})"
+            if row["branch_id_pos_s"] is not None
+            else "None"
+        )
+        branch_id_pos_e = (
+            f"Some({row['branch_id_pos_e']})"
+            if row["branch_id_pos_e"] is not None
+            else "None"
+        )
+        iban_struct = row["iban_struct"]
+
         # Convert country code to ASCII representation for comment
-        country_str = chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
-        
+        country_str = (
+            chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        )
+
         # Format the struct initialization
         rs_code += """    IbanFields {{
         ctry_cd: [{}, {}],  // "{}"
@@ -143,16 +161,17 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
         iban_struct: "{}",
     }},
 """.format(
-            ctry_cd[0], ctry_cd[1],
+            ctry_cd[0],
+            ctry_cd[1],
             country_str,
             iban_len,
             bank_id_pos_s,
             bank_id_pos_e,
             branch_id_pos_s,
             branch_id_pos_e,
-            iban_struct
+            iban_struct,
         )
-    
+
     # Close the array
     rs_code += "];\n"
 
@@ -162,21 +181,28 @@ pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
 """
     counter = 0
     for row in pre_df.iter_rows(named=True):
-        ctry_cd = row['ctry_cd']
+        ctry_cd = row["ctry_cd"]
         # Convert country code to ASCII representation for comment
-        country_str = chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        country_str = (
+            chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        )
         rs_code += """      [{}, {}] => Some(&IBAN_DEFINITIONS[{}]), // {}
-""".format(ctry_cd[0], ctry_cd[1], counter, country_str,)
+""".format(
+            ctry_cd[0],
+            ctry_cd[1],
+            counter,
+            country_str,
+        )
         counter += 1
 
-    rs_code +=  """     _ => None,
+    rs_code += """     _ => None,
     }
 }
 """
     # Write to output file
-    with open(output_rust_codegen, 'w') as f:
+    with open(output_rust_codegen, "w") as f:
         f.write(rs_code)
-    
+
     print(f"Rust code written to {output_rust_codegen}")
 
 

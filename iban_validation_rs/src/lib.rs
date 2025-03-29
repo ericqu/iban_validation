@@ -30,16 +30,13 @@
 //! ```
 
 use iban_definition::get_iban_fields;
-// use rustc_hash::FxHashMap;
-use serde_derive::{Deserialize, Serialize};
 use std::error::Error;
 use std::fmt;
-// use std::sync::LazyLock;
 
 mod iban_definition;
 
 /// indicate which information is expected from the Iban Registry and in the record.
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct IbanFields {
     /// two-letter country codes as per ISO 3166-1
     pub ctry_cd: [u8; 2],
@@ -105,39 +102,6 @@ impl fmt::Display for ValidationError {
     }
 }
 impl Error for ValidationError {}
-
-// #[derive(Clone)]
-// pub struct IbanRegistry {
-//     // Uses the array directly + a small lookup helper
-//     lookup: FxHashMap<[u8; 2], usize>, // Maps country code to array index
-// }
-
-// impl IbanRegistry {
-//     pub fn get(&self, country_code: [u8; 2]) -> Option<&'static IbanFields> {
-//         self.lookup.get(&country_code)
-//             .map(|&idx| &IBAN_DEFINITIONS[idx])
-//     }
-// }
-
-/// utility function to load the registry const array into a Hashmap
-// fn convert_to_hashmap() -> FxHashMap<[u8; 2], &'static IbanFields> {
-//     // let map: FxHashMap<[u8; 2], IbanFields> =
-//     IBAN_DEFINITIONS.iter().map(|item| (item.ctry_cd, item)).collect()
-// }
-
-/// trigger the loading of the registry once need, and only once.
-/// panics if failing as there is no other way forward.
-// static IB_REG: LazyLock<FxHashMap<[u8; 2], &'static IbanFields>> = LazyLock::new(|| {
-// static IB_REG: LazyLock<IbanRegistry> = LazyLock::new(|| {
-//         // convert_to_hashmap()
-//     let lookup = IBAN_DEFINITIONS.iter()
-//         .enumerate()
-//         .map(|(idx, item)| (item.ctry_cd, idx))
-//         .collect();
-
-//     IbanRegistry{ lookup }
-
-// });
 
 const ALLOWED_E: &str = " ";
 
@@ -225,7 +189,7 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
 
     // let iban_data: &IbanFields = match &IB_REG.get(identified_country) {
     let iban_data: &IbanFields = match get_iban_fields(identified_country) {
-            Some(pattern) => pattern,
+        Some(pattern) => pattern,
         None => return Err(ValidationError::InvalidCountry),
     };
 
