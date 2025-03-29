@@ -155,6 +155,24 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
     
     # Close the array
     rs_code += "];\n"
+
+    rs_code += """
+pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
+    match cc {
+"""
+    counter = 0
+    for row in pre_df.iter_rows(named=True):
+        ctry_cd = row['ctry_cd']
+        # Convert country code to ASCII representation for comment
+        country_str = chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        rs_code += """      [{}, {}] => Some(&IBAN_DEFINITIONS[{}]), // {}
+""".format(ctry_cd[0], ctry_cd[1], counter, country_str,)
+        counter += 1
+
+    rs_code +=  """     _ => None,
+    }
+}
+"""
     # Write to output file
     with open(output_rust_codegen, 'w') as f:
         f.write(rs_code)

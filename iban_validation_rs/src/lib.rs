@@ -29,12 +29,12 @@
 //! }
 //! ```
 
-use iban_definition::IBAN_DEFINITIONS;
-use rustc_hash::FxHashMap;
+use iban_definition::get_iban_fields;
+// use rustc_hash::FxHashMap;
 use serde_derive::{Deserialize, Serialize};
 use std::error::Error;
 use std::fmt;
-use std::sync::LazyLock;
+// use std::sync::LazyLock;
 
 mod iban_definition;
 
@@ -106,17 +106,38 @@ impl fmt::Display for ValidationError {
 }
 impl Error for ValidationError {}
 
+// #[derive(Clone)]
+// pub struct IbanRegistry {
+//     // Uses the array directly + a small lookup helper
+//     lookup: FxHashMap<[u8; 2], usize>, // Maps country code to array index
+// }
+
+// impl IbanRegistry {
+//     pub fn get(&self, country_code: [u8; 2]) -> Option<&'static IbanFields> {
+//         self.lookup.get(&country_code)
+//             .map(|&idx| &IBAN_DEFINITIONS[idx])
+//     }
+// }
+
 /// utility function to load the registry const array into a Hashmap
-fn convert_to_hashmap() -> FxHashMap<[u8; 2], &'static IbanFields> {
-    // let map: FxHashMap<[u8; 2], IbanFields> =
-    IBAN_DEFINITIONS.iter().map(|item| (item.ctry_cd, item)).collect()
-}
+// fn convert_to_hashmap() -> FxHashMap<[u8; 2], &'static IbanFields> {
+//     // let map: FxHashMap<[u8; 2], IbanFields> =
+//     IBAN_DEFINITIONS.iter().map(|item| (item.ctry_cd, item)).collect()
+// }
 
 /// trigger the loading of the registry once need, and only once.
 /// panics if failing as there is no other way forward.
-static IB_REG: LazyLock<FxHashMap<[u8; 2], &'static IbanFields>> = LazyLock::new(|| {
-    convert_to_hashmap()
-});
+// static IB_REG: LazyLock<FxHashMap<[u8; 2], &'static IbanFields>> = LazyLock::new(|| {
+// static IB_REG: LazyLock<IbanRegistry> = LazyLock::new(|| {
+//         // convert_to_hashmap()
+//     let lookup = IBAN_DEFINITIONS.iter()
+//         .enumerate()
+//         .map(|(idx, item)| (item.ctry_cd, idx))
+//         .collect();
+
+//     IbanRegistry{ lookup }
+
+// });
 
 const ALLOWED_E: &str = " ";
 
@@ -202,8 +223,9 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         None => return Err(ValidationError::MissingCountry),
     };
 
-    let iban_data: &IbanFields = match &IB_REG.get(&identified_country) {
-        Some(pattern) => pattern,
+    // let iban_data: &IbanFields = match &IB_REG.get(identified_country) {
+    let iban_data: &IbanFields = match get_iban_fields(identified_country) {
+            Some(pattern) => pattern,
         None => return Err(ValidationError::InvalidCountry),
     };
 
@@ -503,7 +525,8 @@ mod tests {
 
     #[test]
     fn check_map() {
-        match IB_REG.get(&[b'F', b'R']) {
+        // match IB_REG.get([b'F', b'R']) {
+        match get_iban_fields([b'F', b'R']) {
             Some(ib_data) => {
                 println!("FR : {}", ib_data.iban_struct);
                 assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
@@ -511,13 +534,13 @@ mod tests {
             _ => println!("FR IBan missing!"),
         }
 
-        let al_ib_struct = &IB_REG
-            .get(&[b'A', b'L'])
+        let al_ib_struct = get_iban_fields([b'A', b'L'])
             .expect("country does not existin in registry")
             .iban_struct;
-        assert_eq!("ALnnnnnnnnnncccccccccccccccc", *al_ib_struct);
+        assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
 
-        println!("Successfully loaded {} countries", IB_REG.len());
+        // println!("Successfully loaded {} countries", IB_REG.len());
+        println!("Successfully loaded countries");
     }
 
     #[test]
