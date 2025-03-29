@@ -5,6 +5,7 @@ pl.Config.set_tbl_rows(45)
 inputfile = "iban_validation_preprocess/iban_registry_v99.txt"
 output_iban_file = "iban_validation_rs/data/iban_definitions.json"
 output_source_file = "iban_validation_rs/data/iban_sourcefile.txt"
+output_rust_codegen = "iban_validation_rs/src/iban_definition.rs"
 
 
 def pre_process_filename(inputfile, output_source_file):
@@ -16,7 +17,7 @@ def pre_process_filename(inputfile, output_source_file):
         f.write(filename)
 
 
-def pre_process(inputfile, output_iban_file):
+def get_df_from_input(inputfile):
     df = pl.scan_csv(inputfile, separator="\t", quote_char='"', n_rows=25)
 
     header = df.select(df.collect_schema().names()[0]).collect().to_series().to_list()
@@ -98,14 +99,70 @@ def pre_process(inputfile, output_iban_file):
             ]
         )
     )
+    return pre_df
 
+
+def pre_process_to_json(inputfile, output_iban_file):
+    pre_df = get_df_from_input(inputfile)
     pre_df.write_json(output_iban_file)
     print(
         f"preprocessing: {inputfile} -> completed",
     )
-    return pre_df
+
+
+def pre_process_to_rust(inputfile, output_rust_codegen):
+    pre_df = get_df_from_input(inputfile)
+
+    rs_code = """// Auto-generated from Polars DataFrame, do not edit manually
+use crate::IbanFields;
+
+pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
+""".format(len(pre_df))
+
+    for row in pre_df.iter_rows(named=True):
+        # Extract values and handle None values
+        ctry_cd = row['ctry_cd']
+        iban_len = row['iban_len']
+        bank_id_pos_s = f"Some({row['bank_id_pos_s']})" if row['bank_id_pos_s'] is not None else "None"
+        bank_id_pos_e = f"Some({row['bank_id_pos_e']})" if row['bank_id_pos_e'] is not None else "None"
+        branch_id_pos_s = f"Some({row['branch_id_pos_s']})" if row['branch_id_pos_s'] is not None else "None"
+        branch_id_pos_e = f"Some({row['branch_id_pos_e']})" if row['branch_id_pos_e'] is not None else "None"
+        iban_struct = row['iban_struct']
+        
+        # Convert country code to ASCII representation for comment
+        country_str = chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        
+        # Format the struct initialization
+        rs_code += """    IbanFields {{
+        ctry_cd: [{}, {}],  // "{}"
+        iban_len: {},
+        bank_id_pos_s: {},
+        bank_id_pos_e: {},
+        branch_id_pos_s: {},
+        branch_id_pos_e: {},
+        iban_struct: "{}",
+    }},
+""".format(
+            ctry_cd[0], ctry_cd[1],
+            country_str,
+            iban_len,
+            bank_id_pos_s,
+            bank_id_pos_e,
+            branch_id_pos_s,
+            branch_id_pos_e,
+            iban_struct
+        )
+    
+    # Close the array
+    rs_code += "];\n"
+    # Write to output file
+    with open(output_rust_codegen, 'w') as f:
+        f.write(rs_code)
+    
+    print(f"Rust code written to {output_rust_codegen}")
 
 
 if __name__ == "__main__":
-    pre_process(inputfile, output_iban_file)
-    pre_process_filename(inputfile, output_source_file)
+    pre_process_to_rust(inputfile, output_rust_codegen)
+    # pre_process_to_json(inputfile, output_iban_file)
+    # pre_process_filename(inputfile, output_source_file)
