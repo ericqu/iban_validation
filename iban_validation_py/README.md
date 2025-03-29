@@ -32,6 +32,7 @@ assert('11009' == iban.iban_branch_id)
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde)
  - 0.1.9: improve mod97 perf (reduce memory needed)
  - 0.1.8: improve mod97 perf (cpu memory tradeoff).
  - 0.1.7: improve performance related to the Iban structure again.
