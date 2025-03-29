@@ -108,7 +108,7 @@ def pre_process_to_json(inputfile, output_iban_file):
     print(
         f"preprocessing: {inputfile} -> completed",
     )
-
+    return pre_df # for test
 
 def pre_process_to_rust(inputfile, output_rust_codegen):
     pre_df = get_df_from_input(inputfile)
