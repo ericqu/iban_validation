@@ -30,14 +30,18 @@ print(df.collect(streaming=True))
 # cleanup
 os.remove(outputfile)
 ```
+
+## Benchmarks
+This polars plugin was the principal objective of this library; the benchmarks [here](iban_validation_bench_py/README.md) highlight how much faster it is to use the plugin than to call the Python library with ```map_element``` (about 80 times faster).
+
 ## Credits
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
- - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde)
+ - 0.1.11: eliminated rust dependencies (rust code generated from Python instead of Hash and Serde)
  - 0.1.9: improve mod97 perf (reduce memory needed)
  - 0.1.8: improve mod97 perf (cpu memory tradeoff).
  - 0.1.7: improve performance related to the Iban structure again.
  - 0.1.6: improve performance related to the Iban structure.
- - 0.1.5: add support to Python 3.13
+ - 0.1.5: add support for Python 3.13
  - 0.1.4: technical update; updated polars dependency to polars 0.46.0, pyo3-polars 0.20, and py03 0.23.
