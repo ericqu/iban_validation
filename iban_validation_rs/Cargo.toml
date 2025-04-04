@@ -15,7 +15,12 @@ exclude = ["benches/", "data/IBAN Examples.txt", "examples/"]
 
 [dev-dependencies]
 criterion = "0.5"
+divan = "0.1.17"
 
 [[bench]]
 name = "speed_bench"
+harness = false
+
+[[bench]]
+name = "speed_bench_divan"
 harness = false
