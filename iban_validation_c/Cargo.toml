@@ -1,0 +1,17 @@
+[package]
+name = "iban_validation_c"
+version = { workspace = true }
+edition = { workspace = true }
+description = "A package to facilitate validation of IBANs and selecting Bank_id and Branch_id as a Polars plugin"
+readme = "README.md"
+authors = [
+    "Eric" 
+]
+license = "MIT" 
+
+[lib]
+name = "iban_validation_c"
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+iban_validation_rs = {path = "../iban_validation_rs" }

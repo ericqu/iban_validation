@@ -9,4 +9,4 @@ target/
 __pycache__/
 dist/
 iban_validation_bench_py/data/test_file.csv
-
+zig-cc-wrapper.sh

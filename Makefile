@@ -1,4 +1,6 @@
 DIST_DIR ?= dist
+C_WRAPPER_DIR := iban_validation_c
+DIST_C_DIR := $(DIST_DIR)/c
 
 # OS Specific command
 ifeq ($(OS),Windows_NT)
@@ -65,6 +67,39 @@ ifeq ($(OS),Windows_NT)
 else
 	find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
 endif
+
+.PHONY: iban_validation_c
+iban_validation_c:
+	cargo build -p iban_validation_c --release
+
+.PHONY: iban_validation_c_release
+iban_validation_c_release: 
+	$(call create_venv)
+	mkdir -p $(DIST_C_DIR)
+	# Build for macOS
+	$(foreach target,$(MACOS_TARGETS),\
+		cargo build -p $(C_WRAPPER_DIR) --release --target $(target) ;\
+		mkdir -p $(DIST_C_DIR)/$(target) ;\
+		cp target/$(target)/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/$(target)/ ;\
+		cp target/$(target)/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR)/$(target)/ ;\
+		cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/$(target)/ ;\
+	)
+# # Build for Linux
+# $(foreach target,$(LINUX_TARGETS),\
+# 	cargo zigbuild -p $(C_WRAPPER_DIR) --release --target $(target) ;\
+# 	mkdir -p $(DIST_C_DIR)/$(target) ;\
+# 	cp target/$(target)/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/$(target)/ ;\
+# 	cp target/$(target)/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/$(target)/ ;\
+# 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/$(target)/ ;\
+# )
+# # Build for Windows
+# $(foreach target,$(WINDOWS_TARGETS),\
+# 	cargo build -p $(C_WRAPPER_DIR) --release --target $(target) ;\
+# 	mkdir -p $(DIST_C_DIR)/$(target) ;\
+# 	cp target/$(target)/release/$(C_WRAPPER_DIR).lib $(DIST_C_DIR)/$(target)/ ;\
+# 	cp target/$(target)/release/$(C_WRAPPER_DIR).dll $(DIST_C_DIR)/$(target)/ ;\
+# 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/$(target)/ ;\
+# )
 
 .PHONY: iban_validation_py
 iban_validation_py:
