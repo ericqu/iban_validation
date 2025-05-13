@@ -1,6 +1,7 @@
 DIST_DIR ?= dist
 C_WRAPPER_DIR := iban_validation_c
 DIST_C_DIR := $(DIST_DIR)/c
+DIST_WHL_DIR := $(DIST_DIR)/whl
 
 # OS Specific command
 ifeq ($(OS),Windows_NT)
@@ -107,23 +108,23 @@ iban_validation_polars_release:	clippy
 .PHONY: build_iban_validation_py_release
 build_iban_validation_py_release:	clippy
 	$(call create_venv)
-	$(VENV_BIN)/maturin sdist -m iban_validation_py/Cargo.toml --out $(DIST_DIR)
+	$(VENV_BIN)/maturin sdist -m iban_validation_py/Cargo.toml --out $(DIST_WHL_DIR)
 	$(foreach target,$(MACOS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --strip --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 	$(foreach target,$(LINUX_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 	$(foreach target,$(WINDOWS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 
@@ -133,23 +134,23 @@ ifeq ($(OS),Windows_NT)
 	powershell -Command "Remove-Item -Path iban_validation_polars\*.pyd -Force"
 endif
 	$(call create_venv)
-	$(VENV_BIN)/maturin sdist -m iban_validation_polars/Cargo.toml --out $(DIST_DIR)
+	$(VENV_BIN)/maturin sdist -m iban_validation_polars/Cargo.toml --out $(DIST_WHL_DIR)
 	$(foreach target,$(MACOS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --strip --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 	$(foreach target,$(LINUX_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 	$(foreach target,$(WINDOWS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_DIR) ;\
+			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 
@@ -185,12 +186,12 @@ clippy:
 # only manual when local dist is filled with the artifacts
 .PHONY: publishing_pipy
 publishing_pipy:
-	$(VENV_BIN)/python3 -m twine upload dist/* --verbose
+	$(VENV_BIN)/python3 -m twine upload $(DIST_WHL_DIR)/* --verbose
 
 # only manual when local dist is filled with the artifacts
 .PHONY: publishing_testpipy
 publishing_testpipy:
-	$(VENV_BIN)/python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
+	$(VENV_BIN)/python3 -m twine upload --repository-url https://test.pypi.org/legacy/ $(DIST_WHL_DIR)/* --verbose
 
 # to execute the bench against other libraries
 .PHONY: iban_validation_bench_rs
