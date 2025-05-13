@@ -58,6 +58,7 @@ clean:
 	$(RMRF) .pytest_cache
 	$(RMRF) .venv
 	$(RMRF) target
+	$(RMRF) $(DIST_DIR)
 
 .PHONY: clean_wheels
 clean_wheels:
@@ -76,30 +77,17 @@ iban_validation_c:
 iban_validation_c_release: 
 	$(call create_venv)
 	mkdir -p $(DIST_C_DIR)
-	# Build for macOS
-	$(foreach target,$(MACOS_TARGETS),\
-		cargo build -p $(C_WRAPPER_DIR) --release --target $(target) ;\
-		mkdir -p $(DIST_C_DIR)/$(target) ;\
-		cp target/$(target)/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/$(target)/ ;\
-		cp target/$(target)/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR)/$(target)/ ;\
-		cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/$(target)/ ;\
-	)
-# # Build for Linux
-# $(foreach target,$(LINUX_TARGETS),\
-# 	cargo zigbuild -p $(C_WRAPPER_DIR) --release --target $(target) ;\
-# 	mkdir -p $(DIST_C_DIR)/$(target) ;\
-# 	cp target/$(target)/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/$(target)/ ;\
-# 	cp target/$(target)/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/$(target)/ ;\
-# 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/$(target)/ ;\
-# )
-# # Build for Windows
-# $(foreach target,$(WINDOWS_TARGETS),\
-# 	cargo build -p $(C_WRAPPER_DIR) --release --target $(target) ;\
-# 	mkdir -p $(DIST_C_DIR)/$(target) ;\
-# 	cp target/$(target)/release/$(C_WRAPPER_DIR).lib $(DIST_C_DIR)/$(target)/ ;\
-# 	cp target/$(target)/release/$(C_WRAPPER_DIR).dll $(DIST_C_DIR)/$(target)/ ;\
-# 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/$(target)/ ;\
-# )
+# current machine
+	cargo build -p $(C_WRAPPER_DIR) --release ;\
+	mkdir -p $(DIST_C_DIR) ;\
+	cp target/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR) ;\
+	cp target/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR) ;\
+	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/ ;\
+
+.PHONY: iban_validation_c_examples
+iban_validation_c_examples: iban_validation_c_release
+	cc iban_validation_c/examples/example.c -o iban_validation_c/examples/example_c -liban_validation_c -L./dist/c
+	g++ iban_validation_c/examples/example.cpp -o iban_validation_c/examples/example_cpp -liban_validation_c -L./dist/c
 
 .PHONY: iban_validation_py
 iban_validation_py:
