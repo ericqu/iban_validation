@@ -87,8 +87,8 @@ iban_validation_c_release:
 
 .PHONY: iban_validation_c_examples
 iban_validation_c_examples: iban_validation_c_release
-	cc iban_validation_c/examples/example.c -o iban_validation_c/examples/example_c -liban_validation_c -L./dist/c
-	g++ iban_validation_c/examples/example.cpp -o iban_validation_c/examples/example_cpp -liban_validation_c -L./dist/c
+	cc iban_validation_c/examples/example.c -o iban_validation_c/examples/example_c -liban_validation_c -L./$(DIST_C_DIR)
+	g++ iban_validation_c/examples/example.cpp -o iban_validation_c/examples/example_cpp -liban_validation_c -L./$(DIST_C_DIR)
 
 .PHONY: iban_validation_py
 iban_validation_py:
