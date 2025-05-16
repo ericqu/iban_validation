@@ -83,7 +83,28 @@ iban_validation_c_release:
 	mkdir -p $(DIST_C_DIR) ;\
 	cp target/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR) ;\
 	cp target/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR) ;\
-	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/ ;\
+	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/ ;
+# macos gnu
+	rustup target add aarch64-apple-darwin
+	cargo build -p $(C_WRAPPER_DIR) --release --target aarch64-apple-darwin
+	mkdir -p $(DIST_C_DIR)/aarch64-apple-darwin
+	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/aarch64-apple-darwin/
+	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/aarch64-apple-darwin/ || true
+	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/aarch64-apple-darwin/
+# linux gnu
+	rustup target add x86_64-unknown-linux-gnu
+	cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-unknown-linux-gnu
+	mkdir -p $(DIST_C_DIR)/x86_64-unknown-linux-gnu
+	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
+	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/x86_64-unknown-linux-gnu/ || true
+	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
+# build-windows:
+	rustup target add x86_64-pc-windows-gnu
+	cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-pc-windows-gnu
+	mkdir -p $(DIST_C_DIR)/x86_64-pc-windows-gnu
+	cp target/x86_64-pc-windows-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-pc-windows-gnu/
+	cp target/x86_64-pc-windows-gnu/release/$(C_WRAPPER_DIR).dll $(DIST_C_DIR)/x86_64-pc-windows-gnu/ || true
+	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/x86_64-pc-windows-gnu/
 
 .PHONY: iban_validation_c_examples
 iban_validation_c_examples: iban_validation_c_release
