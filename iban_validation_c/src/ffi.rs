@@ -2,9 +2,10 @@ use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_int};
 use std::ptr;
 
-use iban_validation_rs::{validate_iban_str, Iban, ValidationError};
+use iban_validation_rs::{Iban, ValidationError, validate_iban_str};
 
 /// Error codes for IBAN validation
+#[derive(Copy, Clone, Debug)]
 #[repr(C)]
 pub enum IbanErrorCode {
     /// IBAN is valid
@@ -26,11 +27,14 @@ pub enum IbanErrorCode {
 }
 
 /// Validates an IBAN string and returns a status code
-/// 
+///
 /// @param iban_str A null-terminated C string containing the IBAN to validate
 /// @return Status code (see IbanErrorCode enum values)
+///
+/// # Safety
+/// This call unsafe code, when convertingthe C String
 #[unsafe(no_mangle)]
-pub extern "C" fn iban_validate(iban_str: *const c_char) -> c_int {
+pub unsafe extern "C" fn iban_validate(iban_str: *const c_char) -> c_int {
     // Safety check for null pointer
     if iban_str.is_null() {
         return IbanErrorCode::MissingCountry as c_int;
@@ -51,7 +55,9 @@ pub extern "C" fn iban_validate(iban_str: *const c_char) -> c_int {
             ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
             ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
             ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
-            ValidationError::StructureIncorrectForCountry => IbanErrorCode::StructureIncorrect as c_int,
+            ValidationError::StructureIncorrectForCountry => {
+                IbanErrorCode::StructureIncorrect as c_int
+            }
             ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
             ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
         },
@@ -67,13 +73,16 @@ pub struct IbanData {
 }
 
 /// Creates a new IBAN structure from a string
-/// 
+///
 /// @param iban_str A null-terminated C string containing the IBAN
 /// @return A pointer to an IbanData structure if valid, NULL otherwise
-/// 
+///
 /// Note: The caller is responsible for freeing the memory by calling iban_free
+///
+/// # Safety
+/// This call unsafe code, when convertingthe C String
 #[unsafe(no_mangle)]
-pub extern "C" fn iban_new(iban_str: *const c_char) -> *mut IbanData {
+pub unsafe extern "C" fn iban_new(iban_str: *const c_char) -> *mut IbanData {
     // Safety check for null pointer
     if iban_str.is_null() {
         return ptr::null_mut();
@@ -140,51 +149,54 @@ pub extern "C" fn iban_new(iban_str: *const c_char) -> *mut IbanData {
 }
 
 /// Frees the memory allocated for an IbanData structure
-/// 
+///
 /// @param iban_data Pointer to the IbanData structure to free
+///
+/// # Safety
+/// This call unsafe code, when convertingthe C String
 #[unsafe(no_mangle)]
-pub extern "C" fn iban_free(iban_data: *mut IbanData) {
+pub unsafe extern "C" fn iban_free(iban_data: *mut IbanData) {
     if iban_data.is_null() {
         return;
     }
 
     unsafe {
         let data = Box::from_raw(iban_data);
-        
+
         // Free all the C strings
         if !data.iban.is_null() {
             let _ = CString::from_raw(data.iban);
         }
-        
+
         if !data.bank_id.is_null() {
             let _ = CString::from_raw(data.bank_id);
         }
-        
+
         if !data.branch_id.is_null() {
             let _ = CString::from_raw(data.branch_id);
         }
-        
+
         // Box will be dropped here, freeing the IbanData struct
     }
 }
 
 /// Gets error message for a specific error code
-/// 
+///
 /// @param error_code The error code returned by iban_validate
 /// @return A null-terminated string with the error message (do not free this string)
 #[unsafe(no_mangle)]
 pub extern "C" fn iban_error_message(error_code: c_int) -> *const c_char {
     // Use static strings that persist for the program's lifetime
-    static VALID: &'static [u8] = b"Valid IBAN\0";
-    static INVALID: &'static [u8] = b"Invalid IBAN\0";
-    static TOO_SHORT: &'static [u8] = b"IBAN is too short\0";
-    static MISSING_COUNTRY: &'static [u8] = b"IBAN is missing country code\0";
-    static INVALID_COUNTRY: &'static [u8] = b"IBAN has invalid country code\0";
-    static STRUCTURE_INCORRECT: &'static [u8] = b"IBAN structure is incorrect for the country\0";
-    static INVALID_SIZE: &'static [u8] = b"IBAN length is invalid for the country\0";
-    static MODULO_FAILED: &'static [u8] = b"IBAN checksum (mod-97) is incorrect\0";
-    static UNKNOWN: &'static [u8] = b"Unknown error code\0";
-    
+    static VALID: &[u8] = b"Valid IBAN\0";
+    static INVALID: &[u8] = b"Invalid IBAN\0";
+    static TOO_SHORT: &[u8] = b"IBAN is too short\0";
+    static MISSING_COUNTRY: &[u8] = b"IBAN is missing country code\0";
+    static INVALID_COUNTRY: &[u8] = b"IBAN has invalid country code\0";
+    static STRUCTURE_INCORRECT: &[u8] = b"IBAN structure is incorrect for the country\0";
+    static INVALID_SIZE: &[u8] = b"IBAN length is invalid for the country\0";
+    static MODULO_FAILED: &[u8] = b"IBAN checksum (mod-97) is incorrect\0";
+    static UNKNOWN: &[u8] = b"Unknown error code\0";
+
     let bytes = match error_code {
         1 => VALID,
         0 => INVALID,
@@ -196,6 +208,221 @@ pub extern "C" fn iban_error_message(error_code: c_int) -> *const c_char {
         -6 => MODULO_FAILED,
         _ => UNKNOWN,
     };
-    
+
     bytes.as_ptr() as *const c_char
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::ffi::CString;
+    use std::ptr;
+
+    // Test valid IBANs from different countries
+    #[test]
+    fn test_valid_ibans() {
+        let valid_ibans = [
+            "DE89370400440532013000",      // Germany
+            "GB29NWBK60161331926819",      // UK
+            "FR1420041010050500013M02606", // France
+            "CH9300762011623852957",       // Switzerland
+            "NL91ABNA0417164300",          // Netherlands
+        ];
+
+        for iban in valid_ibans.iter() {
+            let c_iban = CString::new(*iban).unwrap();
+            let result = unsafe { iban_validate(c_iban.as_ptr()) };
+            assert_eq!(
+                result,
+                IbanErrorCode::Valid as i32,
+                "IBAN {} should be valid",
+                iban
+            );
+        }
+    }
+
+    // Test invalid IBANs with different error cases
+    #[test]
+    fn test_invalid_ibans() {
+        let test_cases = [
+            ("DE8937040044053201300", IbanErrorCode::InvalidSize), // Too short for Germany
+            ("XX89370400440532013000", IbanErrorCode::InvalidCountry), // Invalid country code
+            ("DE00370400440532013000", IbanErrorCode::ModuloFailed), // Invalid checksum
+            ("D", IbanErrorCode::MissingCountry),                  // Too short overall
+            ("", IbanErrorCode::MissingCountry),                   // Empty string
+            ("DE893704004405320130001234", IbanErrorCode::InvalidSize), // Too long for Germany
+        ];
+
+        for (iban, expected_error) in test_cases.iter() {
+            let c_iban = CString::new(*iban).unwrap();
+            let result = unsafe { iban_validate(c_iban.as_ptr()) };
+            assert_eq!(
+                result, *expected_error as i32,
+                "IBAN {} should return error {:?}",
+                iban, expected_error
+            );
+        }
+    }
+
+    // Test null pointer handling
+    #[test]
+    fn test_null_pointer() {
+        let result = unsafe { iban_validate(ptr::null()) };
+        assert_eq!(
+            result,
+            IbanErrorCode::MissingCountry as i32,
+            "Null pointer should return MissingCountry error"
+        );
+    }
+
+    // Test iban_new functionality
+    #[test]
+    fn test_iban_new() {
+        // Test with a valid IBAN
+        let valid_iban = "DE89370400440532013000"; // German IBAN with bank code 37040044
+        let c_iban = CString::new(valid_iban).unwrap();
+
+        let iban_data_ptr = unsafe { iban_new(c_iban.as_ptr()) };
+        assert!(
+            !iban_data_ptr.is_null(),
+            "iban_new should return a valid pointer for a valid IBAN"
+        );
+
+        // Check the data fields
+        unsafe {
+            let iban_data = &*iban_data_ptr;
+
+            // Check the IBAN string
+            let iban_str = CStr::from_ptr(iban_data.iban).to_str().unwrap();
+            assert_eq!(iban_str, valid_iban);
+
+            // Check the bank ID (for German IBANs it should be positions 4-11)
+            if !iban_data.bank_id.is_null() {
+                let bank_id = CStr::from_ptr(iban_data.bank_id).to_str().unwrap();
+                assert_eq!(
+                    bank_id, "37040044",
+                    "Bank ID should match the expected value"
+                );
+            } else {
+                panic!("Bank ID should not be null for a German IBAN");
+            }
+
+            // Clean up
+            iban_free(iban_data_ptr);
+        }
+    }
+
+    // Test iban_new with invalid IBAN
+    #[test]
+    fn test_iban_new_invalid() {
+        let invalid_iban = "INVALID";
+        let c_iban = CString::new(invalid_iban).unwrap();
+
+        let iban_data_ptr = unsafe { iban_new(c_iban.as_ptr()) };
+        assert!(
+            iban_data_ptr.is_null(),
+            "iban_new should return null for an invalid IBAN"
+        );
+    }
+
+    // Test iban_new with null pointer
+    #[test]
+    fn test_iban_new_null() {
+        let iban_data_ptr = unsafe { iban_new(ptr::null()) };
+        assert!(
+            iban_data_ptr.is_null(),
+            "iban_new should return null for a null pointer"
+        );
+    }
+
+    // Test iban_free with null pointer (should not crash)
+    #[test]
+    fn test_iban_free_null() {
+        unsafe {
+            iban_free(ptr::null_mut());
+        }
+        // If we get here without crashing, the test passes
+    }
+
+    // Test error messages
+    #[test]
+    fn test_error_messages() {
+        let error_codes = [
+            (IbanErrorCode::Valid as i32, "Valid IBAN"),
+            (IbanErrorCode::Invalid as i32, "Invalid IBAN"),
+            (IbanErrorCode::TooShort as i32, "IBAN is too short"),
+            (
+                IbanErrorCode::MissingCountry as i32,
+                "IBAN is missing country code",
+            ),
+            (
+                IbanErrorCode::InvalidCountry as i32,
+                "IBAN has invalid country code",
+            ),
+            (
+                IbanErrorCode::StructureIncorrect as i32,
+                "IBAN structure is incorrect for the country",
+            ),
+            (
+                IbanErrorCode::InvalidSize as i32,
+                "IBAN length is invalid for the country",
+            ),
+            (
+                IbanErrorCode::ModuloFailed as i32,
+                "IBAN checksum (mod-97) is incorrect",
+            ),
+            (99, "Unknown error code"), // Unknown error code
+        ];
+
+        for (code, expected_message) in error_codes.iter() {
+            let message_ptr = iban_error_message(*code);
+            let message = unsafe { CStr::from_ptr(message_ptr).to_str().unwrap() };
+            assert_eq!(
+                message, *expected_message,
+                "Error message for code {} should match",
+                code
+            );
+        }
+    }
+
+    // Integration test - validate and then parse IBAN
+    #[test]
+    fn test_validate_and_parse() {
+        let valid_ibans = [
+            "DE89370400440532013000", // Germany
+            "GB29NWBK60161331926819", // UK
+        ];
+
+        for iban in valid_ibans.iter() {
+            let c_iban = CString::new(*iban).unwrap();
+
+            // First validate
+            let result = unsafe { iban_validate(c_iban.as_ptr()) };
+            assert_eq!(result, IbanErrorCode::Valid as i32);
+
+            // Then parse if valid
+            if result == IbanErrorCode::Valid as i32 {
+                let iban_data_ptr = unsafe { iban_new(c_iban.as_ptr()) };
+                assert!(!iban_data_ptr.is_null());
+
+                // Clean up
+                unsafe { iban_free(iban_data_ptr) };
+            }
+        }
+    }
+
+    // Memory leak test - create and free multiple IBAN objects
+    #[test]
+    fn test_memory_management() {
+        let valid_iban = "DE89370400440532013000";
+        let c_iban = CString::new(valid_iban).unwrap();
+
+        // Create and free multiple IBAN objects in a loop
+        for _ in 0..100 {
+            let iban_data_ptr = unsafe { iban_new(c_iban.as_ptr()) };
+            assert!(!iban_data_ptr.is_null());
+            unsafe { iban_free(iban_data_ptr) };
+        }
+        // If no memory leaks, this test should complete without issues
+    }
 }

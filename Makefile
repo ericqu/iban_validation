@@ -183,6 +183,7 @@ publish_iban_validation_rs:
 .PHONY: test
 test:	clippy
 	cargo test
+	cargo test -p iban_validation_c
 	$(call create_venv)
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
@@ -196,10 +197,12 @@ coverage:
 clippy:
 	cargo update
 	cargo fmt -p iban_validation_rs
+	cargo fmt -p iban_validation_c
 	cargo fmt -p iban_validation_py
 	cargo fmt -p iban_validation_polars
 	cargo fmt -p iban_validation_bench_rs
 	cargo clippy -p iban_validation_rs
+	cargo clippy -p iban_validation_c
 	cargo clippy -p iban_validation_py
 	cargo clippy -p iban_validation_polars
 	cargo clippy -p iban_validation_bench_rs
