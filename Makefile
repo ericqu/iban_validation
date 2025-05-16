@@ -72,7 +72,7 @@ endif
 
 .PHONY: iban_validation_c
 iban_validation_c:
-	cargo build -p iban_validation_c --release
+	cargo build -p $(C_WRAPPER_DIR) --release
 
 .PHONY: iban_validation_c_release
 iban_validation_c_release: 
