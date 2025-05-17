@@ -37,6 +37,7 @@ int main() {
     } else {
         printf("Failed to create IBAN structure\n");
     }
-    
+    printf("Version %s\n", iban_version());
+
     return 0;
 }

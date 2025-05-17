@@ -211,6 +211,18 @@ pub extern "C" fn iban_error_message(error_code: c_int) -> *const c_char {
     bytes.as_ptr() as *const c_char
 }
 
+/// Returns the library version as a C string
+///
+/// @return A null-terminated string with the version (do not free this string)
+#[unsafe(no_mangle)]
+pub extern "C" fn iban_version() -> *const c_char {
+    // Define a static version string that persists for the program's lifetime
+    // This uses the version from Cargo.toml during compile time
+    static VERSION: &[u8] = concat!(env!("CARGO_PKG_VERSION"), "\0").as_bytes();
+
+    VERSION.as_ptr() as *const c_char
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -418,5 +430,18 @@ mod tests {
             }
         }
         // If no memory leaks, this test should complete without issues
+    }
+
+    #[test]
+    fn test_version() {
+        let version_ptr = iban_version();
+        let version = unsafe { CStr::from_ptr(version_ptr).to_str().unwrap() };
+
+        // This test verifies that we can retrieve the version without crashing
+        // The actual version value will depend on what's in Cargo.toml
+        assert!(!version.is_empty(), "Version string should not be empty");
+
+        // Optional: You can assert the specific version if you want to ensure it matches
+        // assert_eq!(version, "0.1.0");  // Replace with your actual version
     }
 }

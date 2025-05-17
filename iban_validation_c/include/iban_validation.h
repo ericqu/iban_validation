@@ -68,6 +68,13 @@
   */
  const char* iban_error_message(int error_code);
  
+ /**
+  * Gets library version
+  * 
+  * @return A null-terminated string with the version number of the library (do not free this string)
+  */
+ const char* iban_version();
+
  #ifdef __cplusplus
  }
  #endif

@@ -39,5 +39,7 @@ int main() {
         std::cout << "Failed to create IBAN structure" << std::endl;
     }
     
+    std::cout << "Version " << iban_version() << std::endl;
+
     return 0;
 }
