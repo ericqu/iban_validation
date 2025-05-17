@@ -28,7 +28,6 @@ define create_venv
 	uv venv $(VENV_DIR)
 	uv pip install --upgrade --compile-bytecode --no-build -r requirements-python.txt
 endef
-# $(VENV_BIN)/uv python install $(PYTHON_VERSIONS)
 
 # Create a virtual environment for a specific platform
 define create_venv_py
@@ -41,10 +40,6 @@ endef
 iban_validation_preprocess:
 	$(call create_venv)
 	$(VENV_BIN)/python iban_validation_preprocess/pre_process_registry.py
-
-.PHONY: iban_validation_rs
-iban_validation_rs:
-	cargo build -p iban_validation_rs
 
 .PHONY: iban_validation_rs_release
 iban_validation_rs_release:	clippy
@@ -75,7 +70,7 @@ iban_validation_c:
 	cargo build -p $(C_WRAPPER_DIR) --release
 
 .PHONY: iban_validation_c_release
-iban_validation_c_release: 
+iban_validation_c_release: iban_validation_rs_release
 	$(call create_venv)
 	mkdir -p $(DIST_C_DIR)
 # current machine
