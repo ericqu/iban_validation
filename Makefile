@@ -42,13 +42,9 @@ iban_validation_preprocess:
 	$(call create_venv)
 	$(VENV_BIN)/python iban_validation_preprocess/pre_process_registry.py
 
-.PHONY: iban_validation_rs
-iban_validation_rs:
-	cargo build -p iban_validation_rs
-
 .PHONY: iban_validation_rs_release
 iban_validation_rs_release:	clippy
-	cargo build -p iban_validation_rs -r
+	cargo build -p iban_validation_rs -r --no-default-features
 
 .PHONY: clean
 clean:
@@ -71,36 +67,36 @@ else
 endif
 
 .PHONY: iban_validation_c
-iban_validation_c:
-	cargo build -p $(C_WRAPPER_DIR) --release
+iban_validation_c: iban_validation_rs_release
+	cargo build -p $(C_WRAPPER_DIR) --release --no-default-features
 
 .PHONY: iban_validation_c_release
-iban_validation_c_release: 
+iban_validation_c_release: iban_validation_rs_release
 	$(call create_venv)
 	mkdir -p $(DIST_C_DIR)
 # current machine
-	cargo build -p $(C_WRAPPER_DIR) --release ;\
+	cargo build -p $(C_WRAPPER_DIR) --release --no-default-features;\
 	mkdir -p $(DIST_C_DIR) ;\
 	cp target/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR) ;\
 	cp target/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR) ;\
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/ ;
 # macos gnu
 	rustup target add aarch64-apple-darwin
-	cargo build -p $(C_WRAPPER_DIR) --release --target aarch64-apple-darwin
+	cargo build -p $(C_WRAPPER_DIR) --release --no-default-features --target aarch64-apple-darwin
 	mkdir -p $(DIST_C_DIR)/aarch64-apple-darwin
 	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/aarch64-apple-darwin/
 	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/aarch64-apple-darwin/ || true
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/aarch64-apple-darwin/
 # linux gnu
 	rustup target add x86_64-unknown-linux-gnu
-	cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-unknown-linux-gnu
+	cargo build -p $(C_WRAPPER_DIR) --release --no-default-features --target x86_64-unknown-linux-gnu
 	mkdir -p $(DIST_C_DIR)/x86_64-unknown-linux-gnu
 	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
 	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/x86_64-unknown-linux-gnu/ || true
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
 # build-windows:
 	rustup target add x86_64-pc-windows-gnu
-	cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-pc-windows-gnu
+	cargo build -p $(C_WRAPPER_DIR) --release --no-default-features --target x86_64-pc-windows-gnu
 	mkdir -p $(DIST_C_DIR)/x86_64-pc-windows-gnu
 	cp target/x86_64-pc-windows-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-pc-windows-gnu/
 	cp target/x86_64-pc-windows-gnu/release/$(C_WRAPPER_DIR).dll $(DIST_C_DIR)/x86_64-pc-windows-gnu/ || true
@@ -178,7 +174,7 @@ endif
 .PHONY: publish_iban_validation_rs
 publish_iban_validation_rs:
 	cargo doc
-	cargo publish -p iban_validation_rs 
+	cargo publish -p iban_validation_rs --no-default-features
 
 .PHONY: test
 test:	clippy

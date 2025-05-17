@@ -9,9 +9,14 @@ authors = [
 ]
 license = "MIT" 
 
+[features]
+default = ["std"]
+std = []
+
 [lib]
 name = "iban_validation_c"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 iban_validation_rs = {path = "../iban_validation_rs" }
+mimalloc = "0.1.46"

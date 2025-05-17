@@ -1,8 +1,10 @@
-use std::ffi::{CStr, CString};
-use std::os::raw::{c_char, c_int};
-use std::ptr;
+use alloc::boxed::Box;
+use alloc::ffi::CString;
+use core::ffi::CStr;
+use core::ffi::{c_char, c_int};
+use core::ptr;
 
-use iban_validation_rs::{Iban, ValidationError, validate_iban_str};
+use iban_validation_rs::{validate_iban_str, Iban, ValidationError};
 
 /// Error codes for IBAN validation
 #[repr(C)]

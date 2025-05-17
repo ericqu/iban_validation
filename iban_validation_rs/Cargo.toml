@@ -10,8 +10,12 @@ repository = "https://github.com/ericqu/iban_validation"
 description = "Facilitate validation of ibans and selecting Bank identifier and Branch identifier in Rust."
 exclude = ["benches/", "data/IBAN Examples.txt", "examples/"]
 
-[dependencies]
+[features]
+default = ["std"]
+std = []
 
+[dependencies]
+mimalloc = { version = "*", features = ["secure"] }
 
 [dev-dependencies]
 criterion = "0.5"

@@ -29,9 +29,11 @@
 //! }
 //! ```
 
+#![cfg_attr(all(not(test), not(feature = "std")), no_std)]
+
+use core::error::Error;
+use core::fmt;
 use iban_definition::get_iban_fields;
-use std::error::Error;
-use std::fmt;
 
 mod iban_definition;
 
