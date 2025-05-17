@@ -5,7 +5,6 @@ use std::ptr;
 use iban_validation_rs::{Iban, ValidationError, validate_iban_str};
 
 /// Error codes for IBAN validation
-#[derive(Copy, Clone, Debug)]
 #[repr(C)]
 pub enum IbanErrorCode {
     /// IBAN is valid
@@ -245,20 +244,26 @@ mod tests {
     #[test]
     fn test_invalid_ibans() {
         let test_cases = [
-            ("DE8937040044053201300", IbanErrorCode::InvalidSize), // Too short for Germany
-            ("XX89370400440532013000", IbanErrorCode::InvalidCountry), // Invalid country code
-            ("DE00370400440532013000", IbanErrorCode::ModuloFailed), // Invalid checksum
-            ("D", IbanErrorCode::MissingCountry),                  // Too short overall
-            ("", IbanErrorCode::MissingCountry),                   // Empty string
-            ("DE893704004405320130001234", IbanErrorCode::InvalidSize), // Too long for Germany
+            ("DE8937040044053201300", IbanErrorCode::InvalidSize as i32), // Too short for Germany
+            (
+                "XX89370400440532013000",
+                IbanErrorCode::InvalidCountry as i32,
+            ), // Invalid country code
+            ("DE00370400440532013000", IbanErrorCode::ModuloFailed as i32), // Invalid checksum
+            ("D", IbanErrorCode::MissingCountry as i32),                  // Too short overall
+            ("", IbanErrorCode::MissingCountry as i32),                   // Empty string
+            (
+                "DE893704004405320130001234",
+                IbanErrorCode::InvalidSize as i32,
+            ), // Too long for Germany
         ];
 
         for (iban, expected_error) in test_cases.iter() {
             let c_iban = CString::new(*iban).unwrap();
             let result = unsafe { iban_validate(c_iban.as_ptr()) };
             assert_eq!(
-                result, *expected_error as i32,
-                "IBAN {} should return error {:?}",
+                result, *expected_error,
+                "IBAN {} should return error code {}",
                 iban, expected_error
             );
         }
@@ -340,38 +345,23 @@ mod tests {
     fn test_iban_free_null() {
         unsafe {
             iban_free(ptr::null_mut());
+            // If we get here without crashing, the test passes
         }
-        // If we get here without crashing, the test passes
     }
 
     // Test error messages
     #[test]
     fn test_error_messages() {
         let error_codes = [
-            (IbanErrorCode::Valid as i32, "Valid IBAN"),
-            (IbanErrorCode::Invalid as i32, "Invalid IBAN"),
-            (IbanErrorCode::TooShort as i32, "IBAN is too short"),
-            (
-                IbanErrorCode::MissingCountry as i32,
-                "IBAN is missing country code",
-            ),
-            (
-                IbanErrorCode::InvalidCountry as i32,
-                "IBAN has invalid country code",
-            ),
-            (
-                IbanErrorCode::StructureIncorrect as i32,
-                "IBAN structure is incorrect for the country",
-            ),
-            (
-                IbanErrorCode::InvalidSize as i32,
-                "IBAN length is invalid for the country",
-            ),
-            (
-                IbanErrorCode::ModuloFailed as i32,
-                "IBAN checksum (mod-97) is incorrect",
-            ),
-            (99, "Unknown error code"), // Unknown error code
+            (1, "Valid IBAN"),                                   // IbanErrorCode::Valid
+            (0, "Invalid IBAN"),                                 // IbanErrorCode::Invalid
+            (-1, "IBAN is too short"),                           // IbanErrorCode::TooShort
+            (-2, "IBAN is missing country code"),                // IbanErrorCode::MissingCountry
+            (-3, "IBAN has invalid country code"),               // IbanErrorCode::InvalidCountry
+            (-4, "IBAN structure is incorrect for the country"), // IbanErrorCode::StructureIncorrect
+            (-5, "IBAN length is invalid for the country"),      // IbanErrorCode::InvalidSize
+            (-6, "IBAN checksum (mod-97) is incorrect"),         // IbanErrorCode::ModuloFailed
+            (99, "Unknown error code"),                          // Unknown error code
         ];
 
         for (code, expected_message) in error_codes.iter() {
@@ -406,7 +396,9 @@ mod tests {
                 assert!(!iban_data_ptr.is_null());
 
                 // Clean up
-                unsafe { iban_free(iban_data_ptr) };
+                unsafe {
+                    iban_free(iban_data_ptr);
+                }
             }
         }
     }
@@ -421,7 +413,9 @@ mod tests {
         for _ in 0..100 {
             let iban_data_ptr = unsafe { iban_new(c_iban.as_ptr()) };
             assert!(!iban_data_ptr.is_null());
-            unsafe { iban_free(iban_data_ptr) };
+            unsafe {
+                iban_free(iban_data_ptr);
+            }
         }
         // If no memory leaks, this test should complete without issues
     }
