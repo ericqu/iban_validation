@@ -31,7 +31,7 @@ pub enum IbanErrorCode {
 /// @return Status code (see IbanErrorCode enum values)
 ///
 /// # Safety
-/// This call unsafe code, when convertingthe C String
+/// This calls unsafe code, when converting the C String. The input must be a valid null-terminated C string.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn iban_validate(iban_str: *const c_char) -> c_int {
     // Safety check for null pointer
@@ -79,7 +79,7 @@ pub struct IbanData {
 /// Note: The caller is responsible for freeing the memory by calling iban_free
 ///
 /// # Safety
-/// This call unsafe code, when convertingthe C String
+/// This calls unsafe code, when converting the C String. The input must be a valid null-terminated C string.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn iban_new(iban_str: *const c_char) -> *mut IbanData {
     // Safety check for null pointer
@@ -152,7 +152,7 @@ pub unsafe extern "C" fn iban_new(iban_str: *const c_char) -> *mut IbanData {
 /// @param iban_data Pointer to the IbanData structure to free
 ///
 /// # Safety
-/// This call unsafe code, when convertingthe C String
+/// This calls unsafe code, when converting the C String. The input must be a valid null-terminated C string.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn iban_free(iban_data: *mut IbanData) {
     if iban_data.is_null() {
