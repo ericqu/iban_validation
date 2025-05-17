@@ -84,7 +84,7 @@ iban_validation_c_release: iban_validation_rs_release
 	cargo build -p $(C_WRAPPER_DIR) --release --target aarch64-apple-darwin
 	mkdir -p $(DIST_C_DIR)/aarch64-apple-darwin
 	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/aarch64-apple-darwin/
-	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/aarch64-apple-darwin/ || true
+	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR)/aarch64-apple-darwin/ || true
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/aarch64-apple-darwin/
 # linux gnu
 	rustup target add x86_64-unknown-linux-gnu
