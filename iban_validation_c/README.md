@@ -1,12 +1,12 @@
 # iban_validation_c
 A package to facilitate validation of IBANs and getting the bank identifier and branch identifier in C/C++ as a wrapper from Rust.
-Only build for the current machine, not cross compilation.
+This is experiemental changes to the API are likely to be without further notice.
 
 ## Short example
 There are two ways to interact with the API:
  - Validate the iban with `iban_validate` which validates an IBAN string and returns a status code.
  - Use `iban_new` to creates a new IBAN structure from a string.
-
+ 
  See below code for illustration:
 
 ```c
@@ -53,7 +53,8 @@ int main() {
     return 0;
 }
 ```
-See Makefile for compilation of the c/c++ examples
+See Makefile for compilation of the c/c++ examples, and the examples directory for more examples
 
 ## Changes
+ - 0.1.13: update to the wrapper for a version with less allocation (view-based)
  - 0.1.12: Initial release of the c wrapper

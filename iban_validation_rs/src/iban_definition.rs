@@ -1,4 +1,4 @@
-// Auto-generated from Polars DataFrame, do not edit manually
+// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::IbanFields;
 
 pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
@@ -805,7 +805,6 @@ pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
     },
 ];
 
-#[inline]
 pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
         [65, 68] => Some(&IBAN_DEFINITIONS[0]),  // AD

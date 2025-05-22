@@ -3,7 +3,6 @@ import polars as pl
 pl.Config.set_tbl_cols(15)
 pl.Config.set_tbl_rows(45)
 inputfile = "iban_validation_preprocess/iban_registry_v99.txt"
-output_iban_file = "iban_validation_rs/data/iban_definitions.json"
 output_source_file = "iban_validation_rs/data/iban_sourcefile.txt"
 output_rust_codegen = "iban_validation_rs/src/iban_definition.rs"
 
@@ -101,17 +100,12 @@ def get_df_from_input(inputfile):
     )
     return pre_df
 
-
-def pre_process_to_json(inputfile, output_iban_file):
-    pre_df = get_df_from_input(inputfile)
-    pre_df.write_json(output_iban_file)
-    print(
-        f"preprocessing: {inputfile} -> completed",
-    )
-    return pre_df # for test
-
 def pre_process_to_rust(inputfile, output_rust_codegen):
     pre_df = get_df_from_input(inputfile)
+
+    # TODO to include in the rust code in particular the FFI C
+    # print('iban len: min:', pre_df.select(pl.min('iban_len')), 
+    #         ' max: ', pre_df.select(pl.max('iban_len')))
 
     rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::IbanFields;
@@ -208,5 +202,4 @@ pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
 
 if __name__ == "__main__":
     pre_process_to_rust(inputfile, output_rust_codegen)
-    # pre_process_to_json(inputfile, output_iban_file)
-    # pre_process_filename(inputfile, output_source_file)
+    pre_process_filename(inputfile, output_source_file)

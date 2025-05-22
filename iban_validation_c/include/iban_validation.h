@@ -11,6 +11,7 @@
  
  #include <stdint.h>
  #include <stddef.h>
+ #include <stdbool.h>
  
  /**
   * Error codes for IBAN validation
@@ -25,9 +26,26 @@
      InvalidSize = -5,      /* IBAN length is invalid for the country */
      ModuloFailed = -6,     /* IBAN checksum (mod-97) is incorrect */
  };
+
+ /**
+  * Zero-copy string view structure
+  */
+ typedef struct {
+     const char* ptr;       /* Pointer to string data */
+     size_t len;            /* Length of string (excluding null terminator) */
+ } StringView;
  
  /**
-  * Structure to hold IBAN data
+  * Zero-copy IBAN data view structure
+  */
+ typedef struct {
+     StringView iban;       /* The full IBAN string view */
+     StringView bank_id;    /* Bank identifier view */
+     StringView branch_id;  /* Branch identifier view */
+ } IbanDataView;
+ 
+ /**
+  * Structure to hold IBAN data (with allocations)
   */
  typedef struct {
      char* iban;       /* The full IBAN string */
@@ -42,6 +60,25 @@
   * @return Status code (see IbanErrorCode enum values)
   */
  int iban_validate(const char* iban_str);
+
+ /**
+  * Optimized IBAN validation using zero-copy approach
+  * 
+  * @param iban_str A null-terminated string containing the IBAN to validate
+  * @param len Length of the string (if known), pass 0 to auto-detect length
+  * @return Status code (see IbanErrorCode enum values)
+  */
+ int iban_validate_optimized(const char* iban_str, size_t len);
+ 
+ /**
+  * Gets IBAN information without copying strings
+  * Note: The returned data is only valid while iban_str is valid
+  * 
+  * @param iban_str A null-terminated string containing the IBAN
+  * @param out_data Pointer to an IbanDataView structure to fill
+  * @return 1 if valid, 0 or negative error code otherwise
+  */
+ int iban_get_view(const char* iban_str, IbanDataView* out_data);
  
  /**
   * Creates a new IBAN structure from a string

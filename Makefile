@@ -42,7 +42,7 @@ iban_validation_preprocess:
 	$(VENV_BIN)/python iban_validation_preprocess/pre_process_registry.py
 
 .PHONY: iban_validation_rs_release
-iban_validation_rs_release:	clippy
+iban_validation_rs_release:	iban_validation_preprocess clippy
 	cargo build -p iban_validation_rs -r
 
 .PHONY: clean
@@ -104,6 +104,7 @@ iban_validation_c_release: iban_validation_rs_release
 .PHONY: iban_validation_c_examples
 iban_validation_c_examples: iban_validation_c_release
 	cc iban_validation_c/examples/example.c -o iban_validation_c/examples/example_c -liban_validation_c -L./$(DIST_C_DIR)
+	cc iban_validation_c/examples/bench.c -o iban_validation_c/examples/bench_c -liban_validation_c -L./$(DIST_C_DIR)
 	g++ iban_validation_c/examples/example.cpp -o iban_validation_c/examples/example_cpp -liban_validation_c -L./$(DIST_C_DIR)
 
 .PHONY: iban_validation_py
@@ -171,12 +172,12 @@ endif
 	)
 
 .PHONY: publish_iban_validation_rs
-publish_iban_validation_rs:
+publish_iban_validation_rs: test
 	cargo doc
 	cargo publish -p iban_validation_rs 
 
 .PHONY: test
-test:	clippy
+test:	clippy iban_validation_preprocess
 	cargo test
 	cargo test -p iban_validation_c
 	$(call create_venv)
