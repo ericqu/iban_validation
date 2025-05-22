@@ -16,6 +16,7 @@ Some of the Makefile were inspired by the makefiles on the [Polars project](http
 In the iban_validation_bench_rs, benchmark of similar crates published on crates.io is presented. While this library is the fastest other libraries can provide additional features that are more relevant to your use-cases. See [details](iban_validation_bench_rs/README.md). Similar benchmarking was done on Python libraries see [details](iban_validation_bench_py/README.md).
 
 ## Changes
+ - 0.1.13: technical update to polars 0.48.1 and pyo3 0.24
  - 0.1.12: added the c/c++ wrapper
  - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde)
  - 0.1.9: improve mod97 perf (reduce memory needed)
