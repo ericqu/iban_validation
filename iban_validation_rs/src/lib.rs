@@ -88,7 +88,7 @@ impl fmt::Display for ValidationError {
             ),
             ValidationError::StructureIncorrectForCountry => write!(
                 f,
-                "The characters founds in teh input Iban do not follow the country's Iban structure"
+                "The characters founds in the input Iban do not follow the country's Iban structure"
             ),
             ValidationError::InvalidSizeForCountry => write!(
                 f,
@@ -171,9 +171,14 @@ fn div_arr_mod97(x: u32) -> u32 {
     M97_ARRAY[index] as u32
 }
 
-/// indicate which file was used a source
+/// Indicates which file was used a source
 pub const fn get_source_file() -> &'static str {
     include_str!("../data/iban_sourcefile.txt")
+}
+
+/// Indicates the version used. to be used in other modules like the c wrapper where this infomration is not available.
+pub const fn get_version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
 }
 
 /// Validate than an Iban is valid according to the registry information
@@ -250,7 +255,34 @@ pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
     validate_iban_with_data(input_iban).map(|(_, is_valid)| is_valid)
 }
 
-/// indicate how a valid Iban is stored.
+/// Validate than an Iban is valid according to the registry information
+/// Give the results by numerical values (0,0 when the optional part is missing).
+/// This is meant to be used in c wrapper when copying value is expensive.
+pub fn validate_iban_get_numeric(
+    input_iban: &str,
+) -> Result<(bool, u8, u8, u8, u8), ValidationError> {
+    let (iban_data, result) = validate_iban_with_data(input_iban)?;
+
+    let (bank_s, bank_e) = match (iban_data.bank_id_pos_s, iban_data.bank_id_pos_e) {
+        (Some(start), Some(end)) => (start + 3, end + 4),
+        _ => (0, 0),
+    };
+
+    let (branch_s, branch_e) = match (iban_data.branch_id_pos_s, iban_data.branch_id_pos_e) {
+        (Some(start), Some(end)) => (start + 3, end + 4),
+        _ => (0, 0),
+    };
+
+    Ok((
+        result,
+        bank_s as u8,
+        bank_e as u8,
+        branch_s as u8,
+        branch_e as u8,
+    ))
+}
+
+/// Indicate how a valid Iban is stored.
 /// A owned String for the iban, so that if the String we tested is out of scope we have our own copy. TODO is it an issue?
 /// If valid for the country the slice of the Iban representing the bank_id bank identifier.
 /// If valid for the country the slice of the Iban representing the branch_id Branch identifier.
@@ -535,12 +567,97 @@ mod tests {
         assert_eq!(the_test.get_iban(), "GE29NB0000000101904917");
         assert_eq!(the_test.iban_bank_id.unwrap(), "NB");
         assert_eq!(the_test.iban_branch_id, None);
+        let the_test = Iban::new("IQ98NBIQ850123456789012").unwrap();
+        assert_eq!(the_test.get_iban(), "IQ98NBIQ850123456789012");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "NBIQ");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "850");
         let the_test = Iban::new("DEFR").unwrap_err();
         assert_eq!(the_test, ValidationError::InvalidSizeForCountry);
         let the_test = Iban::new("D").unwrap_err();
         assert_eq!(the_test, ValidationError::MissingCountry);
         let the_test = Iban::new("").unwrap_err();
         assert_eq!(the_test, ValidationError::MissingCountry);
+    }
+
+    #[test]
+    fn validate_iban_to_nums() {
+        let s = "AT483200000012345864";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 9);
+        assert_eq!(branch_s, 0);
+        assert_eq!(branch_e, 0); // not available
+        assert_eq!("32000", &s[bank_s as usize..bank_e as usize]);
+
+        let s = "AT611904300234573201";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 9);
+        assert_eq!(branch_s, 0);
+        assert_eq!(branch_e, 0); // not available
+        assert_eq!("19043", &s[bank_s as usize..bank_e as usize]);
+
+        let s = "CY17002001280000001200527600";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 7);
+        assert_eq!(branch_s, 7);
+        assert_eq!(branch_e, 12);
+        assert_eq!("002", &s[bank_s as usize..bank_e as usize]);
+        assert_eq!("00128", &s[branch_s as usize..branch_e as usize]);
+
+        let s = "DE89370400440532013000";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 12);
+        assert_eq!(branch_s, 0);
+        assert_eq!(branch_e, 0); // not available
+        assert_eq!("37040044", &s[bank_s as usize..bank_e as usize]);
+
+        let s = "FR1420041010050500013M02606";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 9);
+        assert_eq!(branch_s, 0);
+        assert_eq!(branch_e, 0); // not available
+        assert_eq!("20041", &s[bank_s as usize..bank_e as usize]);
+
+        let s = "GB29NWBK60161331926819";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 8);
+        assert_eq!(branch_s, 8);
+        assert_eq!(branch_e, 14); // not available
+        assert_eq!("NWBK", &s[bank_s as usize..bank_e as usize]);
+        assert_eq!("601613", &s[branch_s as usize..branch_e as usize]);
+
+        let s = "IQ98NBIQ850123456789012";
+        let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
+        assert_eq!(true, res);
+        assert_eq!(bank_s, 4);
+        assert_eq!(bank_e, 8);
+        assert_eq!(branch_s, 8);
+        assert_eq!(branch_e, 11); // not available
+        assert_eq!("NBIQ", &s[bank_s as usize..bank_e as usize]);
+        assert_eq!("850", &s[branch_s as usize..branch_e as usize]);
+
+        let s = "DEFR";
+        let the_error = validate_iban_get_numeric(s).unwrap_err();
+        assert_eq!(the_error, ValidationError::InvalidSizeForCountry);
+
+        let s = "D";
+        let the_error = validate_iban_get_numeric(s).unwrap_err();
+        assert_eq!(the_error, ValidationError::MissingCountry);
+
+        let s = "";
+        let the_error = validate_iban_get_numeric(s).unwrap_err();
+        assert_eq!(the_error, ValidationError::MissingCountry);
     }
 
     #[test]
@@ -564,6 +681,11 @@ mod tests {
     }
 
     #[test]
+    fn test_version() {
+        assert_eq!(get_version(), env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
     fn test_fmt_display() {
         let error = ValidationError::TooShort(3);
         assert_eq!(
@@ -583,7 +705,7 @@ mod tests {
         let error = ValidationError::StructureIncorrectForCountry;
         assert_eq!(
             format!("{}", error),
-            "The characters founds in teh input Iban do not follow the country's Iban structure"
+            "The characters founds in the input Iban do not follow the country's Iban structure"
         );
         let error = ValidationError::InvalidSizeForCountry;
         assert_eq!(

@@ -37,10 +37,18 @@ def get_df_from_input(inputfile):
 
     pre_df = (
         df.with_columns(
+            pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
+            .then(pl.lit("5-7"))
+            .otherwise(pl.col("Branch identifier position within the BBAN"))
+            .alias("Branch identifier position within the BBAN")
+        )
+        .with_columns(
             pl.col("IBAN structure")
             .map_elements(process_iban_structure, return_dtype=pl.String)
             .alias("iban_struct"),
             pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "JO")
+            .then(pl.lit("1-4"))
+            .when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
             .then(pl.lit("1-4"))
             .otherwise(
                 pl.col("Bank identifier position within the BBAN").str.strip_chars()

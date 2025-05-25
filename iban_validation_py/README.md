@@ -32,6 +32,7 @@ assert('11009' == iban.iban_branch_id)
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.14: fixed error for country code IQ (using pdf instead of technicql input file)
  - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde)
  - 0.1.9: improve mod97 perf (reduce memory needed)
  - 0.1.8: improve mod97 perf (cpu memory tradeoff).

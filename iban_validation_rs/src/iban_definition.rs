@@ -347,10 +347,10 @@ pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
     IbanFields {
         ctry_cd: [73, 81],  // "IQ"
         iban_len: 23,
-        bank_id_pos_s: Some(4),
-        bank_id_pos_e: Some(461),
-        branch_id_pos_s: Some(42556),
-        branch_id_pos_e: None,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(4),
+        branch_id_pos_s: Some(5),
+        branch_id_pos_e: Some(7),
         iban_struct: "IQnnaaaannnnnnnnnnnnnnn",
     },
     IbanFields {

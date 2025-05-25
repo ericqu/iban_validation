@@ -56,5 +56,6 @@ int main() {
 See Makefile for compilation of the c/c++ examples, and the examples directory for more examples
 
 ## Changes
+ - 0.1.14: fixed error for country code IQ (using pdf instead of technicql input file)
  - 0.1.13: update to the wrapper for a version with less allocation (view-based)
  - 0.1.12: Initial release of the c wrapper

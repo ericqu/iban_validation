@@ -1,13 +1,19 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use iban_validation_rs::validate_iban_str;
+use iban_validation_rs::{validate_iban_get_numeric, validate_iban_str};
 
-pub fn valid_001(c: &mut Criterion) {
-    c.bench_function("valid 001", |b| {
+pub fn bench_validate_iban_str(c: &mut Criterion) {
+    c.bench_function("bench_validate_iban_str", |b| {
         b.iter(|| validate_iban_str(black_box("DE44500105175407324931")))
     });
 }
 
-pub fn valid_002(c: &mut Criterion) {
+pub fn bench_validate_iban_num(c: &mut Criterion) {
+    c.bench_function("bench_validate_iban_num", |b| {
+        b.iter(|| validate_iban_get_numeric(black_box("DE44500105175407324931")))
+    });
+}
+
+pub fn bench_validate_iban_str_long(c: &mut Criterion) {
     let tc = vec![
         "AD1200012030200359100100",
         "AE070331234567890123456",
@@ -112,7 +118,7 @@ pub fn valid_002(c: &mut Criterion) {
         "DE89370400440532013000",
     ];
 
-    c.bench_function("valid 002", |b| {
+    c.bench_function("bench_validate_iban_str_long", |b| {
         b.iter(|| {
             for iban in &tc {
                 let _ = validate_iban_str(black_box(iban));
@@ -127,5 +133,11 @@ pub fn iban_validation_new_struct(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, valid_001, valid_002, iban_validation_new_struct);
+criterion_group!(
+    benches,
+    bench_validate_iban_str,
+    bench_validate_iban_num,
+    bench_validate_iban_str_long,
+    iban_validation_new_struct
+);
 criterion_main!(benches);

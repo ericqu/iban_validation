@@ -13,6 +13,13 @@ fn simple_bench(bencher: Bencher) {
 }
 
 #[divan::bench(sample_count = 1000)]
+fn simple_bench_num(bencher: Bencher) {
+    bencher.bench(|| {
+        iban_validation_rs::validate_iban_get_numeric(black_box("DE44500105175407324931"))
+    });
+}
+
+#[divan::bench(sample_count = 1000)]
 fn struct_bench() {
     let _ = iban_validation_rs::Iban::new(black_box("DE44500105175407324931")).unwrap();
 }
