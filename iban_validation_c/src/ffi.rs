@@ -6,7 +6,9 @@ use std::os::raw::{c_char, c_int};
 use std::ptr;
 use std::slice;
 
-use iban_validation_rs::{Iban, ValidationError, validate_iban_str, validate_iban_with_data};
+use iban_validation_rs::{
+    Iban, ValidationError, validate_iban_get_numeric, validate_iban_str, validate_iban_with_data,
+};
 
 /// Error codes for IBAN validation (unchanged)
 #[repr(C)]
@@ -26,6 +28,16 @@ pub enum IbanErrorCode {
 pub struct StringView {
     ptr: *const c_char,
     len: usize,
+}
+
+/// A zero-copy string view for C strings
+#[repr(C)]
+pub struct IbanValidationResult {
+    is_valid: bool, // is it a valid iban
+    bank_s: u8,     // bank id starting point
+    bank_e: u8,     // bank id end point, when zero it is not available
+    branch_s: u8,   // branch id starting point
+    branch_e: u8,   // branch id end point, when zero it is not available
 }
 
 impl StringView {
@@ -58,6 +70,81 @@ impl StringView {
             return None;
         }
         Some(StringView { ptr, len })
+    }
+}
+
+/// Optimized IBAN validation using zero-copy approach
+///
+/// @param iban_str A null-terminated C string containing the IBAN to validate
+/// @param result the results needed to build the branch_id and bank_id (when available)
+/// @param len Length of the string (if known), pass 0 to auto-detect length
+/// @return Status code (see IbanErrorCode enum values)
+///
+/// # Safety
+/// The input must be a valid null-terminated C string.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_validate_short(
+    iban_str: *const c_char,
+    len: usize,
+    result: *mut IbanValidationResult,
+) -> c_int {
+    // Safety check for null pointer
+    if iban_str.is_null() {
+        unsafe {
+            (*result).is_valid = false;
+            (*result).bank_s = 0;
+            (*result).bank_e = 0;
+            (*result).branch_s = 0;
+            (*result).branch_e = 0;
+        };
+        return IbanErrorCode::MissingCountry as c_int;
+    }
+
+    let actual_len = match len {
+        0 => {
+            // Find the null terminator
+            let mut i = 0;
+            while unsafe { *iban_str.add(i) != 0 } {
+                i += 1;
+            }
+            i
+        }
+        15..=33 => len,
+        _ => 15,
+    };
+
+    // Create a byte slice without copying or allocation
+    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
+
+    // Convert to &str without copying - only validates UTF-8
+    let iban_rust_str = match std::str::from_utf8(bytes) {
+        Ok(s) => s,
+        Err(_) => return IbanErrorCode::Invalid as c_int,
+    };
+
+    // Validate the IBAN
+    match validate_iban_get_numeric(iban_rust_str) {
+        Ok((true, bank_s, bank_e, branch_s, branch_e)) => {
+            unsafe {
+                (*result).is_valid = true;
+                (*result).bank_s = bank_s;
+                (*result).bank_e = bank_e;
+                (*result).branch_s = branch_s;
+                (*result).branch_e = branch_e;
+            };
+            IbanErrorCode::Valid as c_int
+        }
+        Ok((false, _, _, _, _)) => IbanErrorCode::Invalid as c_int,
+        Err(err) => match err {
+            ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
+            ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
+            ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
+            ValidationError::StructureIncorrectForCountry => {
+                IbanErrorCode::StructureIncorrectForCountry as c_int
+            }
+            ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
+            ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
+        },
     }
 }
 
@@ -710,5 +797,458 @@ mod tests {
 
         // Optional: You can assert the specific version if you want to ensure it matches
         // assert_eq!(version, "0.1.0");  // Replace with your actual version
+    }
+
+    #[test]
+    fn test_valid_ibans_short() {
+        let test_cases = [
+            ("GB82WEST12345698765432", "UK IBAN"),
+            ("DE89370400440532013000", "German IBAN"),
+            ("FR1420041010050500013M02606", "French IBAN"),
+            ("IT60X0542811101000000123456", "Italian IBAN"),
+            ("ES9121000418450200051332", "Spanish IBAN"),
+            ("NL91ABNA0417164300", "Dutch IBAN"),
+            ("BE68539007547034", "Belgian IBAN"),
+            ("CH9300762011623852957", "Swiss IBAN"),
+            ("AT611904300234573201", "Austrian IBAN"),
+            ("LU280019400644750000", "Luxembourg IBAN"),
+            ("IE29AIBK93115212345678", "Irish IBAN"),
+            ("PT50000201231234567890154", "Portuguese IBAN"),
+            ("SE4550000000058398257466", "Swedish IBAN"),
+            ("DK5000400440116243", "Danish IBAN"),
+            ("NO9386011117947", "Norwegian IBAN"),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!(
+                "{}: {} -> Status: {}, Valid: {}",
+                description, iban, status, result.is_valid
+            );
+
+            assert_eq!(
+                status,
+                IbanErrorCode::Valid as i32,
+                "Expected valid IBAN for {}: {}",
+                description,
+                iban
+            );
+            assert!(
+                result.is_valid,
+                "Result should indicate valid IBAN for {}",
+                description
+            );
+        }
+    }
+
+    #[test]
+    fn test_invalid_ibans_checksum_failures() {
+        let test_cases = [
+            ("GB82WEST12345698765433", "UK IBAN with wrong checksum"),
+            ("DE89370400440532013001", "German IBAN with wrong checksum"),
+            (
+                "FR1420041010050500013M02607",
+                "French IBAN with wrong checksum",
+            ),
+            (
+                "IT60X0542811101000000123457",
+                "Italian IBAN with wrong checksum",
+            ),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: {} -> Status: {}", description, iban, status);
+
+            assert_eq!(
+                status,
+                IbanErrorCode::ModuloFailed as i32,
+                "Expected modulo failure for {}: {}",
+                description,
+                iban
+            );
+            assert!(
+                !result.is_valid,
+                "Result should indicate invalid IBAN for {}",
+                description
+            );
+        }
+    }
+
+    #[test]
+    fn test_invalid_country_codes() {
+        let test_cases = [
+            ("XX82WEST12345698765432", "Invalid country code XX"),
+            ("ZZ12345678901234567890", "Invalid country code ZZ"),
+            ("G182WEST12345698765432", "Malformed country code G1"),
+            ("1B82WEST12345698765432", "Numeric first character"),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: {} -> Status: {}", description, iban, status);
+
+            assert_eq!(
+                status,
+                IbanErrorCode::InvalidCountry as i32,
+                "Expected invalid country for {}: {}",
+                description,
+                iban
+            );
+        }
+    }
+
+    #[test]
+    fn test_structure_incorrect() {
+        let test_cases = [
+            ("GB82WEST123456987654321", "UK IBAN too long"),
+            ("GB82WEST1234569876543", "UK IBAN too short"),
+            ("DE89370400440532013", "German IBAN too short"),
+            ("DE893704004405320130001", "German IBAN too long"),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: {} -> Status: {}", description, iban, status);
+
+            // Could be StructureIncorrectForCountry or InvalidSize
+            assert!(
+                status == IbanErrorCode::StructureIncorrectForCountry as i32
+                    || status == IbanErrorCode::InvalidSize as i32,
+                "Expected structure error for {}: {}",
+                description,
+                iban
+            );
+        }
+    }
+
+    #[test]
+    fn test_too_short() {
+        let test_cases = [
+            ("", "Empty string"),
+            ("G", "Single character"),
+            ("GB", "Two characters"),
+            ("GB8", "Three characters"),
+            ("GB82", "Four characters - minimal but still too short"),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: '{}' -> Status: {}", description, iban, status);
+
+            // Could be or InvalidSize MissingCountry
+            assert!(
+                status == IbanErrorCode::MissingCountry as i32
+                    || status == IbanErrorCode::InvalidSize as i32,
+                "Expected structure error for {}: {}",
+                description,
+                iban
+            );
+        }
+    }
+
+    #[test]
+    fn test_invalid_characters() {
+        let test_cases = [
+            ("GBXXWEST12345698765432", "Non-numeric check digits"),
+            ("GB82WEST12345698765@32", "Special character @ in account"),
+            ("GB82WEST123456987654#2", "Special character # in account"),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: {} -> Status: {}", description, iban, status);
+
+            assert_eq!(
+                status,
+                IbanErrorCode::StructureIncorrectForCountry as i32,
+                "Expected invalid error for {}: {}",
+                description,
+                iban
+            );
+        }
+    }
+
+    #[test]
+    fn test_null_pointer_short() {
+        let mut result = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+
+        let status = unsafe { iban_validate_short(ptr::null(), 0, &mut result) };
+
+        println!("NULL pointer -> Status: {}", status);
+
+        assert_eq!(status, IbanErrorCode::MissingCountry as i32);
+        assert!(!result.is_valid);
+        assert_eq!(result.bank_s, 0);
+        assert_eq!(result.bank_e, 0);
+        assert_eq!(result.branch_s, 0);
+        assert_eq!(result.branch_e, 0);
+    }
+
+    #[test]
+    fn test_explicit_length() {
+        let iban = "GB82WEST12345698765432";
+        let c_string = CString::new(iban).expect("CString::new failed");
+        let mut result = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+
+        // Test with correct explicit length
+        let status = unsafe { iban_validate_short(c_string.as_ptr(), iban.len(), &mut result) };
+        println!("Explicit correct length -> Status: {}", status);
+        assert_eq!(status, IbanErrorCode::Valid as i32);
+        assert!(result.is_valid);
+
+        // Test with wrong explicit length (too short)
+        let mut result2 = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+        let status2 = unsafe { iban_validate_short(c_string.as_ptr(), 10, &mut result2) };
+        println!("Explicit wrong length (10) -> Status: {}", status2);
+        // Should fail due to incorrect length - exact error depends on implementation
+        assert_eq!(status2, IbanErrorCode::InvalidSize as i32);
+    }
+
+    #[test]
+    fn test_bank_branch_extraction() {
+        let test_cases = [
+            ("GB82WEST12345698765432", "GB"),
+            ("DE89370400440532013000", "DE"),
+            ("FR1420041010050500013M02606", "FR"),
+            ("IT60X0542811101000000123456", "IT"),
+        ];
+
+        for (iban, country) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            if status == IbanErrorCode::Valid as i32 {
+                println!("{} {}:", country, iban);
+                println!("  Bank: positions {}-{}", result.bank_s, result.bank_e);
+                println!(
+                    "  Branch: positions {}-{}",
+                    result.branch_s, result.branch_e
+                );
+
+                // Validate that positions are reasonable
+                assert!(
+                    result.bank_s >= 4,
+                    "Bank start should be after country and check digits"
+                );
+                if result.bank_e > 0 {
+                    assert!(
+                        result.bank_e > result.bank_s,
+                        "Bank end should be after bank start"
+                    );
+                    assert!(
+                        result.bank_e <= iban.len() as u8,
+                        "Bank end should be within IBAN length"
+                    );
+
+                    // Extract and display bank code
+                    let bank_code = &iban[result.bank_s as usize..result.bank_e as usize];
+                    println!("  Bank code: {}", bank_code);
+                    assert!(!bank_code.is_empty(), "Bank code should not be empty");
+                }
+
+                if result.branch_e > 0 {
+                    assert!(
+                        result.branch_e > result.branch_s,
+                        "Branch end should be after branch start"
+                    );
+                    assert!(
+                        result.branch_e <= iban.len() as u8,
+                        "Branch end should be within IBAN length"
+                    );
+
+                    // Extract and display branch code
+                    let branch_code = &iban[result.branch_s as usize..result.branch_e as usize];
+                    println!("  Branch code: {}", branch_code);
+                    assert!(!branch_code.is_empty(), "Branch code should not be empty");
+                }
+            } else {
+                panic!(
+                    "Expected valid IBAN for {}: {}, got status: {}",
+                    country, iban, status
+                );
+            }
+        }
+    }
+
+    #[test]
+    /// only upper case accepted. not a user-facing library.
+    fn test_case_sensitivity() {
+        let test_cases = [
+            ("gb82west12345698765432", "Lowercase"),
+            ("Gb82West12345698765432", "Mixed case"),
+            ("GB82west12345698765432", "Mixed case 2"),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: {} -> Status: {}", description, iban, status);
+
+            // Could be or StructureIncorrectForCountry or InvalidCountry
+            assert!(
+                status == IbanErrorCode::InvalidCountry as i32
+                    || status == IbanErrorCode::StructureIncorrectForCountry as i32,
+                "Expected structure error for {}: {}",
+                description,
+                iban
+            );
+        }
+    }
+
+    #[test]
+    fn test_invalid_utf8() {
+        // This test requires creating invalid UTF-8, which is tricky in safe Rust
+        // We'll simulate it by creating a raw byte array and converting to *const c_char
+        let invalid_utf8 = vec![b'G', b'B', b'8', b'2', 0xFF, 0xFE, 0x00];
+        let mut result = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+
+        let status =
+            unsafe { iban_validate_short(invalid_utf8.as_ptr() as *const i8, 0, &mut result) };
+
+        println!("Invalid UTF-8 -> Status: {}", status);
+
+        assert_eq!(status, IbanErrorCode::Invalid as i32);
+        assert!(!result.is_valid);
+    }
+
+    #[test]
+    fn test_boundary_lengths() {
+        // Test minimum and maximum plausible IBAN lengths
+        let test_cases = [
+            (
+                "AD1200012030200359100100",
+                "Andorra - 24 chars (one of shortest)",
+            ),
+            ("SM86U0322509800000000270100", "San Marino - 27 chars"),
+            (
+                "MT84MALT011000012345MTLCAST001S",
+                "Malta - 31 chars (one of longest)",
+            ),
+        ];
+
+        for (iban, description) in test_cases.iter() {
+            let c_string = CString::new(*iban).expect("CString::new failed");
+            let mut result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+
+            let status = unsafe { iban_validate_short(c_string.as_ptr(), 0, &mut result) };
+
+            println!("{}: {} -> Status: {}", description, iban, status);
+
+            // These should be processed (might be valid or invalid based on checksum)
+            assert_ne!(
+                status,
+                IbanErrorCode::TooShort as i32,
+                "Should not be too short for {}",
+                description
+            );
+        }
     }
 }
