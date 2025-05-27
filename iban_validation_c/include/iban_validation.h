@@ -45,6 +45,17 @@
  } IbanDataView;
  
  /**
+  * hold short return value for the iban validation avoiding copy of chars
+  */
+ typedef struct {
+     bool is_valid;       /* is it a valid iban */
+     uint8_t bank_s;      /* bank id starting point */
+     uint8_t bank_e;      /* bank id end point, when zero it is not available */ 
+     uint8_t branch_s;    /* branch id starting point */
+     uint8_t branch_e;    /* branch id end point, when zero is not available */
+ } IbanValidationResult;
+
+ /**
   * Structure to hold IBAN data (with allocations)
   */
  typedef struct {
@@ -60,6 +71,16 @@
   * @return Status code (see IbanErrorCode enum values)
   */
  int iban_validate(const char* iban_str);
+
+ /**
+  * Optimized IBAN validation using short zero-copy approach
+  * 
+  * @param iban_str A null-terminated string containing the IBAN to validate
+  * @param len Length of the string (if known), pass 0 to auto-detect length
+  * @param result the results needed to build the branch_id and bank_id (when available)
+  * @return Status code (see IbanErrorCode enum values)
+  */
+ int iban_validate_short(const char* iban_str, size_t len, IbanValidationResult* result);
 
  /**
   * Optimized IBAN validation using zero-copy approach

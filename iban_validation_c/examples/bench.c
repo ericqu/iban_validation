@@ -21,6 +21,28 @@ void benchmark_standard_approach(const char* iban, int iterations) {
            time_elapsed, iterations);
 }
 
+void benchmark_short_approach(const char* iban, int iterations) {
+    printf("Benchmarking Short approach:\n");
+    
+    // Pre-calculate length once
+    size_t len = strlen(iban);
+    // prepare structure with results
+    IbanValidationResult result;
+    // Warmup
+    iban_validate_short(iban, len, &result);
+    
+    // Benchmark
+    clock_t start = clock();
+    for (int i = 0; i < iterations; i++) {
+        iban_validate_short(iban, len, &result);
+    }
+    clock_t end = clock();
+    
+    double time_elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Short approach: %f seconds for %d iterations\n", 
+           time_elapsed, iterations);
+}
+
 void benchmark_optimized_approach(const char* iban, int iterations) {
     printf("Benchmarking zero-copy approach:\n");
     
@@ -95,6 +117,23 @@ void benchmark_compared_to_allocation(const char* iban, int iterations) {
     
     double speedup = time_elapsed / view_time;
     printf("Zero-copy speedup: %.2fx faster\n", speedup);
+
+
+    // Compare with short approach
+    IbanValidationResult result;
+    size_t len = strlen(iban);
+    start = clock();
+    for (int i = 0; i < iterations; i++) {
+        iban_validate_short(iban, len, &result);
+    }
+    end = clock();
+    
+    double short_time = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Short approach: %f seconds for %d iterations\n", 
+           short_time, iterations);
+    
+    speedup = time_elapsed / short_time;
+    printf("Short approach speedup: %.2fx faster\n", speedup);    
 }
 
 void demo_view_usage() {
@@ -124,6 +163,7 @@ int main() {
     // Run benchmarks with 10,000,000 iterations
     int iterations = 10000000;
     benchmark_standard_approach(iban, iterations);
+    benchmark_short_approach(iban, iterations);
     benchmark_optimized_approach(iban, iterations);
     benchmark_view_approach(iban, iterations);
     benchmark_compared_to_allocation(iban, iterations);
