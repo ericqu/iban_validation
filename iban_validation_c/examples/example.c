@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "../include/iban_validation.h"
 
 int main() {
@@ -37,6 +38,30 @@ int main() {
     } else {
         printf("Failed to create IBAN structure\n");
     }
+
+    // preferred approach, keep the allocation on the c side.
+
+    // calculate length once, otherwise pass 0
+    size_t len = strlen(valid_iban);
+    // prepare structure with results
+    IbanValidationResult result_s;
+    //validate
+    int status = iban_validate_short(valid_iban, len, &result_s);
+    if (status == 1) {
+        printf("Valid Iban:\t%s\n", valid_iban);
+        if (result_s.bank_e > 0) {
+            printf("\tBank ID: %.*s\t\tPositions %d-%d\n",(result_s.bank_e - result_s.bank_s), 
+                valid_iban + result_s.bank_s , result_s.bank_s, result_s.bank_e);
+        }
+        if (result_s.branch_e > 0) {
+            printf("\tBranch ID: %.*s\t\tPositions %d-%d\n", (result_s.branch_e - result_s.branch_s),
+                valid_iban + result_s.branch_s,  result_s.branch_s, result_s.branch_e);
+        }
+    } else {
+        printf("Failed to validated IBAN structure\n");
+    }
+
+    // Print version
     printf("Version %s\n", iban_version());
 
     return 0;
