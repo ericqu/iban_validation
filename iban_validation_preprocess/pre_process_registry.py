@@ -154,7 +154,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
 
         # Format the struct initialization
         rs_code += """    IbanFields {{
-        ctry_cd: [{}, {}],  // "{}"
+        ctry_cd: [{}, {}], // "{}"
         iban_len: {},
         bank_id_pos_s: {},
         bank_id_pos_e: {},
