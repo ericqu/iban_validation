@@ -103,8 +103,6 @@ impl fmt::Display for ValidationError {
 }
 impl Error for ValidationError {}
 
-const ALLOWED_E: &str = " ";
-
 /// potential error for the per letter validation
 #[derive(Debug, PartialEq)]
 enum ValidationLetterError {
@@ -112,11 +110,11 @@ enum ValidationLetterError {
 }
 
 /// internal utility
-/// Check the character is a digit and return the value of that digit.
+/// Check the character (byte) is a digit and return the value of that digit.
 #[inline]
-fn simple_contains_n(c: char) -> Result<u8, ValidationLetterError> {
+fn simple_contains_n(c: u8) -> Result<u8, ValidationLetterError> {
     if c.is_ascii_digit() {
-        Ok((c as u8) - 48) // 48 is the ascii value of '0'
+        Ok(c - 48) // 48 is the ascii value of '0'
     } else {
         Err(ValidationLetterError::NotPartOfRequiredSet)
     }
@@ -125,9 +123,9 @@ fn simple_contains_n(c: char) -> Result<u8, ValidationLetterError> {
 /// internal utility
 /// check the character is an uppercase A-Z and return a value between 10-36
 #[inline]
-fn simple_contains_a(c: char) -> Result<u8, ValidationLetterError> {
+fn simple_contains_a(c: u8) -> Result<u8, ValidationLetterError> {
     if c.is_ascii_uppercase() {
-        Ok((c as u8) - 55) // 55 is to get a 10 from a 'A'
+        Ok(c - 55) // 55 is to get a 10 from a 'A'
     } else {
         Err(ValidationLetterError::NotPartOfRequiredSet)
     }
@@ -136,13 +134,13 @@ fn simple_contains_a(c: char) -> Result<u8, ValidationLetterError> {
 /// internal utility
 /// Check the character is alphanumeric an return the value (0-9 for digit,) 10-36 for letters.
 #[inline]
-fn simple_contains_c(c: char) -> Result<u8, ValidationLetterError> {
+fn simple_contains_c(c: u8) -> Result<u8, ValidationLetterError> {
     if c.is_ascii_digit() {
-        Ok((c as u8) - 48)
+        Ok(c - 48)
     } else if c.is_ascii_uppercase() {
-        Ok((c as u8) - 55)
+        Ok(c - 55)
     } else if c.is_ascii_lowercase() {
-        Ok((c as u8) - 87) // 87 is to get a 10 from a 'a'
+        Ok(c - 87) // 87 is to get a 10 from a 'a'
     } else {
         Err(ValidationLetterError::NotPartOfRequiredSet)
     }
@@ -204,27 +202,23 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         return Err(ValidationError::InvalidSizeForCountry);
     }
 
-    let pat_re = pattern[4..].chars().chain(pattern[..4].chars());
-    let input_re = input_iban[4..].chars().chain(input_iban[..4].chars());
+    let pat_re = pattern[4..].bytes().chain(pattern[..4].bytes());
+    let input_re = input_iban[4..].bytes().chain(input_iban[..4].bytes());
 
     let mut acc: u32 = 0;
 
     for (p, t) in pat_re.zip(input_re) {
         let m97digit = match p {
-            'n' => match simple_contains_n(t) {
+            b'n' => match simple_contains_n(t) {
                 Ok(value) => value,
                 _ => return Err(ValidationError::StructureIncorrectForCountry),
             },
-            'a' => match simple_contains_a(t) {
+            b'a' => match simple_contains_a(t) {
                 Ok(value) => value,
                 _ => return Err(ValidationError::StructureIncorrectForCountry),
             },
-            'c' => match simple_contains_c(t) {
+            b'c' => match simple_contains_c(t) {
                 Ok(value) => value,
-                _ => return Err(ValidationError::StructureIncorrectForCountry),
-            },
-            'e' => match ALLOWED_E.contains(t) {
-                true => 0,
                 _ => return Err(ValidationError::StructureIncorrectForCountry),
             },
             _ => {
@@ -658,13 +652,6 @@ mod tests {
         let s = "";
         let the_error = validate_iban_get_numeric(s).unwrap_err();
         assert_eq!(the_error, ValidationError::MissingCountry);
-    }
-
-    #[test]
-    fn charac_tests() {
-        for c in ALLOWED_E.chars() {
-            println!("{:?}", c as u8);
-        }
     }
 
     #[test]
