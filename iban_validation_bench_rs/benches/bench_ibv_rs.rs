@@ -31,7 +31,9 @@ pub fn schwifty_sd(c: &mut Criterion) {
 
 pub fn iban_validation_rs_sd(c: &mut Criterion) {
     c.bench_function("iban_validation_rs_sd", |b| {
-        b.iter(|| iban_validation_rs::validate_iban_get_numeric(black_box("DE44500105175407324931")))
+        b.iter(|| {
+            iban_validation_rs::validate_iban_get_numeric(black_box("DE44500105175407324931"))
+        })
     });
 }
 

@@ -216,7 +216,7 @@ publishing_testpipy:
 
 # to execute the bench against other libraries
 .PHONY: iban_validation_bench_rs
-iban_validation_bench_rs:
+iban_validation_bench_rs: iban_validation_rs_release
 	cargo bench -p iban_validation_bench_rs
 	$(RMRF) iban_validation_bench_rs/criterion
 	$(MVF) target/criterion iban_validation_bench_rs/criterion
