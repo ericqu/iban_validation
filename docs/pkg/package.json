@@ -1,0 +1,25 @@
+{
+  "name": "iban_validation_wasm",
+  "type": "module",
+  "collaborators": [
+    "Eric Quéré"
+  ],
+  "description": "A WebAssembly IBAN validation powered by Rust",
+  "version": "0.1.15",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericqu/iban_validation"
+  },
+  "files": [
+    "iban_validation_wasm_bg.wasm",
+    "iban_validation_wasm.js",
+    "iban_validation_wasm.d.ts"
+  ],
+  "main": "iban_validation_wasm.js",
+  "homepage": "https://github.com/ericqu/iban_validation",
+  "types": "iban_validation_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
