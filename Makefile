@@ -67,7 +67,7 @@ endif
 
 .PHONY: iban_validation_wasm
 iban_validation_wasm: iban_validation_rs_release
-	wasm-pack build iban_validation_wasm --target web --out-dir docs/pkg --release
+	wasm-pack build iban_validation_wasm --target web --out-dir ../docs/pkg --release
 	cp iban_validation_wasm/index.html docs/
 	wasm-pack build iban_validation_wasm --target bundler --release
 
