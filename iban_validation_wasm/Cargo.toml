@@ -7,7 +7,7 @@ readme = "README.md"
 homepage = "https://github.com/ericqu/iban_validation"
 license = "MIT"
 repository = "https://github.com/ericqu/iban_validation"
-description = "Facilitate validation of ibans and selecting Bank identifier and Branch identifier in Rust and presented in wasm."
+description = "A WebAssembly IBAN validation powered by Rust"
 
 [lib]
 crate-type = ["cdylib"]

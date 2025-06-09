@@ -1,0 +1,12 @@
+{
+  "name": "@ericqu/iban-validation-wasm",
+  "version": "0.1.15",
+  "description": "IBAN validator compiled from Rust to WebAssembly",
+  "files": ["iban_validator_bg.wasm", "iban_validator.js", "iban_validator.d.ts"],
+  "main": "iban_validator.js",
+  "types": "iban_validator.d.ts",
+  "author": "Eric Quéré",
+  "license": "MIT",
+  "repository": "https://github.com/ericqu/iban_validation",
+  "keywords": ["iban", "validation", "validator", "wasm", "rust"]
+}
