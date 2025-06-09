@@ -65,6 +65,12 @@ else
 	find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
 endif
 
+.PHONY: iban_validation_wasm
+iban_validation_wasm: iban_validation_rs_release
+	wasm-pack build iban_validation_wasm --target web --release
+	
+
+
 .PHONY: iban_validation_c
 iban_validation_c:
 	cargo build -p $(C_WRAPPER_DIR) --release

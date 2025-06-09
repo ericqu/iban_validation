@@ -1,0 +1,83 @@
+<style>
+.content {
+  max-width: 500px;
+  margin: auto;
+}
+/* New table styling */
+#ibanTable {
+  border-collapse: separate;
+  border-spacing: 20px 0; /* Horizontal spacing between columns */
+  margin-top: 5rem;
+  width: 100%;
+}
+/* Hide header visually but maintain column alignment 
+#ibanTable thead {
+  visibility: hidden;
+  height: 0;
+}*/
+#ibanTable thead th {
+  padding: 0;
+  line-height: 0;
+}
+/* Cell styling */
+#ibanTable tbody td {
+  padding: 8px 15px;
+  border: 0px solid #ddd;
+  text-align: center;
+}
+</style>
+<body>
+<div class="content">
+    <h1>IBAN Validation WASM/JS</h1>
+    <p><small><strong>Version:</strong> <span id="version">Loading...</span> <strong>Source File:</strong> <span id="sourcefile">Loading...</span></small></p>
+
+    <form id="ibanForm">
+        <input type="text" id="ibanInput" placeholder="Enter IBAN here" size="40"/>
+        <button type="submit">Validate</button>
+    </form>
+
+    <div id="output"></div>
+    <table id="ibanTable" style="margin-top:1rem; display:none;">
+        <thead>
+            <tr><th>IBAN</th><th>Bank ID</th><th>Branch</th></tr>
+        </thead>
+        <tbody id="ibanRow"></tbody>
+    </table>
+
+    <script type="module">
+        import init, { get_version_js, get_source_file_js, parse_iban_js } from './pkg/iban_validation_wasm.js';
+
+        async function main() {
+            await init();
+            document.getElementById("version").textContent = get_version_js();
+            document.getElementById("sourcefile").textContent = get_source_file_js();
+
+            document.getElementById("ibanForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const input = document.getElementById("ibanInput").value;
+                const output = document.getElementById("output");
+                const table = document.getElementById("ibanTable");
+                const row = document.getElementById("ibanRow");
+
+                output.textContent = '';
+                row.innerHTML = '';
+                table.style.display = 'none';
+
+                try {
+                    const result = parse_iban_js(input);
+                    row.innerHTML = `<tr>
+                        <td>${result.iban}</td>
+                        <td>${result.bank_id || ''}</td>
+                        <td>${result.branch_id || ''}</td>
+                    </tr>`;
+                    table.style.display = '';
+                } catch (e) {
+                    output.textContent = `❌ ${e}`;
+                }
+            });
+        }
+
+        main();
+    </script>
+</div>
+</body>
