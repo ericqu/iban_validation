@@ -1,0 +1,18 @@
+[package]
+name = "iban_validation_wasm"
+version = { workspace = true }
+edition = { workspace = true }
+authors = [ "Eric Quéré" ]
+readme = "README.md"
+homepage = "https://github.com/ericqu/iban_validation"
+license = "MIT"
+repository = "https://github.com/ericqu/iban_validation"
+description = "A WebAssembly IBAN validation powered by Rust"
+
+[lib]
+crate-type = ["cdylib"]
+name = "iban_validation_wasm"
+
+[dependencies]
+wasm-bindgen = "0.2"
+iban_validation_rs = {path = "../iban_validation_rs" }

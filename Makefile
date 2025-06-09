@@ -65,6 +65,13 @@ else
 	find . -type f \( -name "*.whl" -o -name "*.tar.gz" -o -name "*.so" \) -delete
 endif
 
+.PHONY: iban_validation_wasm
+iban_validation_wasm: iban_validation_rs_release
+	wasm-pack build iban_validation_wasm --target web --out-dir docs/pkg --release
+	cp iban_validation_wasm/index.html docs/
+	wasm-pack build iban_validation_wasm --target bundler --release
+
+
 .PHONY: iban_validation_c
 iban_validation_c:
 	cargo build -p $(C_WRAPPER_DIR) --release
@@ -178,13 +185,14 @@ publish_iban_validation_rs: test
 	cargo publish -p iban_validation_rs 
 
 .PHONY: test
-test:	clippy iban_validation_preprocess
+test:	clippy iban_validation_preprocess iban_validation_wasm
 	cargo test
 	cargo test -p iban_validation_c
 	$(call create_venv)
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest --ignore=iban_validation_bench_py
+	cd iban_validation_wasm && npm pack --pack-destination ../dist/npm && cd ..
 
 .PHONY: coverage
 coverage:
