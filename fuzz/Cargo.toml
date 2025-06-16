@@ -1,0 +1,19 @@
+[package]
+name = "iban_validation_rs-fuzz"
+version = { workspace = true }
+edition = { workspace = true }
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+iban_validation_rs = { path = "../iban_validation_rs" }
+
+[[bin]]
+name = "fuzz_target_1"
+path = "fuzz_targets/fuzz_target_1.rs"
+test = false
+doc = false
+bench = false

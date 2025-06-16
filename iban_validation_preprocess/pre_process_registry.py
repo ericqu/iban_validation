@@ -22,6 +22,11 @@ def get_df_from_input(inputfile):
     header = df.select(df.collect_schema().names()[0]).collect().to_series().to_list()
     df = df.collect().transpose(include_header=False, column_names=header).slice(1)
 
+    territory_mapping = pl.DataFrame({
+        'original_code': ['FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR'],
+        'new_code':      ['FR', 'GP', 'MQ', 'GF', 'RE', 'YT', 'NC', 'PF', 'PM', 'TF', 'WF']
+    })
+
     # preprocess and check iban structure
     def process_iban_structure(i_structure_e: str):
         iso3166 = i_structure_e[0:2]
@@ -39,6 +44,8 @@ def get_df_from_input(inputfile):
         df.with_columns(
             pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
             .then(pl.lit("5-7"))
+            .when(pl.col("IBAN prefix country code (ISO 3166)") == "AL") # according to PDF and Wise
+            .then(pl.lit("4-7"))
             .otherwise(pl.col("Branch identifier position within the BBAN"))
             .alias("Branch identifier position within the BBAN")
         )
@@ -89,6 +96,14 @@ def get_df_from_input(inputfile):
                 "IBAN length": "iban_len",
             }
         )
+        .join(territory_mapping, left_on='ctry_cd', right_on='original_code', how='left')
+        .with_columns(
+            pl.coalesce([pl.col('new_code'), pl.col('ctry_cd')]).alias('ctry_cd')
+        )
+        .drop('new_code')
+        .with_columns(
+            (pl.col('ctry_cd') + pl.col('iban_struct').str.slice(2)).alias('iban_struct')
+        )
         .with_columns(
             pl.col("ctry_cd").map_elements(
                 lambda x: [ord(c) for c in x], return_dtype=pl.List(pl.UInt16)
@@ -111,15 +126,17 @@ def get_df_from_input(inputfile):
 def pre_process_to_rust(inputfile, output_rust_codegen):
     pre_df = get_df_from_input(inputfile)
 
-    # TODO to include in the rust code in particular the FFI C
-    # print('iban len: min:', pre_df.select(pl.min('iban_len')), 
-    #         ' max: ', pre_df.select(pl.max('iban_len')))
-
+    iban_min_len = pre_df.select(pl.min('iban_len')).item()
+    iban_max_len = pre_df.select(pl.max('iban_len')).item()
+    
     rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::IbanFields;
 
+pub const _IBAN_MIN_LEN: u8 = {} ;
+pub const _IBAN_MAX_LEN: u8 = {} ;
+
 pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
-""".format(len(pre_df))
+""".format(iban_min_len, iban_max_len, len(pre_df))
 
     for row in pre_df.iter_rows(named=True):
         # Extract values and handle None values

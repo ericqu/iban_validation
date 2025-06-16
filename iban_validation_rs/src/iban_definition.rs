@@ -1,7 +1,10 @@
 // Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::IbanFields;
 
-pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
+pub const _IBAN_MIN_LEN: u8 = 15 ;
+pub const _IBAN_MAX_LEN: u8 = 33 ;
+
+pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
     IbanFields {
         ctry_cd: [65, 68], // "AD"
         iban_len: 24,
@@ -26,7 +29,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
         bank_id_pos_s: Some(1),
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
-        branch_id_pos_e: Some(8),
+        branch_id_pos_e: Some(7),
         iban_struct: "ALnnnnnnnnnncccccccccccccccc",
     },
     IbanFields {
@@ -244,6 +247,96 @@ pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
         branch_id_pos_s: None,
         branch_id_pos_e: None,
         iban_struct: "FRnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [71, 80], // "GP"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "GPnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [77, 81], // "MQ"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "MQnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [71, 70], // "GF"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "GFnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [82, 69], // "RE"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "REnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [89, 84], // "YT"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "YTnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [78, 67], // "NC"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "NCnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [80, 70], // "PF"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "PFnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [80, 77], // "PM"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "PMnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [84, 70], // "TF"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "TFnnnnnnnnnnnncccccccccccnn",
+    },
+    IbanFields {
+        ctry_cd: [87, 70], // "WF"
+        iban_len: 27,
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(5),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
+        iban_struct: "WFnnnnnnnnnnnncccccccccccnn",
     },
     IbanFields {
         ctry_cd: [71, 66], // "GB"
@@ -807,95 +900,105 @@ pub const IBAN_DEFINITIONS: [IbanFields; 89] = [
 
 pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
-        [65, 68] => Some(&IBAN_DEFINITIONS[0]),  // AD
-        [65, 69] => Some(&IBAN_DEFINITIONS[1]),  // AE
-        [65, 76] => Some(&IBAN_DEFINITIONS[2]),  // AL
-        [65, 84] => Some(&IBAN_DEFINITIONS[3]),  // AT
-        [65, 90] => Some(&IBAN_DEFINITIONS[4]),  // AZ
-        [66, 65] => Some(&IBAN_DEFINITIONS[5]),  // BA
-        [66, 69] => Some(&IBAN_DEFINITIONS[6]),  // BE
-        [66, 71] => Some(&IBAN_DEFINITIONS[7]),  // BG
-        [66, 72] => Some(&IBAN_DEFINITIONS[8]),  // BH
-        [66, 73] => Some(&IBAN_DEFINITIONS[9]),  // BI
-        [66, 82] => Some(&IBAN_DEFINITIONS[10]), // BR
-        [66, 89] => Some(&IBAN_DEFINITIONS[11]), // BY
-        [67, 72] => Some(&IBAN_DEFINITIONS[12]), // CH
-        [67, 82] => Some(&IBAN_DEFINITIONS[13]), // CR
-        [67, 89] => Some(&IBAN_DEFINITIONS[14]), // CY
-        [67, 90] => Some(&IBAN_DEFINITIONS[15]), // CZ
-        [68, 69] => Some(&IBAN_DEFINITIONS[16]), // DE
-        [68, 74] => Some(&IBAN_DEFINITIONS[17]), // DJ
-        [68, 75] => Some(&IBAN_DEFINITIONS[18]), // DK
-        [68, 79] => Some(&IBAN_DEFINITIONS[19]), // DO
-        [69, 69] => Some(&IBAN_DEFINITIONS[20]), // EE
-        [69, 71] => Some(&IBAN_DEFINITIONS[21]), // EG
-        [69, 83] => Some(&IBAN_DEFINITIONS[22]), // ES
-        [70, 73] => Some(&IBAN_DEFINITIONS[23]), // FI
-        [70, 75] => Some(&IBAN_DEFINITIONS[24]), // FK
-        [70, 79] => Some(&IBAN_DEFINITIONS[25]), // FO
-        [70, 82] => Some(&IBAN_DEFINITIONS[26]), // FR
-        [71, 66] => Some(&IBAN_DEFINITIONS[27]), // GB
-        [71, 69] => Some(&IBAN_DEFINITIONS[28]), // GE
-        [71, 73] => Some(&IBAN_DEFINITIONS[29]), // GI
-        [71, 76] => Some(&IBAN_DEFINITIONS[30]), // GL
-        [71, 82] => Some(&IBAN_DEFINITIONS[31]), // GR
-        [71, 84] => Some(&IBAN_DEFINITIONS[32]), // GT
-        [72, 78] => Some(&IBAN_DEFINITIONS[33]), // HN
-        [72, 82] => Some(&IBAN_DEFINITIONS[34]), // HR
-        [72, 85] => Some(&IBAN_DEFINITIONS[35]), // HU
-        [73, 69] => Some(&IBAN_DEFINITIONS[36]), // IE
-        [73, 76] => Some(&IBAN_DEFINITIONS[37]), // IL
-        [73, 81] => Some(&IBAN_DEFINITIONS[38]), // IQ
-        [73, 83] => Some(&IBAN_DEFINITIONS[39]), // IS
-        [73, 84] => Some(&IBAN_DEFINITIONS[40]), // IT
-        [74, 79] => Some(&IBAN_DEFINITIONS[41]), // JO
-        [75, 87] => Some(&IBAN_DEFINITIONS[42]), // KW
-        [75, 90] => Some(&IBAN_DEFINITIONS[43]), // KZ
-        [76, 66] => Some(&IBAN_DEFINITIONS[44]), // LB
-        [76, 67] => Some(&IBAN_DEFINITIONS[45]), // LC
-        [76, 73] => Some(&IBAN_DEFINITIONS[46]), // LI
-        [76, 84] => Some(&IBAN_DEFINITIONS[47]), // LT
-        [76, 85] => Some(&IBAN_DEFINITIONS[48]), // LU
-        [76, 86] => Some(&IBAN_DEFINITIONS[49]), // LV
-        [76, 89] => Some(&IBAN_DEFINITIONS[50]), // LY
-        [77, 67] => Some(&IBAN_DEFINITIONS[51]), // MC
-        [77, 68] => Some(&IBAN_DEFINITIONS[52]), // MD
-        [77, 69] => Some(&IBAN_DEFINITIONS[53]), // ME
-        [77, 75] => Some(&IBAN_DEFINITIONS[54]), // MK
-        [77, 78] => Some(&IBAN_DEFINITIONS[55]), // MN
-        [77, 82] => Some(&IBAN_DEFINITIONS[56]), // MR
-        [77, 84] => Some(&IBAN_DEFINITIONS[57]), // MT
-        [77, 85] => Some(&IBAN_DEFINITIONS[58]), // MU
-        [78, 73] => Some(&IBAN_DEFINITIONS[59]), // NI
-        [78, 76] => Some(&IBAN_DEFINITIONS[60]), // NL
-        [78, 79] => Some(&IBAN_DEFINITIONS[61]), // NO
-        [79, 77] => Some(&IBAN_DEFINITIONS[62]), // OM
-        [80, 75] => Some(&IBAN_DEFINITIONS[63]), // PK
-        [80, 76] => Some(&IBAN_DEFINITIONS[64]), // PL
-        [80, 83] => Some(&IBAN_DEFINITIONS[65]), // PS
-        [80, 84] => Some(&IBAN_DEFINITIONS[66]), // PT
-        [81, 65] => Some(&IBAN_DEFINITIONS[67]), // QA
-        [82, 79] => Some(&IBAN_DEFINITIONS[68]), // RO
-        [82, 83] => Some(&IBAN_DEFINITIONS[69]), // RS
-        [82, 85] => Some(&IBAN_DEFINITIONS[70]), // RU
-        [83, 65] => Some(&IBAN_DEFINITIONS[71]), // SA
-        [83, 67] => Some(&IBAN_DEFINITIONS[72]), // SC
-        [83, 68] => Some(&IBAN_DEFINITIONS[73]), // SD
-        [83, 69] => Some(&IBAN_DEFINITIONS[74]), // SE
-        [83, 73] => Some(&IBAN_DEFINITIONS[75]), // SI
-        [83, 75] => Some(&IBAN_DEFINITIONS[76]), // SK
-        [83, 77] => Some(&IBAN_DEFINITIONS[77]), // SM
-        [83, 79] => Some(&IBAN_DEFINITIONS[78]), // SO
-        [83, 84] => Some(&IBAN_DEFINITIONS[79]), // ST
-        [83, 86] => Some(&IBAN_DEFINITIONS[80]), // SV
-        [84, 76] => Some(&IBAN_DEFINITIONS[81]), // TL
-        [84, 78] => Some(&IBAN_DEFINITIONS[82]), // TN
-        [84, 82] => Some(&IBAN_DEFINITIONS[83]), // TR
-        [85, 65] => Some(&IBAN_DEFINITIONS[84]), // UA
-        [86, 65] => Some(&IBAN_DEFINITIONS[85]), // VA
-        [86, 71] => Some(&IBAN_DEFINITIONS[86]), // VG
-        [88, 75] => Some(&IBAN_DEFINITIONS[87]), // XK
-        [89, 69] => Some(&IBAN_DEFINITIONS[88]), // YE
-        _ => None,
+      [65, 68] => Some(&IBAN_DEFINITIONS[0]), // AD
+      [65, 69] => Some(&IBAN_DEFINITIONS[1]), // AE
+      [65, 76] => Some(&IBAN_DEFINITIONS[2]), // AL
+      [65, 84] => Some(&IBAN_DEFINITIONS[3]), // AT
+      [65, 90] => Some(&IBAN_DEFINITIONS[4]), // AZ
+      [66, 65] => Some(&IBAN_DEFINITIONS[5]), // BA
+      [66, 69] => Some(&IBAN_DEFINITIONS[6]), // BE
+      [66, 71] => Some(&IBAN_DEFINITIONS[7]), // BG
+      [66, 72] => Some(&IBAN_DEFINITIONS[8]), // BH
+      [66, 73] => Some(&IBAN_DEFINITIONS[9]), // BI
+      [66, 82] => Some(&IBAN_DEFINITIONS[10]), // BR
+      [66, 89] => Some(&IBAN_DEFINITIONS[11]), // BY
+      [67, 72] => Some(&IBAN_DEFINITIONS[12]), // CH
+      [67, 82] => Some(&IBAN_DEFINITIONS[13]), // CR
+      [67, 89] => Some(&IBAN_DEFINITIONS[14]), // CY
+      [67, 90] => Some(&IBAN_DEFINITIONS[15]), // CZ
+      [68, 69] => Some(&IBAN_DEFINITIONS[16]), // DE
+      [68, 74] => Some(&IBAN_DEFINITIONS[17]), // DJ
+      [68, 75] => Some(&IBAN_DEFINITIONS[18]), // DK
+      [68, 79] => Some(&IBAN_DEFINITIONS[19]), // DO
+      [69, 69] => Some(&IBAN_DEFINITIONS[20]), // EE
+      [69, 71] => Some(&IBAN_DEFINITIONS[21]), // EG
+      [69, 83] => Some(&IBAN_DEFINITIONS[22]), // ES
+      [70, 73] => Some(&IBAN_DEFINITIONS[23]), // FI
+      [70, 75] => Some(&IBAN_DEFINITIONS[24]), // FK
+      [70, 79] => Some(&IBAN_DEFINITIONS[25]), // FO
+      [70, 82] => Some(&IBAN_DEFINITIONS[26]), // FR
+      [71, 80] => Some(&IBAN_DEFINITIONS[27]), // GP
+      [77, 81] => Some(&IBAN_DEFINITIONS[28]), // MQ
+      [71, 70] => Some(&IBAN_DEFINITIONS[29]), // GF
+      [82, 69] => Some(&IBAN_DEFINITIONS[30]), // RE
+      [89, 84] => Some(&IBAN_DEFINITIONS[31]), // YT
+      [78, 67] => Some(&IBAN_DEFINITIONS[32]), // NC
+      [80, 70] => Some(&IBAN_DEFINITIONS[33]), // PF
+      [80, 77] => Some(&IBAN_DEFINITIONS[34]), // PM
+      [84, 70] => Some(&IBAN_DEFINITIONS[35]), // TF
+      [87, 70] => Some(&IBAN_DEFINITIONS[36]), // WF
+      [71, 66] => Some(&IBAN_DEFINITIONS[37]), // GB
+      [71, 69] => Some(&IBAN_DEFINITIONS[38]), // GE
+      [71, 73] => Some(&IBAN_DEFINITIONS[39]), // GI
+      [71, 76] => Some(&IBAN_DEFINITIONS[40]), // GL
+      [71, 82] => Some(&IBAN_DEFINITIONS[41]), // GR
+      [71, 84] => Some(&IBAN_DEFINITIONS[42]), // GT
+      [72, 78] => Some(&IBAN_DEFINITIONS[43]), // HN
+      [72, 82] => Some(&IBAN_DEFINITIONS[44]), // HR
+      [72, 85] => Some(&IBAN_DEFINITIONS[45]), // HU
+      [73, 69] => Some(&IBAN_DEFINITIONS[46]), // IE
+      [73, 76] => Some(&IBAN_DEFINITIONS[47]), // IL
+      [73, 81] => Some(&IBAN_DEFINITIONS[48]), // IQ
+      [73, 83] => Some(&IBAN_DEFINITIONS[49]), // IS
+      [73, 84] => Some(&IBAN_DEFINITIONS[50]), // IT
+      [74, 79] => Some(&IBAN_DEFINITIONS[51]), // JO
+      [75, 87] => Some(&IBAN_DEFINITIONS[52]), // KW
+      [75, 90] => Some(&IBAN_DEFINITIONS[53]), // KZ
+      [76, 66] => Some(&IBAN_DEFINITIONS[54]), // LB
+      [76, 67] => Some(&IBAN_DEFINITIONS[55]), // LC
+      [76, 73] => Some(&IBAN_DEFINITIONS[56]), // LI
+      [76, 84] => Some(&IBAN_DEFINITIONS[57]), // LT
+      [76, 85] => Some(&IBAN_DEFINITIONS[58]), // LU
+      [76, 86] => Some(&IBAN_DEFINITIONS[59]), // LV
+      [76, 89] => Some(&IBAN_DEFINITIONS[60]), // LY
+      [77, 67] => Some(&IBAN_DEFINITIONS[61]), // MC
+      [77, 68] => Some(&IBAN_DEFINITIONS[62]), // MD
+      [77, 69] => Some(&IBAN_DEFINITIONS[63]), // ME
+      [77, 75] => Some(&IBAN_DEFINITIONS[64]), // MK
+      [77, 78] => Some(&IBAN_DEFINITIONS[65]), // MN
+      [77, 82] => Some(&IBAN_DEFINITIONS[66]), // MR
+      [77, 84] => Some(&IBAN_DEFINITIONS[67]), // MT
+      [77, 85] => Some(&IBAN_DEFINITIONS[68]), // MU
+      [78, 73] => Some(&IBAN_DEFINITIONS[69]), // NI
+      [78, 76] => Some(&IBAN_DEFINITIONS[70]), // NL
+      [78, 79] => Some(&IBAN_DEFINITIONS[71]), // NO
+      [79, 77] => Some(&IBAN_DEFINITIONS[72]), // OM
+      [80, 75] => Some(&IBAN_DEFINITIONS[73]), // PK
+      [80, 76] => Some(&IBAN_DEFINITIONS[74]), // PL
+      [80, 83] => Some(&IBAN_DEFINITIONS[75]), // PS
+      [80, 84] => Some(&IBAN_DEFINITIONS[76]), // PT
+      [81, 65] => Some(&IBAN_DEFINITIONS[77]), // QA
+      [82, 79] => Some(&IBAN_DEFINITIONS[78]), // RO
+      [82, 83] => Some(&IBAN_DEFINITIONS[79]), // RS
+      [82, 85] => Some(&IBAN_DEFINITIONS[80]), // RU
+      [83, 65] => Some(&IBAN_DEFINITIONS[81]), // SA
+      [83, 67] => Some(&IBAN_DEFINITIONS[82]), // SC
+      [83, 68] => Some(&IBAN_DEFINITIONS[83]), // SD
+      [83, 69] => Some(&IBAN_DEFINITIONS[84]), // SE
+      [83, 73] => Some(&IBAN_DEFINITIONS[85]), // SI
+      [83, 75] => Some(&IBAN_DEFINITIONS[86]), // SK
+      [83, 77] => Some(&IBAN_DEFINITIONS[87]), // SM
+      [83, 79] => Some(&IBAN_DEFINITIONS[88]), // SO
+      [83, 84] => Some(&IBAN_DEFINITIONS[89]), // ST
+      [83, 86] => Some(&IBAN_DEFINITIONS[90]), // SV
+      [84, 76] => Some(&IBAN_DEFINITIONS[91]), // TL
+      [84, 78] => Some(&IBAN_DEFINITIONS[92]), // TN
+      [84, 82] => Some(&IBAN_DEFINITIONS[93]), // TR
+      [85, 65] => Some(&IBAN_DEFINITIONS[94]), // UA
+      [86, 65] => Some(&IBAN_DEFINITIONS[95]), // VA
+      [86, 71] => Some(&IBAN_DEFINITIONS[96]), // VG
+      [88, 75] => Some(&IBAN_DEFINITIONS[97]), // XK
+      [89, 69] => Some(&IBAN_DEFINITIONS[98]), // YE
+     _ => None,
     }
 }
