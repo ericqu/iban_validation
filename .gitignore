@@ -13,4 +13,3 @@ zig-cc-wrapper.sh
 iban_validation_c/examples/example_c
 iban_validation_c/examples/example_cpp
 iban_validation_c/examples/bench_c
-

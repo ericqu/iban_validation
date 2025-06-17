@@ -849,5 +849,16 @@ mod tests {
         assert_eq!(the_test.get_iban(), "GE29NB0000000101904917");
         assert_eq!(the_test.iban_bank_id.unwrap(), "NB");
         assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("GI75NWBK000000007099453").unwrap();
+        assert_eq!(the_test.get_iban(), "GI75NWBK000000007099453");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "NWBK");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("GL8964710001000206").unwrap();
+        assert_eq!(the_test.get_iban(), "GL8964710001000206");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "6471");
+        assert_eq!(the_test.iban_branch_id, None);
+
     }
 }
