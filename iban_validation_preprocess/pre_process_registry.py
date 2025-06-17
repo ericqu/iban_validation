@@ -104,6 +104,10 @@ def get_df_from_input(inputfile):
         .with_columns(
             (pl.col('ctry_cd') + pl.col('iban_struct').str.slice(2)).alias('iban_struct')
         )
+        .with_columns( 
+            (pl.col('iban_struct').str.slice(4) +
+             pl.col('iban_struct').str.slice(0, 4)) #.alias('temp_is')
+        )
         .with_columns(
             pl.col("ctry_cd").map_elements(
                 lambda x: [ord(c) for c in x], return_dtype=pl.List(pl.UInt16)

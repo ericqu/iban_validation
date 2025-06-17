@@ -12,7 +12,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "ADnnnnnnnnnncccccccccccc",
+        iban_struct: "nnnnnnnnccccccccccccADnn",
     },
     IbanFields {
         ctry_cd: [65, 69], // "AE"
@@ -21,7 +21,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "AEnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnAEnn",
     },
     IbanFields {
         ctry_cd: [65, 76], // "AL"
@@ -30,7 +30,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(7),
-        iban_struct: "ALnnnnnnnnnncccccccccccccccc",
+        iban_struct: "nnnnnnnnccccccccccccccccALnn",
     },
     IbanFields {
         ctry_cd: [65, 84], // "AT"
@@ -39,7 +39,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "ATnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnATnn",
     },
     IbanFields {
         ctry_cd: [65, 90], // "AZ"
@@ -48,7 +48,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "AZnnaaaacccccccccccccccccccc",
+        iban_struct: "aaaaccccccccccccccccccccAZnn",
     },
     IbanFields {
         ctry_cd: [66, 65], // "BA"
@@ -57,7 +57,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(6),
-        iban_struct: "BAnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnBAnn",
     },
     IbanFields {
         ctry_cd: [66, 69], // "BE"
@@ -66,7 +66,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "BEnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnBEnn",
     },
     IbanFields {
         ctry_cd: [66, 71], // "BG"
@@ -75,7 +75,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "BGnnaaaannnnnncccccccc",
+        iban_struct: "aaaannnnnnccccccccBGnn",
     },
     IbanFields {
         ctry_cd: [66, 72], // "BH"
@@ -84,7 +84,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "BHnnaaaacccccccccccccc",
+        iban_struct: "aaaaccccccccccccccBHnn",
     },
     IbanFields {
         ctry_cd: [66, 73], // "BI"
@@ -93,7 +93,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "BInnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnBInn",
     },
     IbanFields {
         ctry_cd: [66, 82], // "BR"
@@ -102,7 +102,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(8),
         branch_id_pos_s: Some(9),
         branch_id_pos_e: Some(13),
-        iban_struct: "BRnnnnnnnnnnnnnnnnnnnnnnnnnac",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnacBRnn",
     },
     IbanFields {
         ctry_cd: [66, 89], // "BY"
@@ -111,7 +111,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "BYnnccccnnnncccccccccccccccc",
+        iban_struct: "ccccnnnnccccccccccccccccBYnn",
     },
     IbanFields {
         ctry_cd: [67, 72], // "CH"
@@ -120,7 +120,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "CHnnnnnnncccccccccccc",
+        iban_struct: "nnnnnccccccccccccCHnn",
     },
     IbanFields {
         ctry_cd: [67, 82], // "CR"
@@ -129,7 +129,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "CRnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnCRnn",
     },
     IbanFields {
         ctry_cd: [67, 89], // "CY"
@@ -138,7 +138,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(8),
-        iban_struct: "CYnnnnnnnnnncccccccccccccccc",
+        iban_struct: "nnnnnnnnccccccccccccccccCYnn",
     },
     IbanFields {
         ctry_cd: [67, 90], // "CZ"
@@ -147,7 +147,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "CZnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnCZnn",
     },
     IbanFields {
         ctry_cd: [68, 69], // "DE"
@@ -156,7 +156,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(8),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "DEnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnDEnn",
     },
     IbanFields {
         ctry_cd: [68, 74], // "DJ"
@@ -165,7 +165,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "DJnnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnDJnn",
     },
     IbanFields {
         ctry_cd: [68, 75], // "DK"
@@ -174,7 +174,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "DKnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnDKnn",
     },
     IbanFields {
         ctry_cd: [68, 79], // "DO"
@@ -183,7 +183,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "DOnnccccnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "ccccnnnnnnnnnnnnnnnnnnnnDOnn",
     },
     IbanFields {
         ctry_cd: [69, 69], // "EE"
@@ -192,7 +192,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "EEnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnEEnn",
     },
     IbanFields {
         ctry_cd: [69, 71], // "EG"
@@ -201,7 +201,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "EGnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnnnEGnn",
     },
     IbanFields {
         ctry_cd: [69, 83], // "ES"
@@ -210,7 +210,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "ESnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnESnn",
     },
     IbanFields {
         ctry_cd: [70, 73], // "FI"
@@ -219,7 +219,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "FInnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnFInn",
     },
     IbanFields {
         ctry_cd: [70, 75], // "FK"
@@ -228,7 +228,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "FKnnaannnnnnnnnnnn",
+        iban_struct: "aannnnnnnnnnnnFKnn",
     },
     IbanFields {
         ctry_cd: [70, 79], // "FO"
@@ -237,7 +237,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "FOnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnFOnn",
     },
     IbanFields {
         ctry_cd: [70, 82], // "FR"
@@ -246,7 +246,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "FRnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnFRnn",
     },
     IbanFields {
         ctry_cd: [71, 80], // "GP"
@@ -255,7 +255,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "GPnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnGPnn",
     },
     IbanFields {
         ctry_cd: [77, 81], // "MQ"
@@ -264,7 +264,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "MQnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnMQnn",
     },
     IbanFields {
         ctry_cd: [71, 70], // "GF"
@@ -273,7 +273,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "GFnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnGFnn",
     },
     IbanFields {
         ctry_cd: [82, 69], // "RE"
@@ -282,7 +282,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "REnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnREnn",
     },
     IbanFields {
         ctry_cd: [89, 84], // "YT"
@@ -291,7 +291,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "YTnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnYTnn",
     },
     IbanFields {
         ctry_cd: [78, 67], // "NC"
@@ -300,7 +300,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "NCnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnNCnn",
     },
     IbanFields {
         ctry_cd: [80, 70], // "PF"
@@ -309,7 +309,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "PFnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnPFnn",
     },
     IbanFields {
         ctry_cd: [80, 77], // "PM"
@@ -318,7 +318,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "PMnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnPMnn",
     },
     IbanFields {
         ctry_cd: [84, 70], // "TF"
@@ -327,7 +327,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "TFnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnTFnn",
     },
     IbanFields {
         ctry_cd: [87, 70], // "WF"
@@ -336,7 +336,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "WFnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnWFnn",
     },
     IbanFields {
         ctry_cd: [71, 66], // "GB"
@@ -345,7 +345,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "GBnnaaaannnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnGBnn",
     },
     IbanFields {
         ctry_cd: [71, 69], // "GE"
@@ -354,7 +354,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "GEnnaannnnnnnnnnnnnnnn",
+        iban_struct: "aannnnnnnnnnnnnnnnGEnn",
     },
     IbanFields {
         ctry_cd: [71, 73], // "GI"
@@ -363,7 +363,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "GInnaaaaccccccccccccccc",
+        iban_struct: "aaaacccccccccccccccGInn",
     },
     IbanFields {
         ctry_cd: [71, 76], // "GL"
@@ -372,7 +372,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "GLnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnGLnn",
     },
     IbanFields {
         ctry_cd: [71, 82], // "GR"
@@ -381,7 +381,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(7),
-        iban_struct: "GRnnnnnnnnncccccccccccccccc",
+        iban_struct: "nnnnnnnccccccccccccccccGRnn",
     },
     IbanFields {
         ctry_cd: [71, 84], // "GT"
@@ -390,7 +390,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "GTnncccccccccccccccccccccccc",
+        iban_struct: "ccccccccccccccccccccccccGTnn",
     },
     IbanFields {
         ctry_cd: [72, 78], // "HN"
@@ -399,7 +399,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "HNnnaaaannnnnnnnnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnHNnn",
     },
     IbanFields {
         ctry_cd: [72, 82], // "HR"
@@ -408,7 +408,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(7),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "HRnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnHRnn",
     },
     IbanFields {
         ctry_cd: [72, 85], // "HU"
@@ -417,7 +417,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(7),
-        iban_struct: "HUnnnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnnHUnn",
     },
     IbanFields {
         ctry_cd: [73, 69], // "IE"
@@ -426,7 +426,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "IEnnaaaannnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnIEnn",
     },
     IbanFields {
         ctry_cd: [73, 76], // "IL"
@@ -435,7 +435,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(6),
-        iban_struct: "ILnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnILnn",
     },
     IbanFields {
         ctry_cd: [73, 81], // "IQ"
@@ -444,7 +444,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(7),
-        iban_struct: "IQnnaaaannnnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnnIQnn",
     },
     IbanFields {
         ctry_cd: [73, 83], // "IS"
@@ -453,7 +453,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: Some(3),
         branch_id_pos_e: Some(4),
-        iban_struct: "ISnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnISnn",
     },
     IbanFields {
         ctry_cd: [73, 84], // "IT"
@@ -462,7 +462,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(11),
-        iban_struct: "ITnnannnnnnnnnncccccccccccc",
+        iban_struct: "annnnnnnnnnccccccccccccITnn",
     },
     IbanFields {
         ctry_cd: [74, 79], // "JO"
@@ -471,7 +471,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "JOnnaaaannnncccccccccccccccccc",
+        iban_struct: "aaaannnnccccccccccccccccccJOnn",
     },
     IbanFields {
         ctry_cd: [75, 87], // "KW"
@@ -480,7 +480,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "KWnnaaaacccccccccccccccccccccc",
+        iban_struct: "aaaaccccccccccccccccccccccKWnn",
     },
     IbanFields {
         ctry_cd: [75, 90], // "KZ"
@@ -489,7 +489,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "KZnnnnnccccccccccccc",
+        iban_struct: "nnncccccccccccccKZnn",
     },
     IbanFields {
         ctry_cd: [76, 66], // "LB"
@@ -498,7 +498,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "LBnnnnnncccccccccccccccccccc",
+        iban_struct: "nnnnccccccccccccccccccccLBnn",
     },
     IbanFields {
         ctry_cd: [76, 67], // "LC"
@@ -507,7 +507,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "LCnnaaaacccccccccccccccccccccccc",
+        iban_struct: "aaaaccccccccccccccccccccccccLCnn",
     },
     IbanFields {
         ctry_cd: [76, 73], // "LI"
@@ -516,7 +516,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "LInnnnnnncccccccccccc",
+        iban_struct: "nnnnnccccccccccccLInn",
     },
     IbanFields {
         ctry_cd: [76, 84], // "LT"
@@ -525,7 +525,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "LTnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnLTnn",
     },
     IbanFields {
         ctry_cd: [76, 85], // "LU"
@@ -534,7 +534,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "LUnnnnnccccccccccccc",
+        iban_struct: "nnncccccccccccccLUnn",
     },
     IbanFields {
         ctry_cd: [76, 86], // "LV"
@@ -543,7 +543,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "LVnnaaaaccccccccccccc",
+        iban_struct: "aaaacccccccccccccLVnn",
     },
     IbanFields {
         ctry_cd: [76, 89], // "LY"
@@ -552,7 +552,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(6),
-        iban_struct: "LYnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnLYnn",
     },
     IbanFields {
         ctry_cd: [77, 67], // "MC"
@@ -561,7 +561,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "MCnnnnnnnnnnnncccccccccccnn",
+        iban_struct: "nnnnnnnnnncccccccccccnnMCnn",
     },
     IbanFields {
         ctry_cd: [77, 68], // "MD"
@@ -570,7 +570,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "MDnncccccccccccccccccccc",
+        iban_struct: "ccccccccccccccccccccMDnn",
     },
     IbanFields {
         ctry_cd: [77, 69], // "ME"
@@ -579,7 +579,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "MEnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnMEnn",
     },
     IbanFields {
         ctry_cd: [77, 75], // "MK"
@@ -588,7 +588,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "MKnnnnnccccccccccnn",
+        iban_struct: "nnnccccccccccnnMKnn",
     },
     IbanFields {
         ctry_cd: [77, 78], // "MN"
@@ -597,7 +597,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "MNnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnMNnn",
     },
     IbanFields {
         ctry_cd: [77, 82], // "MR"
@@ -606,7 +606,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "MRnnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnMRnn",
     },
     IbanFields {
         ctry_cd: [77, 84], // "MT"
@@ -615,7 +615,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(9),
-        iban_struct: "MTnnaaaannnnncccccccccccccccccc",
+        iban_struct: "aaaannnnnccccccccccccccccccMTnn",
     },
     IbanFields {
         ctry_cd: [77, 85], // "MU"
@@ -624,7 +624,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(8),
-        iban_struct: "MUnnaaaannnnnnnnnnnnnnnnnnnaaa",
+        iban_struct: "aaaannnnnnnnnnnnnnnnnnnaaaMUnn",
     },
     IbanFields {
         ctry_cd: [78, 73], // "NI"
@@ -633,7 +633,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "NInnaaaannnnnnnnnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnNInn",
     },
     IbanFields {
         ctry_cd: [78, 76], // "NL"
@@ -642,7 +642,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "NLnnaaaannnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnNLnn",
     },
     IbanFields {
         ctry_cd: [78, 79], // "NO"
@@ -651,7 +651,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "NOnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnNOnn",
     },
     IbanFields {
         ctry_cd: [79, 77], // "OM"
@@ -660,7 +660,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "OMnnnnncccccccccccccccc",
+        iban_struct: "nnnccccccccccccccccOMnn",
     },
     IbanFields {
         ctry_cd: [80, 75], // "PK"
@@ -669,7 +669,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "PKnnaaaacccccccccccccccc",
+        iban_struct: "aaaaccccccccccccccccPKnn",
     },
     IbanFields {
         ctry_cd: [80, 76], // "PL"
@@ -678,7 +678,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: None,
         branch_id_pos_s: Some(1),
         branch_id_pos_e: Some(8),
-        iban_struct: "PLnnnnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnnPLnn",
     },
     IbanFields {
         ctry_cd: [80, 83], // "PS"
@@ -687,7 +687,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "PSnnaaaaccccccccccccccccccccc",
+        iban_struct: "aaaacccccccccccccccccccccPSnn",
     },
     IbanFields {
         ctry_cd: [80, 84], // "PT"
@@ -696,7 +696,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "PTnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnPTnn",
     },
     IbanFields {
         ctry_cd: [81, 65], // "QA"
@@ -705,7 +705,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "QAnnaaaaccccccccccccccccccccc",
+        iban_struct: "aaaacccccccccccccccccccccQAnn",
     },
     IbanFields {
         ctry_cd: [82, 79], // "RO"
@@ -714,7 +714,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "ROnnaaaacccccccccccccccc",
+        iban_struct: "aaaaccccccccccccccccROnn",
     },
     IbanFields {
         ctry_cd: [82, 83], // "RS"
@@ -723,7 +723,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "RSnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnRSnn",
     },
     IbanFields {
         ctry_cd: [82, 85], // "RU"
@@ -732,7 +732,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(9),
         branch_id_pos_s: Some(10),
         branch_id_pos_e: Some(14),
-        iban_struct: "RUnnnnnnnnnnnnnnnnccccccccccccccc",
+        iban_struct: "nnnnnnnnnnnnnncccccccccccccccRUnn",
     },
     IbanFields {
         ctry_cd: [83, 65], // "SA"
@@ -741,7 +741,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "SAnnnncccccccccccccccccc",
+        iban_struct: "nnccccccccccccccccccSAnn",
     },
     IbanFields {
         ctry_cd: [83, 67], // "SC"
@@ -750,7 +750,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(8),
-        iban_struct: "SCnnaaaannnnnnnnnnnnnnnnnnnnaaa",
+        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnaaaSCnn",
     },
     IbanFields {
         ctry_cd: [83, 68], // "SD"
@@ -759,7 +759,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "SDnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnSDnn",
     },
     IbanFields {
         ctry_cd: [83, 69], // "SE"
@@ -768,7 +768,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "SEnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnSEnn",
     },
     IbanFields {
         ctry_cd: [83, 73], // "SI"
@@ -777,7 +777,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "SInnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnSInn",
     },
     IbanFields {
         ctry_cd: [83, 75], // "SK"
@@ -786,7 +786,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "SKnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnSKnn",
     },
     IbanFields {
         ctry_cd: [83, 77], // "SM"
@@ -795,7 +795,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(11),
-        iban_struct: "SMnnannnnnnnnnncccccccccccc",
+        iban_struct: "annnnnnnnnnccccccccccccSMnn",
     },
     IbanFields {
         ctry_cd: [83, 79], // "SO"
@@ -804,7 +804,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(7),
-        iban_struct: "SOnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnSOnn",
     },
     IbanFields {
         ctry_cd: [83, 84], // "ST"
@@ -813,7 +813,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "STnnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnnSTnn",
     },
     IbanFields {
         ctry_cd: [83, 86], // "SV"
@@ -822,7 +822,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "SVnnaaaannnnnnnnnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnSVnn",
     },
     IbanFields {
         ctry_cd: [84, 76], // "TL"
@@ -831,7 +831,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "TLnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnTLnn",
     },
     IbanFields {
         ctry_cd: [84, 78], // "TN"
@@ -840,7 +840,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: Some(3),
         branch_id_pos_e: Some(5),
-        iban_struct: "TNnnnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnnnTNnn",
     },
     IbanFields {
         ctry_cd: [84, 82], // "TR"
@@ -849,7 +849,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "TRnnnnnnnncccccccccccccccc",
+        iban_struct: "nnnnnnccccccccccccccccTRnn",
     },
     IbanFields {
         ctry_cd: [85, 65], // "UA"
@@ -858,7 +858,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "UAnnnnnnnnccccccccccccccccccc",
+        iban_struct: "nnnnnncccccccccccccccccccUAnn",
     },
     IbanFields {
         ctry_cd: [86, 65], // "VA"
@@ -867,7 +867,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "VAnnnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnnnVAnn",
     },
     IbanFields {
         ctry_cd: [86, 71], // "VG"
@@ -876,7 +876,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "VGnnaaaannnnnnnnnnnnnnnn",
+        iban_struct: "aaaannnnnnnnnnnnnnnnVGnn",
     },
     IbanFields {
         ctry_cd: [88, 75], // "XK"
@@ -885,7 +885,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: Some(3),
         branch_id_pos_e: Some(4),
-        iban_struct: "XKnnnnnnnnnnnnnnnnnn",
+        iban_struct: "nnnnnnnnnnnnnnnnXKnn",
     },
     IbanFields {
         ctry_cd: [89, 69], // "YE"
@@ -894,7 +894,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 99] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "YEnnaaaannnncccccccccccccccccc",
+        iban_struct: "aaaannnnccccccccccccccccccYEnn",
     },
 ];
 

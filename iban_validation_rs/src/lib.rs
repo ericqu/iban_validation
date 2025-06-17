@@ -202,9 +202,9 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         return Err(ValidationError::InvalidSizeForCountry);
     }
 
-    let pat_re = pattern[4..].bytes().chain(pattern[..4].bytes());
+    let pat_re = pattern.bytes();
 
-    // we have invalid character at the boundary before starting to check them
+    // if we have invalid character at the boundary before starting to check them
     if !input_iban.is_char_boundary(4) {
         return Err(ValidationError::StructureIncorrectForCountry);
     }
@@ -525,7 +525,8 @@ mod tests {
         match get_iban_fields([b'F', b'R']) {
             Some(ib_data) => {
                 println!("FR : {}", ib_data.iban_struct);
-                assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
+                // assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
+                assert_eq!(ib_data.iban_struct, "nnnnnnnnnncccccccccccnnFRnn");
             }
             _ => println!("FR IBan missing!"),
         }
@@ -533,7 +534,8 @@ mod tests {
         let al_ib_struct = get_iban_fields([b'A', b'L'])
             .expect("country does not existin in registry")
             .iban_struct;
-        assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
+        // assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
+        assert_eq!("nnnnnnnnccccccccccccccccALnn", al_ib_struct);
 
         // println!("Successfully loaded {} countries", IB_REG.len());
         println!("Successfully loaded countries");
