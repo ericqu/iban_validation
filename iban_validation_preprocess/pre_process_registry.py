@@ -23,8 +23,8 @@ def get_df_from_input(inputfile):
     df = df.collect().transpose(include_header=False, column_names=header).slice(1)
 
     territory_mapping = pl.DataFrame({
-        'original_code': ['FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR'],
-        'new_code':      ['FR', 'GP', 'MQ', 'GF', 'RE', 'YT', 'NC', 'PF', 'PM', 'TF', 'WF']
+        'original_code': ['FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'GB', 'GB', 'GB', 'GB' ],
+        'new_code':      ['FR', 'GP', 'MQ', 'GF', 'RE', 'YT', 'NC', 'PF', 'PM', 'TF', 'WF', 'BL', 'MF', 'GB', 'IM', 'JE', 'GG']
     })
 
     # preprocess and check iban structure

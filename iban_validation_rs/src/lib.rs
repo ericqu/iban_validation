@@ -844,5 +844,10 @@ mod tests {
         assert_eq!(the_test.get_iban(), "GP1120041010050500013M02606");
         assert_eq!(the_test.iban_bank_id.unwrap(), "20041");
         assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("GE29NB0000000101904917").unwrap();
+        assert_eq!(the_test.get_iban(), "GE29NB0000000101904917");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "NB");
+        assert_eq!(the_test.iban_branch_id, None);
     }
 }

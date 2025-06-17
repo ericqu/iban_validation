@@ -9,7 +9,7 @@ def test_preprocess():
 
     ctryl = df["ctry_cd"].to_list()
 
-    assert 99 == len(ctryl)
+    assert 104 == len(ctryl)
 
     try:
         os.remove(output_iban_file)
