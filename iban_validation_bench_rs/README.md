@@ -7,7 +7,7 @@ Here is the output from Criterion:
 - iban_short_sd[^2] time:   [134.20 ns __134.47 ns__ 134.75 ns]
 - iban_parser_sd[^3] time:   [859.62 ns __863.97 ns__ 868.44 ns]
 - schwifty_sd[^4] time:   [52.999 µs __53.455 µs__ 54.176 µs]
-- iban_validation_rs_sd[^5] time:   [27.753 ns __27.799 ns_ 27.848 ns]
+- iban_validation_rs_sd[^5] time:   [27.753 ns __27.799 ns__ 27.848 ns]
 
 [^1]: iban_validate_sd refers to [iban_validate](https://crates.io/crates/iban_validate) in version 5.0
 [^2]: iban_short_sd refers to [iban](https://crates.io/crates/iban) in version 0.1.7
