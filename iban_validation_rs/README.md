@@ -11,7 +11,7 @@ In contrast, the intention is to provide a quick, correct validation of the IBAN
 For now, parallelisation is not in the scope of the core library as usage through other libraries is likely to provide that, like in the polars plugin.
 
 # Changes
- - 0.1.16: improved performance, added territories for GB and FR, and more tests
+ - 0.1.16: improved performance, added territories for GB and FR, and more tests, added WASM (experimental for now), added fuzzer
  - 0.1.15: improved performance (char to bytes) and improved c wrapper doc
  - 0.1.14: fixed error for country code IQ (using pdf instead of technical input file)
  - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde)
