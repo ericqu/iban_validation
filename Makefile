@@ -192,7 +192,6 @@ test:	clippy iban_validation_preprocess iban_validation_wasm
 	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest --ignore=iban_validation_bench_py
-	cd iban_validation_wasm && npm pack --pack-destination ../dist/npm && cd ..
 
 .PHONY: coverage
 coverage:

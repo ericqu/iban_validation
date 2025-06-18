@@ -136,8 +136,8 @@ def pre_process_to_rust(inputfile, output_rust_codegen):
     rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::IbanFields;
 
-pub const _IBAN_MIN_LEN: u8 = {} ;
-pub const _IBAN_MAX_LEN: u8 = {} ;
+pub const _IBAN_MIN_LEN: u8 = {};
+pub const _IBAN_MAX_LEN: u8 = {};
 
 pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
 """.format(iban_min_len, iban_max_len, len(pre_df))
