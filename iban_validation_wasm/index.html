@@ -158,6 +158,8 @@
                 // Get input and preprocess: convert to uppercase and remove spaces
                 const rawInput = document.getElementById("ibanInput").value;
                 const cleanedInput = rawInput.toUpperCase().replace(/\s/g, '');
+
+                inputElement.value = cleanedInput;
                 
                 const output = document.getElementById("output");
                 const table = document.getElementById("ibanTable");
