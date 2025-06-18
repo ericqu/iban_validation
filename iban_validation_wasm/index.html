@@ -159,7 +159,7 @@
                 const rawInput = document.getElementById("ibanInput").value;
                 const cleanedInput = rawInput.toUpperCase().replace(/\s/g, '');
 
-                inputElement.value = cleanedInput;
+                document.getElementById("ibanInput").value = cleanedInput;
                 
                 const output = document.getElementById("output");
                 const table = document.getElementById("ibanTable");
