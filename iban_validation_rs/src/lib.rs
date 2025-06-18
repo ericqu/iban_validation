@@ -860,5 +860,89 @@ mod tests {
         assert_eq!(the_test.iban_bank_id.unwrap(), "6471");
         assert_eq!(the_test.iban_branch_id, None);
 
+        let the_test = Iban::new("GR1601101250000000012300695").unwrap();
+        assert_eq!(the_test.get_iban(), "GR1601101250000000012300695");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "011");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "0125");
+
+        let the_test = Iban::new("GT82TRAJ01020000001210029690").unwrap();
+        assert_eq!(the_test.get_iban(), "GT82TRAJ01020000001210029690");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "TRAJ");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("HN88CABF00000000000250005469").unwrap();
+        assert_eq!(the_test.get_iban(), "HN88CABF00000000000250005469");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "CABF");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("HR1210010051863000160").unwrap();
+        assert_eq!(the_test.get_iban(), "HR1210010051863000160");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "1001005");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("HU42117730161111101800000000").unwrap();
+        assert_eq!(the_test.get_iban(), "HU42117730161111101800000000");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "117");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "7301");
+
+        let the_test = Iban::new("IE29AIBK93115212345678").unwrap();
+        assert_eq!(the_test.get_iban(), "IE29AIBK93115212345678");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "AIBK");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "931152");
+
+        let the_test = Iban::new("IL620108000000099999999").unwrap();
+        assert_eq!(the_test.get_iban(), "IL620108000000099999999");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "010");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "800");
+
+        let the_test = Iban::new("IQ98NBIQ850123456789012").unwrap();
+        assert_eq!(the_test.get_iban(), "IQ98NBIQ850123456789012");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "NBIQ");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "850");
+
+        let the_test = Iban::new("IS140159260076545510730339").unwrap();
+        assert_eq!(the_test.get_iban(), "IS140159260076545510730339");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "01");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "59");
+
+        let the_test = Iban::new("IT60X0542811101000000123456").unwrap();
+        assert_eq!(the_test.get_iban(), "IT60X0542811101000000123456");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "05428");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "11101");
+
+        let the_test = Iban::new("JO94CBJO0010000000000131000302").unwrap();
+        assert_eq!(the_test.get_iban(), "JO94CBJO0010000000000131000302");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "CBJO");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "0010"); // PDF incorrect; online and txt version okay
+
+        let the_test = Iban::new("KW81CBKU0000000000001234560101").unwrap();
+        assert_eq!(the_test.get_iban(), "KW81CBKU0000000000001234560101");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "CBKU");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("KZ86125KZT5004100100").unwrap();
+        assert_eq!(the_test.get_iban(), "KZ86125KZT5004100100");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "125");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("LB62099900000001001901229114").unwrap();
+        assert_eq!(the_test.get_iban(), "LB62099900000001001901229114");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "0999");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("LC55HEMM000100010012001200023015").unwrap();
+        assert_eq!(the_test.get_iban(), "LC55HEMM000100010012001200023015");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "HEMM");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("LI21088100002324013AA").unwrap();
+        assert_eq!(the_test.get_iban(), "LI21088100002324013AA");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "08810");
+        assert_eq!(the_test.iban_branch_id, None);
+
+        let the_test = Iban::new("YE15CBYE0001018861234567891234").unwrap();
+        assert_eq!(the_test.get_iban(), "YE15CBYE0001018861234567891234");
+        assert_eq!(the_test.iban_bank_id.unwrap(), "CBYE");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "0001");
     }
 }
