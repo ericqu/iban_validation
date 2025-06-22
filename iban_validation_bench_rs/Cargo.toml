@@ -11,7 +11,7 @@ description = "Benchmark iban_validation_rs against similar libraries"
 
 [dependencies]
 iban_parser = {package="iban_parser", version="0.2"}
-iban_short = {package= "iban", version= "0.1"}
+iban_short = {package= "iban", version= "0.2"}
 iban_validate = {package = "iban_validate", version="5.0"}
 iban_validation_rs = "0.1"
 schwifty = "0.3"
