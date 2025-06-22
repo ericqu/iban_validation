@@ -112,9 +112,9 @@ enum ValidationLetterError {
 /// internal utility
 /// Check the character (byte) is a digit and return the value of that digit.
 #[inline]
-fn simple_contains_n(c: u8) -> Result<u8, ValidationLetterError> {
+fn simple_contains_n(c: u8) -> Result<usize, ValidationLetterError> {
     if c.is_ascii_digit() {
-        Ok(c - 48) // 48 is the ascii value of '0'
+        Ok((c - 48) as usize) // 48 is the ascii value of '0'
     } else {
         Err(ValidationLetterError::NotPartOfRequiredSet)
     }
@@ -123,9 +123,9 @@ fn simple_contains_n(c: u8) -> Result<u8, ValidationLetterError> {
 /// internal utility
 /// check the character is an uppercase A-Z and return a value between 10-36
 #[inline]
-fn simple_contains_a(c: u8) -> Result<u8, ValidationLetterError> {
+fn simple_contains_a(c: u8) -> Result<usize, ValidationLetterError> {
     if c.is_ascii_uppercase() {
-        Ok(c - 55) // 55 is to get a 10 from a 'A'
+        Ok((c - 55) as usize) // 55 is to get a 10 from a 'A'
     } else {
         Err(ValidationLetterError::NotPartOfRequiredSet)
     }
@@ -134,39 +134,43 @@ fn simple_contains_a(c: u8) -> Result<u8, ValidationLetterError> {
 /// internal utility
 /// Check the character is alphanumeric an return the value (0-9 for digit,) 10-36 for letters.
 #[inline]
-fn simple_contains_c(c: u8) -> Result<u8, ValidationLetterError> {
+fn simple_contains_c(c: u8) -> Result<usize, ValidationLetterError> {
     if c.is_ascii_digit() {
-        Ok(c - 48)
+        Ok((c - 48) as usize)
     } else if c.is_ascii_uppercase() {
-        Ok(c - 55)
+        Ok((c - 55) as usize)
     } else if c.is_ascii_lowercase() {
-        Ok(c - 87) // 87 is to get a 10 from a 'a'
+        Ok((c - 87) as usize) // 87 is to get a 10 from a 'a'
     } else {
         Err(ValidationLetterError::NotPartOfRequiredSet)
     }
 }
 
+/// const storage for the comprehensive modulo operation
+const MFF_ARRAY: [[u8; 36]; 97] = generate_mff_array();
+
 /// internal utility
 /// build an array of precomputed modulo operations
 /// the maximum should be 9635 (96 the largest previous, 35 a Z the largest possible)
-const fn generate_m97_array() -> [u8; 9700] {
-    let mut array = [0u8; 9700];
-    let mut i = 0;
-    while i < 9700 {
-        array[i] = (i as u32 % 97) as u8;
-        i += 1;
+const fn generate_mff_array() -> [[u8; 36]; 97] {
+    let mut array: [[u8; 36]; 97] = [[0; 36]; 97];
+    let mut pseudo_acc = 0u8;
+
+    while pseudo_acc < 97 {
+        let mut pseudo_newchar = 0u8;
+
+        while pseudo_newchar < 36 {
+            let mut result: u32 = pseudo_acc as u32;
+            result *= if pseudo_newchar < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers)
+            result = (result + pseudo_newchar as u32) % 97; // and add new digit
+            array[pseudo_acc as usize][pseudo_newchar as usize] = result as u8;
+
+            pseudo_newchar += 1;
+        }
+
+        pseudo_acc += 1;
     }
     array
-}
-
-/// const storage for the modulo operations
-const M97_ARRAY: [u8; 9700] = generate_m97_array();
-
-/// internal utility to use an array of precomputer modulo
-#[inline]
-fn div_arr_mod97(x: u32) -> u32 {
-    let index = x as usize;
-    M97_ARRAY[index] as u32
 }
 
 /// Indicates which file was used a source
@@ -211,7 +215,7 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
 
     let input_re = input_iban[4..].bytes().chain(input_iban[..4].bytes());
 
-    let mut acc: u32 = 0;
+    let mut acc: usize = 0;
 
     for (p, t) in pat_re.zip(input_re) {
         let m97digit = match p {
@@ -239,8 +243,7 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
                 }
             }
         };
-        acc *= if m97digit < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers)
-        acc = div_arr_mod97(acc + (m97digit as u32)); // and add new digit
+        acc = MFF_ARRAY[acc][m97digit] as usize;
     }
     if acc == 1 {
         Ok((iban_data, true))
@@ -671,13 +674,13 @@ mod tests {
         assert_eq!(the_error, ValidationError::MissingCountry);
     }
 
-    #[test]
-    fn test_mod97_equivalence() {
-        // Test range of values to ensure equivalence
-        for x in 0..9_700 {
-            assert_eq!(div_arr_mod97(x), x % 97, "Failed for value {}", x);
-        }
-    }
+    // #[test]
+    // fn test_mod97_equivalence() {
+    //     // Test range of values to ensure equivalence
+    //     for x in 0..9_700 {
+    //         assert_eq!(div_arr_mod97(x), x % 97, "Failed for value {}", x);
+    //     }
+    // }
 
     #[test]
     fn test_filename() {
