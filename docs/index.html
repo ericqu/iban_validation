@@ -143,6 +143,7 @@
     <p>The processing is done on the browser not outsourced to a third party. More details about the underlying code is available at: 
     <a href="https://github.com/ericqu/iban_validation">https://github.com/ericqu/iban_validation</a> for the overall project and 
     <a href="https://github.com/ericqu/iban_validation/iban_validation_wasm">https://github.com/ericqu/iban_validation/iban_validation_wasm</a> for the WASM wrapper.</p>
+    <p>It only indicates if the IBAN is valid according to the standard, it does not ensure the account exists</p>
 
     <script type="module">
         import init, { get_version_js, get_source_file_js, parse_iban_js } from 'https://ericqu.github.io/iban_validation/pkg/iban_validation_wasm.js';
