@@ -19,16 +19,17 @@ In the iban_validation_bench_rs, benchmark of similar crates published on crates
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Changes
- - 0.1.16: improved performance, added territories for GB and FR, and more tests, added WASM (experimental for now), added fuzzer
- - 0.1.15: improved performance (char to bytes) and improved c wrapper doc
- - 0.1.14: fixed error for country code IQ (using pdf instead of technical input file)
- - 0.1.13: technical update to polars 0.48.1 and pyo3 0.24
- - 0.1.12: added the c/c++ wrapper
- - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde)
- - 0.1.9: improve mod97 perf (reduce memory needed)
+ - 0.1.17: memory usage reduced.
+ - 0.1.16: improved performance, added territories for GB and FR, and more tests, added WASM (experimental for now), added fuzzer.
+ - 0.1.15: improved performance (char to bytes) and improved c wrapper doc.
+ - 0.1.14: fixed error for country code IQ (using pdf instead of technical input file).
+ - 0.1.13: technical update to polars 0.48.1 and pyo3 0.24.
+ - 0.1.12: added the c/c++ wrapper.
+ - 0.1.11: eliminated rust dependecies (rust code generated from Python instead of Hash and Serde).
+ - 0.1.9: improve mod97 perf (reduce memory needed).
  - 0.1.8: improve mod97 perf (cpu memory tradeoff).
  - 0.1.7: improve performance related to the Iban structure again.
  - 0.1.6: improve performance related to the Iban structure.
  - 0.1.5: improve documentation and add support to Python 3.13.
  - 0.1.4: technical update; updated polars dependency to polars 0.46.0, and py03 0.23 impacting only the Python packages.
- - 0.1.3: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024
+ - 0.1.3: Updated to latest [Iban Register](https://www.swift.com/standards/data-standards/iban-international-bank-account-number) v99 from Dec 2024.
