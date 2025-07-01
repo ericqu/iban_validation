@@ -75,8 +75,7 @@ impl fmt::Display for ValidationError {
         match self {
             ValidationError::TooShort(len) => write!(
                 f,
-                "The input Iban is too short to be an IBAN {} (minimum length is 4)",
-                len
+                "The input Iban is too short to be an IBAN {len} (minimum length is 4)"
             ),
             ValidationError::MissingCountry => write!(
                 f,

@@ -11,6 +11,7 @@ In contrast, the intention is to provide a quick, correct validation of the IBAN
 For now, parallelisation is not in the scope of the core library as usage through other libraries is likely to provide that, like in the polars plugin.
 
 # Changes
+ - 0.1.18: technical update updgraded to polars 0.49.1, pyo3 0.25, rust 1.88
  - 0.1.17: memory usage reduced.
  - 0.1.16: improved performance, added territories for GB and FR, and more tests, added WASM (experimental for now), added fuzzer.
  - 0.1.15: improved performance (char to bytes) and improved c wrapper doc.

@@ -15,7 +15,7 @@ fn validate_iban(iban_t: &str) -> PyResult<bool> {
 fn validate_iban_with_error(iban_t: &str) -> PyResult<(bool, String)> {
     match iban_validation_rs::validate_iban_str(iban_t) {
         Ok(_) => Ok((true, String::new())),
-        Err(e) => Ok((false, format!("IBAN Validation failed: {}", e))),
+        Err(e) => Ok((false, format!("IBAN Validation failed: {e}"))),
     }
 }
 

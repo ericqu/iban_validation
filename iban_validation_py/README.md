@@ -32,6 +32,7 @@ assert('11009' == iban.iban_branch_id)
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.18: technical update updgraded to polars 0.49.1, pyo3 0.25, rust 1.88
  - 0.1.17: memory usage reduced.
  - 0.1.16: improved performance, added territories for GB and FR, and more tests, added WASM (experimental for now), added fuzzer.
  - 0.1.15: improved performance (char to bytes) and improved c wrapper doc.
