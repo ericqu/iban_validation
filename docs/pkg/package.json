@@ -5,7 +5,7 @@
     "Eric Quéré"
   ],
   "description": "A WebAssembly IBAN validation powered by Rust",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "license": "MIT",
   "repository": {
     "type": "git",
