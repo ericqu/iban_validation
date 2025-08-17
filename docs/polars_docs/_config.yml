@@ -1,0 +1,14 @@
+title: IBAN Validation for Polars
+description: High-performance Polars plugin for IBAN validation
+theme: minima
+
+# # Navigation
+# header_pages:
+#   - api.md
+#   - examples.md
+
+# Code highlighting
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge

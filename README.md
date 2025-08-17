@@ -19,6 +19,7 @@ In the iban_validation_bench_rs, benchmark of similar crates published on crates
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Changes
+ - 0.1.19: technical update updgraded to polars 0.50.0, rust 1.89
  - 0.1.18: technical update updgraded to polars 0.49.1, pyo3 0.25, rust 1.88
  - 0.1.17: memory usage reduced.
  - 0.1.16: improved performance, added territories for GB and FR, and more tests, added WASM (experimental for now), added fuzzer.
