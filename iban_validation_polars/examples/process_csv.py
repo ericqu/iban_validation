@@ -29,21 +29,5 @@ print(df.collect())
 duration = time.perf_counter() - start
 print(f'process_ibans for {sample_size} took {duration:.6f}')
 
-# start = time.perf_counter()
-# df = (
-#     pl.scan_csv(generatedfile)
-#     .with_columns(
-#         validated=process_ibans_num("IBAN Examples")
-#         .str.split_exact(",", 2)
-#         .struct.rename_fields(["valid_ibans", "bank_id", "branch_id"])
-#     )
-#     .unnest("validated")
-#     .sort(by="IBAN Examples", descending=True)
-# )
-# # trigger the processing
-# print(df.collect())
-# duration = time.perf_counter() - start
-# print(f'process_ibans_num for {sample_size} took {duration:.6f}')
-
 # cleanup
 os.remove(generatedfile)
