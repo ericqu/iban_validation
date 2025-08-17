@@ -46,7 +46,7 @@ pip install iban-validation-polars
 ```
 
 ## Performance Benchmarks
-This polars plugin was the principal objective of this library; the benchmarks [here](../iban_validation_bench_py/README.md) highlight how much faster it is to use the plugin than to call the Python library with ```map_element``` (about 80 times faster).
+This polars plugin was the principal objective of this library; the benchmarks [here](../iban_validation_bench_py/README.md) highlight how much faster it is to use the plugin than to call the Python library with ```map_element``` (about 100 times faster).
 
 ## API Reference
 `process_ibans(column: pl.Expr) -> pl.Expr`
