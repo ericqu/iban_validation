@@ -18,5 +18,5 @@ classifiers = [
 license = { text = "MIT" }
 
 [project.urls]
-Homepage = "https://github.com/ericqu/iban_validation"
+Homepage = "https://github.com/ericqu/iban_validation/tree/main/iban_validation_polars"
 Issues = "https://github.com/ericqu/iban_validation/issues"
