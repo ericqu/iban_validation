@@ -1,4 +1,4 @@
-# IBAN Validation for Polars iban_validation_polars
+# IBAN Validation for Polars
 A high-performance Polars plugin for validating IBANs (International Bank Account Numbers) and extracting bank/branch identifiers leveraging Polars Multi-threaded feature and performance.
 
 ## Quick Start
@@ -62,8 +62,8 @@ Returns:
 - pl.Expr: A struct expression containing:
 
     - validated_iban (str): The valid IBAN if validation passes, empty string if invalid
-    - bank_code (str | null): Bank identifier code (when relevant and valid)
-    - branch_code (str | null): Branch identifier code (when relevant and valid)
+    - bank_code (str): Bank identifier code (when relevant and valid) otherwise empty
+    - branch_code (str): Branch identifier code (when relevant and valid) otherwise empty
 
 ## Common Use cases
  - Data Cleaning pipeline
