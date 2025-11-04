@@ -1,5 +1,5 @@
+use iban_validation_rs::{get_source_file, get_version, validate_iban_str};
 use wasm_bindgen::prelude::*;
-use iban_validation_rs::{validate_iban_str, get_source_file, get_version};
 
 // JS/WASM wrapper
 #[wasm_bindgen]
@@ -49,7 +49,8 @@ impl JsIban {
 pub fn parse_iban_js(input: &str) -> Result<JsIban, JsValue> {
     match validate_iban_str(input) {
         Ok(true) => {
-            let parsed = iban_validation_rs::Iban::new(input).map_err(|e| JsValue::from_str(&format!("Parse error: {}", e)))?;
+            let parsed = iban_validation_rs::Iban::new(input)
+                .map_err(|e| JsValue::from_str(&format!("Parse error: {}", e)))?;
             Ok(JsIban {
                 iban: parsed.get_iban().to_string(),
                 bank_id: parsed.iban_bank_id.map(|s| s.to_string()),

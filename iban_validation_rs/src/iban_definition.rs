@@ -1,5 +1,6 @@
 // Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
-use crate::IbanFields;
+use crate::{IbanFields, ValidationLetterError};
+use crate::{simple_contains_a, simple_contains_c, simple_contains_n};
 
 pub const _IBAN_MIN_LEN: u8 = 15;
 pub const _IBAN_MAX_LEN: u8 = 33;
@@ -12,7 +13,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnccccccccccccADnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_a,
+            literal_d,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [65, 69], // "AE"
@@ -21,7 +47,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnnAEnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_a,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [65, 76], // "AL"
@@ -30,7 +80,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(7),
-        iban_struct: "nnnnnnnnccccccccccccccccALnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_a,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [65, 84], // "AT"
@@ -39,7 +118,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnATnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_a,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [65, 90], // "AZ"
@@ -48,7 +148,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaaccccccccccccccccccccAZnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_a,
+            literal_z,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 65], // "BA"
@@ -57,7 +186,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(6),
-        iban_struct: "nnnnnnnnnnnnnnnnBAnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_b,
+            literal_a,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 69], // "BE"
@@ -66,7 +216,24 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnBEnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_b,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 71], // "BG"
@@ -75,7 +242,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "aaaannnnnnccccccccBGnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_b,
+            literal_g,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 72], // "BH"
@@ -84,7 +274,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaaccccccccccccccBHnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_b,
+            literal_h,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 73], // "BI"
@@ -93,7 +306,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnBInn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_b,
+            literal_i,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 82], // "BR"
@@ -102,7 +343,37 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(8),
         branch_id_pos_s: Some(9),
         branch_id_pos_e: Some(13),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnacBRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_a,
+            simple_contains_c,
+            literal_b,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 89], // "BY"
@@ -111,7 +382,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "ccccnnnnccccccccccccccccBYnn",
+        iban_struct_validators: &[
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_b,
+            literal_y,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [67, 72], // "CH"
@@ -120,7 +420,29 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnccccccccccccCHnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_c,
+            literal_h,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [67, 82], // "CR"
@@ -129,7 +451,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnCRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_c,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [67, 89], // "CY"
@@ -138,7 +483,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnccccccccccccccccCYnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_c,
+            literal_y,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [67, 90], // "CZ"
@@ -147,7 +521,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnCZnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_c,
+            literal_z,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [68, 69], // "DE"
@@ -156,7 +555,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(8),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnDEnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_d,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [68, 74], // "DJ"
@@ -165,7 +587,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnDJnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_d,
+            literal_j,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [68, 75], // "DK"
@@ -174,7 +624,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnDKnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_d,
+            literal_k,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [68, 79], // "DO"
@@ -183,7 +652,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "ccccnnnnnnnnnnnnnnnnnnnnDOnn",
+        iban_struct_validators: &[
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_d,
+            literal_o,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [69, 69], // "EE"
@@ -192,7 +690,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnEEnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_e,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [69, 71], // "EG"
@@ -201,7 +720,37 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnnnEGnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_e,
+            literal_g,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [69, 83], // "ES"
@@ -210,7 +759,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnESnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_e,
+            literal_s,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [70, 73], // "FI"
@@ -219,7 +793,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnFInn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_f,
+            literal_i,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [70, 75], // "FK"
@@ -228,7 +821,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aannnnnnnnnnnnFKnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_f,
+            literal_k,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [70, 79], // "FO"
@@ -237,7 +849,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnFOnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_f,
+            literal_o,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [70, 82], // "FR"
@@ -246,7 +877,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnFRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_f,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 80], // "GP"
@@ -255,7 +914,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnGPnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_g,
+            literal_p,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 81], // "MQ"
@@ -264,7 +951,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnMQnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_q,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 70], // "GF"
@@ -273,7 +988,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnGFnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_g,
+            literal_f,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [82, 69], // "RE"
@@ -282,7 +1025,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnREnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_r,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [89, 84], // "YT"
@@ -291,7 +1062,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnYTnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_y,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [78, 67], // "NC"
@@ -300,7 +1099,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnNCnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_n,
+            literal_c,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [80, 70], // "PF"
@@ -309,7 +1136,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnPFnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_p,
+            literal_f,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [80, 77], // "PM"
@@ -318,7 +1173,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnPMnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_p,
+            literal_m,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [84, 70], // "TF"
@@ -327,7 +1210,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnTFnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_t,
+            literal_f,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [87, 70], // "WF"
@@ -336,7 +1247,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnWFnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_w,
+            literal_f,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [66, 76], // "BL"
@@ -345,7 +1284,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnBLnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_b,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 70], // "MF"
@@ -354,7 +1321,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnncccccccccccnnMFnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_f,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 66], // "GB"
@@ -363,7 +1358,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "aaaannnnnnnnnnnnnnGBnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_g,
+            literal_b,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [73, 77], // "IM"
@@ -372,7 +1390,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "aaaannnnnnnnnnnnnnIMnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_i,
+            literal_m,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [74, 69], // "JE"
@@ -381,7 +1422,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "aaaannnnnnnnnnnnnnJEnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_j,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 71], // "GG"
@@ -390,7 +1454,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "aaaannnnnnnnnnnnnnGGnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_g,
+            literal_g,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 69], // "GE"
@@ -399,7 +1486,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aannnnnnnnnnnnnnnnGEnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_g,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 73], // "GI"
@@ -408,7 +1518,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaacccccccccccccccGInn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_g,
+            literal_i,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 76], // "GL"
@@ -417,7 +1551,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnGLnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_g,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 82], // "GR"
@@ -426,7 +1579,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(7),
-        iban_struct: "nnnnnnnccccccccccccccccGRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_g,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [71, 84], // "GT"
@@ -435,7 +1616,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "ccccccccccccccccccccccccGTnn",
+        iban_struct_validators: &[
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_g,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [72, 78], // "HN"
@@ -444,7 +1654,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnHNnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_h,
+            literal_n,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [72, 82], // "HR"
@@ -453,7 +1692,29 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(7),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnHRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_h,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [72, 85], // "HU"
@@ -462,7 +1723,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(7),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnnHUnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_h,
+            literal_u,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [73, 69], // "IE"
@@ -471,7 +1761,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(10),
-        iban_struct: "aaaannnnnnnnnnnnnnIEnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_i,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [73, 76], // "IL"
@@ -480,7 +1793,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(6),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnILnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_i,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [73, 81], // "IQ"
@@ -489,7 +1826,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(7),
-        iban_struct: "aaaannnnnnnnnnnnnnnIQnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_i,
+            literal_q,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [73, 83], // "IS"
@@ -498,7 +1859,34 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: Some(3),
         branch_id_pos_e: Some(4),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnISnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_i,
+            literal_s,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [73, 84], // "IT"
@@ -507,7 +1895,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(11),
-        iban_struct: "annnnnnnnnnccccccccccccITnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_i,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [74, 79], // "JO"
@@ -516,7 +1932,38 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "aaaannnnccccccccccccccccccJOnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_j,
+            literal_o,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [75, 87], // "KW"
@@ -525,7 +1972,38 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaaccccccccccccccccccccccKWnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_k,
+            literal_w,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [75, 90], // "KZ"
@@ -534,7 +2012,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnncccccccccccccKZnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_k,
+            literal_z,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 66], // "LB"
@@ -543,7 +2042,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnccccccccccccccccccccLBnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_l,
+            literal_b,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 67], // "LC"
@@ -552,7 +2080,40 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaaccccccccccccccccccccccccLCnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_l,
+            literal_c,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 73], // "LI"
@@ -561,7 +2122,29 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnccccccccccccLInn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_l,
+            literal_i,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 84], // "LT"
@@ -570,7 +2153,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnLTnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_l,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 85], // "LU"
@@ -579,7 +2183,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnncccccccccccccLUnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_l,
+            literal_u,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 86], // "LV"
@@ -588,7 +2213,29 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaacccccccccccccLVnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_l,
+            literal_v,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [76, 89], // "LY"
@@ -597,7 +2244,33 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
         branch_id_pos_e: Some(6),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnLYnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_l,
+            literal_y,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 67], // "MC"
@@ -606,7 +2279,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "nnnnnnnnnncccccccccccnnMCnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_c,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 68], // "MD"
@@ -615,7 +2316,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "ccccccccccccccccccccMDnn",
+        iban_struct_validators: &[
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_m,
+            literal_d,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 69], // "ME"
@@ -624,7 +2350,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnMEnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 75], // "MK"
@@ -633,7 +2382,27 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnccccccccccnnMKnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_k,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 78], // "MN"
@@ -642,7 +2411,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnMNnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_n,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 82], // "MR"
@@ -651,7 +2441,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: Some(6),
         branch_id_pos_e: Some(10),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnMRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_m,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 84], // "MT"
@@ -660,7 +2478,39 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(9),
-        iban_struct: "aaaannnnnccccccccccccccccccMTnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_m,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [77, 85], // "MU"
@@ -669,7 +2519,38 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(8),
-        iban_struct: "aaaannnnnnnnnnnnnnnnnnnaaaMUnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            literal_m,
+            literal_u,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [78, 73], // "NI"
@@ -678,7 +2559,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnNInn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_n,
+            literal_i,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [78, 76], // "NL"
@@ -687,7 +2597,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaannnnnnnnnnNLnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_n,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [78, 79], // "NO"
@@ -696,7 +2625,23 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnNOnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_n,
+            literal_o,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [79, 77], // "OM"
@@ -705,7 +2650,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnccccccccccccccccOMnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_o,
+            literal_m,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [80, 75], // "PK"
@@ -714,7 +2683,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaaccccccccccccccccPKnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_p,
+            literal_k,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [80, 76], // "PL"
@@ -723,7 +2717,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: None,
         branch_id_pos_s: Some(1),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnnnnPLnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_p,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [80, 83], // "PS"
@@ -732,7 +2755,37 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaacccccccccccccccccccccPSnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_p,
+            literal_s,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [80, 84], // "PT"
@@ -741,7 +2794,33 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnPTnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_p,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [81, 65], // "QA"
@@ -750,7 +2829,37 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaacccccccccccccccccccccQAnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_q,
+            literal_a,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [82, 79], // "RO"
@@ -759,7 +2868,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaaccccccccccccccccROnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_r,
+            literal_o,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [82, 83], // "RS"
@@ -768,7 +2902,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnRSnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_r,
+            literal_s,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [82, 85], // "RU"
@@ -777,7 +2934,41 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(9),
         branch_id_pos_s: Some(10),
         branch_id_pos_e: Some(14),
-        iban_struct: "nnnnnnnnnnnnnncccccccccccccccRUnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_r,
+            literal_u,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 65], // "SA"
@@ -786,7 +2977,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnccccccccccccccccccSAnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_s,
+            literal_a,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 67], // "SC"
@@ -795,7 +3011,39 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(8),
-        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnaaaSCnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            literal_s,
+            literal_c,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 68], // "SD"
@@ -804,7 +3052,26 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnSDnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_d,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 69], // "SE"
@@ -813,7 +3080,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnSEnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 73], // "SI"
@@ -822,7 +3114,27 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnSInn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_i,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 75], // "SK"
@@ -831,7 +3143,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnSKnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_k,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 77], // "SM"
@@ -840,7 +3177,35 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: Some(7),
         branch_id_pos_e: Some(11),
-        iban_struct: "annnnnnnnnnccccccccccccSMnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_s,
+            literal_m,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 79], // "SO"
@@ -849,7 +3214,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(7),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnSOnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_o,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 84], // "ST"
@@ -858,7 +3247,33 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnnSTnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_t,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [83, 86], // "SV"
@@ -867,7 +3282,36 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaannnnnnnnnnnnnnnnnnnnSVnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_s,
+            literal_v,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [84, 76], // "TL"
@@ -876,7 +3320,31 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnnTLnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_t,
+            literal_l,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [84, 78], // "TN"
@@ -885,7 +3353,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: Some(3),
         branch_id_pos_e: Some(5),
-        iban_struct: "nnnnnnnnnnnnnnnnnnnnTNnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_t,
+            literal_n,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [84, 82], // "TR"
@@ -894,7 +3387,34 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(5),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnccccccccccccccccTRnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_t,
+            literal_r,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [85, 65], // "UA"
@@ -903,7 +3423,37 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(6),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnncccccccccccccccccccUAnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_u,
+            literal_a,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [86, 65], // "VA"
@@ -912,7 +3462,30 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(3),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "nnnnnnnnnnnnnnnnnnVAnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_v,
+            literal_a,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [86, 71], // "VG"
@@ -921,7 +3494,32 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: None,
         branch_id_pos_e: None,
-        iban_struct: "aaaannnnnnnnnnnnnnnnVGnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_v,
+            literal_g,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [88, 75], // "XK"
@@ -930,7 +3528,28 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(2),
         branch_id_pos_s: Some(3),
         branch_id_pos_e: Some(4),
-        iban_struct: "nnnnnnnnnnnnnnnnXKnn",
+        iban_struct_validators: &[
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            literal_x,
+            literal_k,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
     IbanFields {
         ctry_cd: [89, 69], // "YE"
@@ -939,116 +3558,407 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_e: Some(4),
         branch_id_pos_s: Some(5),
         branch_id_pos_e: Some(8),
-        iban_struct: "aaaannnnccccccccccccccccccYEnn",
+        iban_struct_validators: &[
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_a,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_n,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            simple_contains_c,
+            literal_y,
+            literal_e,
+            simple_contains_n,
+            simple_contains_n,
+        ],
     },
 ];
 
 pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
-      [65, 68] => Some(&IBAN_DEFINITIONS[0]), // AD
-      [65, 69] => Some(&IBAN_DEFINITIONS[1]), // AE
-      [65, 76] => Some(&IBAN_DEFINITIONS[2]), // AL
-      [65, 84] => Some(&IBAN_DEFINITIONS[3]), // AT
-      [65, 90] => Some(&IBAN_DEFINITIONS[4]), // AZ
-      [66, 65] => Some(&IBAN_DEFINITIONS[5]), // BA
-      [66, 69] => Some(&IBAN_DEFINITIONS[6]), // BE
-      [66, 71] => Some(&IBAN_DEFINITIONS[7]), // BG
-      [66, 72] => Some(&IBAN_DEFINITIONS[8]), // BH
-      [66, 73] => Some(&IBAN_DEFINITIONS[9]), // BI
-      [66, 82] => Some(&IBAN_DEFINITIONS[10]), // BR
-      [66, 89] => Some(&IBAN_DEFINITIONS[11]), // BY
-      [67, 72] => Some(&IBAN_DEFINITIONS[12]), // CH
-      [67, 82] => Some(&IBAN_DEFINITIONS[13]), // CR
-      [67, 89] => Some(&IBAN_DEFINITIONS[14]), // CY
-      [67, 90] => Some(&IBAN_DEFINITIONS[15]), // CZ
-      [68, 69] => Some(&IBAN_DEFINITIONS[16]), // DE
-      [68, 74] => Some(&IBAN_DEFINITIONS[17]), // DJ
-      [68, 75] => Some(&IBAN_DEFINITIONS[18]), // DK
-      [68, 79] => Some(&IBAN_DEFINITIONS[19]), // DO
-      [69, 69] => Some(&IBAN_DEFINITIONS[20]), // EE
-      [69, 71] => Some(&IBAN_DEFINITIONS[21]), // EG
-      [69, 83] => Some(&IBAN_DEFINITIONS[22]), // ES
-      [70, 73] => Some(&IBAN_DEFINITIONS[23]), // FI
-      [70, 75] => Some(&IBAN_DEFINITIONS[24]), // FK
-      [70, 79] => Some(&IBAN_DEFINITIONS[25]), // FO
-      [70, 82] => Some(&IBAN_DEFINITIONS[26]), // FR
-      [71, 80] => Some(&IBAN_DEFINITIONS[27]), // GP
-      [77, 81] => Some(&IBAN_DEFINITIONS[28]), // MQ
-      [71, 70] => Some(&IBAN_DEFINITIONS[29]), // GF
-      [82, 69] => Some(&IBAN_DEFINITIONS[30]), // RE
-      [89, 84] => Some(&IBAN_DEFINITIONS[31]), // YT
-      [78, 67] => Some(&IBAN_DEFINITIONS[32]), // NC
-      [80, 70] => Some(&IBAN_DEFINITIONS[33]), // PF
-      [80, 77] => Some(&IBAN_DEFINITIONS[34]), // PM
-      [84, 70] => Some(&IBAN_DEFINITIONS[35]), // TF
-      [87, 70] => Some(&IBAN_DEFINITIONS[36]), // WF
-      [66, 76] => Some(&IBAN_DEFINITIONS[37]), // BL
-      [77, 70] => Some(&IBAN_DEFINITIONS[38]), // MF
-      [71, 66] => Some(&IBAN_DEFINITIONS[39]), // GB
-      [73, 77] => Some(&IBAN_DEFINITIONS[40]), // IM
-      [74, 69] => Some(&IBAN_DEFINITIONS[41]), // JE
-      [71, 71] => Some(&IBAN_DEFINITIONS[42]), // GG
-      [71, 69] => Some(&IBAN_DEFINITIONS[43]), // GE
-      [71, 73] => Some(&IBAN_DEFINITIONS[44]), // GI
-      [71, 76] => Some(&IBAN_DEFINITIONS[45]), // GL
-      [71, 82] => Some(&IBAN_DEFINITIONS[46]), // GR
-      [71, 84] => Some(&IBAN_DEFINITIONS[47]), // GT
-      [72, 78] => Some(&IBAN_DEFINITIONS[48]), // HN
-      [72, 82] => Some(&IBAN_DEFINITIONS[49]), // HR
-      [72, 85] => Some(&IBAN_DEFINITIONS[50]), // HU
-      [73, 69] => Some(&IBAN_DEFINITIONS[51]), // IE
-      [73, 76] => Some(&IBAN_DEFINITIONS[52]), // IL
-      [73, 81] => Some(&IBAN_DEFINITIONS[53]), // IQ
-      [73, 83] => Some(&IBAN_DEFINITIONS[54]), // IS
-      [73, 84] => Some(&IBAN_DEFINITIONS[55]), // IT
-      [74, 79] => Some(&IBAN_DEFINITIONS[56]), // JO
-      [75, 87] => Some(&IBAN_DEFINITIONS[57]), // KW
-      [75, 90] => Some(&IBAN_DEFINITIONS[58]), // KZ
-      [76, 66] => Some(&IBAN_DEFINITIONS[59]), // LB
-      [76, 67] => Some(&IBAN_DEFINITIONS[60]), // LC
-      [76, 73] => Some(&IBAN_DEFINITIONS[61]), // LI
-      [76, 84] => Some(&IBAN_DEFINITIONS[62]), // LT
-      [76, 85] => Some(&IBAN_DEFINITIONS[63]), // LU
-      [76, 86] => Some(&IBAN_DEFINITIONS[64]), // LV
-      [76, 89] => Some(&IBAN_DEFINITIONS[65]), // LY
-      [77, 67] => Some(&IBAN_DEFINITIONS[66]), // MC
-      [77, 68] => Some(&IBAN_DEFINITIONS[67]), // MD
-      [77, 69] => Some(&IBAN_DEFINITIONS[68]), // ME
-      [77, 75] => Some(&IBAN_DEFINITIONS[69]), // MK
-      [77, 78] => Some(&IBAN_DEFINITIONS[70]), // MN
-      [77, 82] => Some(&IBAN_DEFINITIONS[71]), // MR
-      [77, 84] => Some(&IBAN_DEFINITIONS[72]), // MT
-      [77, 85] => Some(&IBAN_DEFINITIONS[73]), // MU
-      [78, 73] => Some(&IBAN_DEFINITIONS[74]), // NI
-      [78, 76] => Some(&IBAN_DEFINITIONS[75]), // NL
-      [78, 79] => Some(&IBAN_DEFINITIONS[76]), // NO
-      [79, 77] => Some(&IBAN_DEFINITIONS[77]), // OM
-      [80, 75] => Some(&IBAN_DEFINITIONS[78]), // PK
-      [80, 76] => Some(&IBAN_DEFINITIONS[79]), // PL
-      [80, 83] => Some(&IBAN_DEFINITIONS[80]), // PS
-      [80, 84] => Some(&IBAN_DEFINITIONS[81]), // PT
-      [81, 65] => Some(&IBAN_DEFINITIONS[82]), // QA
-      [82, 79] => Some(&IBAN_DEFINITIONS[83]), // RO
-      [82, 83] => Some(&IBAN_DEFINITIONS[84]), // RS
-      [82, 85] => Some(&IBAN_DEFINITIONS[85]), // RU
-      [83, 65] => Some(&IBAN_DEFINITIONS[86]), // SA
-      [83, 67] => Some(&IBAN_DEFINITIONS[87]), // SC
-      [83, 68] => Some(&IBAN_DEFINITIONS[88]), // SD
-      [83, 69] => Some(&IBAN_DEFINITIONS[89]), // SE
-      [83, 73] => Some(&IBAN_DEFINITIONS[90]), // SI
-      [83, 75] => Some(&IBAN_DEFINITIONS[91]), // SK
-      [83, 77] => Some(&IBAN_DEFINITIONS[92]), // SM
-      [83, 79] => Some(&IBAN_DEFINITIONS[93]), // SO
-      [83, 84] => Some(&IBAN_DEFINITIONS[94]), // ST
-      [83, 86] => Some(&IBAN_DEFINITIONS[95]), // SV
-      [84, 76] => Some(&IBAN_DEFINITIONS[96]), // TL
-      [84, 78] => Some(&IBAN_DEFINITIONS[97]), // TN
-      [84, 82] => Some(&IBAN_DEFINITIONS[98]), // TR
-      [85, 65] => Some(&IBAN_DEFINITIONS[99]), // UA
-      [86, 65] => Some(&IBAN_DEFINITIONS[100]), // VA
-      [86, 71] => Some(&IBAN_DEFINITIONS[101]), // VG
-      [88, 75] => Some(&IBAN_DEFINITIONS[102]), // XK
-      [89, 69] => Some(&IBAN_DEFINITIONS[103]), // YE
-     _ => None,
+        [65, 68] => Some(&IBAN_DEFINITIONS[0]),   // AD
+        [65, 69] => Some(&IBAN_DEFINITIONS[1]),   // AE
+        [65, 76] => Some(&IBAN_DEFINITIONS[2]),   // AL
+        [65, 84] => Some(&IBAN_DEFINITIONS[3]),   // AT
+        [65, 90] => Some(&IBAN_DEFINITIONS[4]),   // AZ
+        [66, 65] => Some(&IBAN_DEFINITIONS[5]),   // BA
+        [66, 69] => Some(&IBAN_DEFINITIONS[6]),   // BE
+        [66, 71] => Some(&IBAN_DEFINITIONS[7]),   // BG
+        [66, 72] => Some(&IBAN_DEFINITIONS[8]),   // BH
+        [66, 73] => Some(&IBAN_DEFINITIONS[9]),   // BI
+        [66, 82] => Some(&IBAN_DEFINITIONS[10]),  // BR
+        [66, 89] => Some(&IBAN_DEFINITIONS[11]),  // BY
+        [67, 72] => Some(&IBAN_DEFINITIONS[12]),  // CH
+        [67, 82] => Some(&IBAN_DEFINITIONS[13]),  // CR
+        [67, 89] => Some(&IBAN_DEFINITIONS[14]),  // CY
+        [67, 90] => Some(&IBAN_DEFINITIONS[15]),  // CZ
+        [68, 69] => Some(&IBAN_DEFINITIONS[16]),  // DE
+        [68, 74] => Some(&IBAN_DEFINITIONS[17]),  // DJ
+        [68, 75] => Some(&IBAN_DEFINITIONS[18]),  // DK
+        [68, 79] => Some(&IBAN_DEFINITIONS[19]),  // DO
+        [69, 69] => Some(&IBAN_DEFINITIONS[20]),  // EE
+        [69, 71] => Some(&IBAN_DEFINITIONS[21]),  // EG
+        [69, 83] => Some(&IBAN_DEFINITIONS[22]),  // ES
+        [70, 73] => Some(&IBAN_DEFINITIONS[23]),  // FI
+        [70, 75] => Some(&IBAN_DEFINITIONS[24]),  // FK
+        [70, 79] => Some(&IBAN_DEFINITIONS[25]),  // FO
+        [70, 82] => Some(&IBAN_DEFINITIONS[26]),  // FR
+        [71, 80] => Some(&IBAN_DEFINITIONS[27]),  // GP
+        [77, 81] => Some(&IBAN_DEFINITIONS[28]),  // MQ
+        [71, 70] => Some(&IBAN_DEFINITIONS[29]),  // GF
+        [82, 69] => Some(&IBAN_DEFINITIONS[30]),  // RE
+        [89, 84] => Some(&IBAN_DEFINITIONS[31]),  // YT
+        [78, 67] => Some(&IBAN_DEFINITIONS[32]),  // NC
+        [80, 70] => Some(&IBAN_DEFINITIONS[33]),  // PF
+        [80, 77] => Some(&IBAN_DEFINITIONS[34]),  // PM
+        [84, 70] => Some(&IBAN_DEFINITIONS[35]),  // TF
+        [87, 70] => Some(&IBAN_DEFINITIONS[36]),  // WF
+        [66, 76] => Some(&IBAN_DEFINITIONS[37]),  // BL
+        [77, 70] => Some(&IBAN_DEFINITIONS[38]),  // MF
+        [71, 66] => Some(&IBAN_DEFINITIONS[39]),  // GB
+        [73, 77] => Some(&IBAN_DEFINITIONS[40]),  // IM
+        [74, 69] => Some(&IBAN_DEFINITIONS[41]),  // JE
+        [71, 71] => Some(&IBAN_DEFINITIONS[42]),  // GG
+        [71, 69] => Some(&IBAN_DEFINITIONS[43]),  // GE
+        [71, 73] => Some(&IBAN_DEFINITIONS[44]),  // GI
+        [71, 76] => Some(&IBAN_DEFINITIONS[45]),  // GL
+        [71, 82] => Some(&IBAN_DEFINITIONS[46]),  // GR
+        [71, 84] => Some(&IBAN_DEFINITIONS[47]),  // GT
+        [72, 78] => Some(&IBAN_DEFINITIONS[48]),  // HN
+        [72, 82] => Some(&IBAN_DEFINITIONS[49]),  // HR
+        [72, 85] => Some(&IBAN_DEFINITIONS[50]),  // HU
+        [73, 69] => Some(&IBAN_DEFINITIONS[51]),  // IE
+        [73, 76] => Some(&IBAN_DEFINITIONS[52]),  // IL
+        [73, 81] => Some(&IBAN_DEFINITIONS[53]),  // IQ
+        [73, 83] => Some(&IBAN_DEFINITIONS[54]),  // IS
+        [73, 84] => Some(&IBAN_DEFINITIONS[55]),  // IT
+        [74, 79] => Some(&IBAN_DEFINITIONS[56]),  // JO
+        [75, 87] => Some(&IBAN_DEFINITIONS[57]),  // KW
+        [75, 90] => Some(&IBAN_DEFINITIONS[58]),  // KZ
+        [76, 66] => Some(&IBAN_DEFINITIONS[59]),  // LB
+        [76, 67] => Some(&IBAN_DEFINITIONS[60]),  // LC
+        [76, 73] => Some(&IBAN_DEFINITIONS[61]),  // LI
+        [76, 84] => Some(&IBAN_DEFINITIONS[62]),  // LT
+        [76, 85] => Some(&IBAN_DEFINITIONS[63]),  // LU
+        [76, 86] => Some(&IBAN_DEFINITIONS[64]),  // LV
+        [76, 89] => Some(&IBAN_DEFINITIONS[65]),  // LY
+        [77, 67] => Some(&IBAN_DEFINITIONS[66]),  // MC
+        [77, 68] => Some(&IBAN_DEFINITIONS[67]),  // MD
+        [77, 69] => Some(&IBAN_DEFINITIONS[68]),  // ME
+        [77, 75] => Some(&IBAN_DEFINITIONS[69]),  // MK
+        [77, 78] => Some(&IBAN_DEFINITIONS[70]),  // MN
+        [77, 82] => Some(&IBAN_DEFINITIONS[71]),  // MR
+        [77, 84] => Some(&IBAN_DEFINITIONS[72]),  // MT
+        [77, 85] => Some(&IBAN_DEFINITIONS[73]),  // MU
+        [78, 73] => Some(&IBAN_DEFINITIONS[74]),  // NI
+        [78, 76] => Some(&IBAN_DEFINITIONS[75]),  // NL
+        [78, 79] => Some(&IBAN_DEFINITIONS[76]),  // NO
+        [79, 77] => Some(&IBAN_DEFINITIONS[77]),  // OM
+        [80, 75] => Some(&IBAN_DEFINITIONS[78]),  // PK
+        [80, 76] => Some(&IBAN_DEFINITIONS[79]),  // PL
+        [80, 83] => Some(&IBAN_DEFINITIONS[80]),  // PS
+        [80, 84] => Some(&IBAN_DEFINITIONS[81]),  // PT
+        [81, 65] => Some(&IBAN_DEFINITIONS[82]),  // QA
+        [82, 79] => Some(&IBAN_DEFINITIONS[83]),  // RO
+        [82, 83] => Some(&IBAN_DEFINITIONS[84]),  // RS
+        [82, 85] => Some(&IBAN_DEFINITIONS[85]),  // RU
+        [83, 65] => Some(&IBAN_DEFINITIONS[86]),  // SA
+        [83, 67] => Some(&IBAN_DEFINITIONS[87]),  // SC
+        [83, 68] => Some(&IBAN_DEFINITIONS[88]),  // SD
+        [83, 69] => Some(&IBAN_DEFINITIONS[89]),  // SE
+        [83, 73] => Some(&IBAN_DEFINITIONS[90]),  // SI
+        [83, 75] => Some(&IBAN_DEFINITIONS[91]),  // SK
+        [83, 77] => Some(&IBAN_DEFINITIONS[92]),  // SM
+        [83, 79] => Some(&IBAN_DEFINITIONS[93]),  // SO
+        [83, 84] => Some(&IBAN_DEFINITIONS[94]),  // ST
+        [83, 86] => Some(&IBAN_DEFINITIONS[95]),  // SV
+        [84, 76] => Some(&IBAN_DEFINITIONS[96]),  // TL
+        [84, 78] => Some(&IBAN_DEFINITIONS[97]),  // TN
+        [84, 82] => Some(&IBAN_DEFINITIONS[98]),  // TR
+        [85, 65] => Some(&IBAN_DEFINITIONS[99]),  // UA
+        [86, 65] => Some(&IBAN_DEFINITIONS[100]), // VA
+        [86, 71] => Some(&IBAN_DEFINITIONS[101]), // VG
+        [88, 75] => Some(&IBAN_DEFINITIONS[102]), // XK
+        [89, 69] => Some(&IBAN_DEFINITIONS[103]), // YE
+        _ => None,
+    }
+}
+
+#[inline]
+fn literal_a(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 65 {
+        // 'A'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_b(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 66 {
+        // 'B'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_c(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 67 {
+        // 'C'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_d(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 68 {
+        // 'D'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_e(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 69 {
+        // 'E'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_f(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 70 {
+        // 'F'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_g(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 71 {
+        // 'G'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_h(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 72 {
+        // 'H'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_i(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 73 {
+        // 'I'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_j(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 74 {
+        // 'J'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_k(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 75 {
+        // 'K'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_l(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 76 {
+        // 'L'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_m(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 77 {
+        // 'M'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_n(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 78 {
+        // 'N'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_o(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 79 {
+        // 'O'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_p(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 80 {
+        // 'P'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_q(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 81 {
+        // 'Q'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_r(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 82 {
+        // 'R'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_s(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 83 {
+        // 'S'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_t(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 84 {
+        // 'T'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_u(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 85 {
+        // 'U'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_v(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 86 {
+        // 'V'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_w(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 87 {
+        // 'W'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_x(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 88 {
+        // 'X'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_y(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 89 {
+        // 'Y'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }
+}
+
+#[inline]
+fn literal_z(c: u8) -> Result<usize, ValidationLetterError> {
+    if c == 90 {
+        // 'Z'
+        Ok((c - 55) as usize)
+    } else {
+        Err(ValidationLetterError::NotPartOfRequiredSet)
     }
 }

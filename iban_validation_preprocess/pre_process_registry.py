@@ -22,10 +22,48 @@ def get_df_from_input(inputfile):
     header = df.select(df.collect_schema().names()[0]).collect().to_series().to_list()
     df = df.collect().transpose(include_header=False, column_names=header).slice(1)
 
-    territory_mapping = pl.DataFrame({
-        'original_code': ['FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'FR', 'GB', 'GB', 'GB', 'GB' ],
-        'new_code':      ['FR', 'GP', 'MQ', 'GF', 'RE', 'YT', 'NC', 'PF', 'PM', 'TF', 'WF', 'BL', 'MF', 'GB', 'IM', 'JE', 'GG']
-    })
+    territory_mapping = pl.DataFrame(
+        {
+            "original_code": [
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "FR",
+                "GB",
+                "GB",
+                "GB",
+                "GB",
+            ],
+            "new_code": [
+                "FR",
+                "GP",
+                "MQ",
+                "GF",
+                "RE",
+                "YT",
+                "NC",
+                "PF",
+                "PM",
+                "TF",
+                "WF",
+                "BL",
+                "MF",
+                "GB",
+                "IM",
+                "JE",
+                "GG",
+            ],
+        }
+    )
 
     # preprocess and check iban structure
     def process_iban_structure(i_structure_e: str):
@@ -44,7 +82,9 @@ def get_df_from_input(inputfile):
         df.with_columns(
             pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
             .then(pl.lit("5-7"))
-            .when(pl.col("IBAN prefix country code (ISO 3166)") == "AL") # according to PDF and Wise
+            .when(
+                pl.col("IBAN prefix country code (ISO 3166)") == "AL"
+            )  # according to PDF and Wise
             .then(pl.lit("4-7"))
             .otherwise(pl.col("Branch identifier position within the BBAN"))
             .alias("Branch identifier position within the BBAN")
@@ -96,17 +136,23 @@ def get_df_from_input(inputfile):
                 "IBAN length": "iban_len",
             }
         )
-        .join(territory_mapping, left_on='ctry_cd', right_on='original_code', how='left')
-        .with_columns(
-            pl.coalesce([pl.col('new_code'), pl.col('ctry_cd')]).alias('ctry_cd')
+        .join(
+            territory_mapping, left_on="ctry_cd", right_on="original_code", how="left"
         )
-        .drop('new_code')
         .with_columns(
-            (pl.col('ctry_cd') + pl.col('iban_struct').str.slice(2)).alias('iban_struct')
+            pl.coalesce([pl.col("new_code"), pl.col("ctry_cd")]).alias("ctry_cd")
         )
-        .with_columns( 
-            (pl.col('iban_struct').str.slice(4) +
-             pl.col('iban_struct').str.slice(0, 4)) #.alias('temp_is')
+        .drop("new_code")
+        .with_columns(
+            (pl.col("ctry_cd") + pl.col("iban_struct").str.slice(2)).alias(
+                "iban_struct"
+            )
+        )
+        .with_columns(
+            (
+                pl.col("iban_struct").str.slice(4)
+                + pl.col("iban_struct").str.slice(0, 4)  # .alias('temp_is')
+            )
         )
         .with_columns(
             pl.col("ctry_cd").map_elements(
@@ -127,14 +173,54 @@ def get_df_from_input(inputfile):
     )
     return pre_df
 
+
+def generate_literal_validators() -> str:
+    """Generate all literal_XX functions for A-Z"""
+    functions = []
+
+    for ascii_val in range(65, 91):  # A-Z
+        char = chr(ascii_val).lower()
+        func = f"""#[inline]
+fn literal_{char}(c: u8) -> Result<usize, ValidationLetterError> {{
+    if c == {ascii_val} {{ // '{char.upper()}'
+        Ok((c - 55) as usize)
+    }} else {{
+        Err(ValidationLetterError::NotPartOfRequiredSet)
+    }}
+}}"""
+        functions.append(func)
+
+    return "\n\n".join(functions)
+
+
+def generate_from_struct_to_validator(iban_struct: str) -> str:
+    """ "Given an iban_gives a validator code"""
+    rust_code = "["
+    for idx, c in enumerate(iban_struct):
+        if c.islower():
+            if c == 'n' :
+                rust_code += '\n\t\t\tsimple_contains_n,'
+            elif c == 'c':
+                rust_code += '\n\t\t\tsimple_contains_c,'
+            elif c == 'a':
+                rust_code += '\n\t\t\tsimple_contains_a,'
+        else:
+            rust_code += "\n\t\t\tliteral_{},".format(c.lower())
+    
+    rust_code += '\n\t],\n'
+    return rust_code
+
+
+
 def pre_process_to_rust(inputfile, output_rust_codegen):
     pre_df = get_df_from_input(inputfile)
 
-    iban_min_len = pre_df.select(pl.min('iban_len')).item()
-    iban_max_len = pre_df.select(pl.max('iban_len')).item()
-    
+    iban_min_len = pre_df.select(pl.min("iban_len")).item()
+    iban_max_len = pre_df.select(pl.max("iban_len")).item()
+
     rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
-use crate::IbanFields;
+use crate::{{IbanFields, ValidationLetterError}};
+use crate::{{simple_contains_a, simple_contains_c, simple_contains_n}};
 
 pub const _IBAN_MIN_LEN: u8 = {};
 pub const _IBAN_MAX_LEN: u8 = {};
@@ -181,7 +267,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
         bank_id_pos_e: {},
         branch_id_pos_s: {},
         branch_id_pos_e: {},
-        iban_struct: "{}",
+        iban_struct_validators: &{} 
     }},
 """.format(
             ctry_cd[0],
@@ -192,7 +278,8 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
             bank_id_pos_e,
             branch_id_pos_s,
             branch_id_pos_e,
-            iban_struct,
+            #         iban_struct: "{}", iban_struct,
+            generate_from_struct_to_validator(iban_struct)
         )
 
     # Close the array
@@ -221,7 +308,9 @@ pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     rs_code += """     _ => None,
     }
 }
+
 """
+    rs_code += generate_literal_validators()
     # Write to output file
     with open(output_rust_codegen, "w") as f:
         f.write(rs_code)

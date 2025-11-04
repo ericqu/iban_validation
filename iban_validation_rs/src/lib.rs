@@ -35,6 +35,8 @@ use std::fmt;
 
 mod iban_definition;
 
+type ValidatorFn = fn(u8) -> Result<usize, ValidationLetterError>;
+
 /// indicate which information is expected from the Iban Registry and in the record.
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct IbanFields {
@@ -50,8 +52,10 @@ pub struct IbanFields {
     pub branch_id_pos_s: Option<usize>,
     /// position of branch identifier end point
     pub branch_id_pos_e: Option<usize>,
-    /// contains the structure the IBan for a specific country should be (generated from the python code)
-    pub iban_struct: &'static str,
+    // /// contains the structure the IBan for a specific country should be (generated from the python code)
+    // pub iban_struct: &'static str,
+    /// array of validation functions for each position (generated from the python code)
+    iban_struct_validators: &'static [ValidatorFn],
 }
 
 /// indicate what types of error the iban validation can detect
@@ -193,19 +197,17 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         None => return Err(ValidationError::MissingCountry),
     };
 
-    // let iban_data: &IbanFields = match &IB_REG.get(identified_country) {
     let iban_data: &IbanFields = match get_iban_fields(identified_country) {
         Some(pattern) => pattern,
         None => return Err(ValidationError::InvalidCountry),
     };
 
-    let pattern = &iban_data.iban_struct;
+    // let pattern = &iban_data.iban_struct;
+    let validators = &iban_data.iban_struct_validators;
 
-    if pattern.len() != input_iban.len() {
+    if validators.len() != input_iban.len() {
         return Err(ValidationError::InvalidSizeForCountry);
     }
-
-    let pat_re = pattern.bytes();
 
     // if we have invalid character at the boundary before starting to check them
     if !input_iban.is_char_boundary(4) {
@@ -216,34 +218,12 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
 
     let mut acc: usize = 0;
 
-    for (p, t) in pat_re.zip(input_re) {
-        let m97digit = match p {
-            b'n' => match simple_contains_n(t) {
-                Ok(value) => value,
-                _ => return Err(ValidationError::StructureIncorrectForCountry),
-            },
-            b'a' => match simple_contains_a(t) {
-                Ok(value) => value,
-                _ => return Err(ValidationError::StructureIncorrectForCountry),
-            },
-            b'c' => match simple_contains_c(t) {
-                Ok(value) => value,
-                _ => return Err(ValidationError::StructureIncorrectForCountry),
-            },
-            _ => {
-                // the 2-letter country code should match, although it is unlikely to not match (still needed to compute the m97)
-                if p == t {
-                    match simple_contains_a(t) {
-                        Ok(value) => value,
-                        _ => return Err(ValidationError::StructureIncorrectForCountry),
-                    }
-                } else {
-                    return Err(ValidationError::StructureIncorrectForCountry);
-                }
-            }
-        };
+    for (validator, byte) in validators.iter().zip(input_re) {
+        let m97digit =
+            validator(byte).map_err(|_| ValidationError::StructureIncorrectForCountry)?;
         acc = MFF_ARRAY[acc][m97digit] as usize;
     }
+
     if acc == 1 {
         Ok((iban_data, true))
     } else {
@@ -521,27 +501,27 @@ mod tests {
         );
     }
 
-    #[test]
-    fn check_map() {
-        // match IB_REG.get([b'F', b'R']) {
-        match get_iban_fields([b'F', b'R']) {
-            Some(ib_data) => {
-                println!("FR : {}", ib_data.iban_struct);
-                // assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
-                assert_eq!(ib_data.iban_struct, "nnnnnnnnnncccccccccccnnFRnn");
-            }
-            _ => println!("FR IBan missing!"),
-        }
+    // #[test]
+    // fn check_map() {
+    //     // match IB_REG.get([b'F', b'R']) {
+    //     match get_iban_fields([b'F', b'R']) {
+    //         Some(ib_data) => {
+    //             println!("FR : {}", ib_data.iban_struct);
+    //             // assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
+    //             assert_eq!(ib_data.iban_struct, "nnnnnnnnnncccccccccccnnFRnn");
+    //         }
+    //         _ => println!("FR IBan missing!"),
+    //     }
 
-        let al_ib_struct = get_iban_fields([b'A', b'L'])
-            .expect("country does not existin in registry")
-            .iban_struct;
-        // assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
-        assert_eq!("nnnnnnnnccccccccccccccccALnn", al_ib_struct);
+    //     // let al_ib_struct = get_iban_fields([b'A', b'L'])
+    //     //     .expect("country does not existin in registry")
+    //     //     .iban_struct;
+    //     // assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
+    //     // assert_eq!("nnnnnnnnccccccccccccccccALnn", al_ib_struct);
 
-        // println!("Successfully loaded {} countries", IB_REG.len());
-        println!("Successfully loaded countries");
-    }
+    //     // println!("Successfully loaded {} countries", IB_REG.len());
+    //     println!("Successfully loaded countries");
+    // }
 
     #[test]
     fn validate_iban_tostruct() {
