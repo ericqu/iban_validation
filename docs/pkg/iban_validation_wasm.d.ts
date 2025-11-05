@@ -1,12 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
-export function validate_iban_js(input: string): boolean;
 export function get_source_file_js(): string;
-export function get_version_js(): string;
+export function validate_iban_js(input: string): boolean;
 export function parse_iban_js(input: string): JsIban;
+export function get_version_js(): string;
 export class JsIban {
   private constructor();
   free(): void;
+  [Symbol.dispose](): void;
   readonly iban: string;
   readonly bank_id: string | undefined;
   readonly branch_id: string | undefined;
@@ -16,19 +17,19 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly validate_iban_js: (a: number, b: number) => [number, number, number];
+  readonly __wbg_jsiban_free: (a: number, b: number) => void;
   readonly get_source_file_js: () => [number, number];
   readonly get_version_js: () => [number, number];
-  readonly __wbg_jsiban_free: (a: number, b: number) => void;
-  readonly jsiban_iban: (a: number) => [number, number];
   readonly jsiban_bank_id: (a: number) => [number, number];
   readonly jsiban_branch_id: (a: number) => [number, number];
+  readonly jsiban_iban: (a: number) => [number, number];
   readonly parse_iban_js: (a: number, b: number) => [number, number, number];
-  readonly __wbindgen_export_0: WebAssembly.Table;
+  readonly validate_iban_js: (a: number, b: number) => [number, number, number];
+  readonly __wbindgen_externrefs: WebAssembly.Table;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __externref_table_dealloc: (a: number) => void;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_start: () => void;
 }
 

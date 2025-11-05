@@ -6,7 +6,7 @@ import os
 
 inputfile = r"iban_validation_rs/data/IBAN Examples.txt"
 generatedfile = r"iban_validation_polars/examples/test_file.csv"
-sample_size = 10000000
+sample_size = 400000000
 
 # generate a csv file for testing
 df = pl.read_csv(inputfile).sample(sample_size, with_replacement=True)
@@ -25,7 +25,7 @@ df = (
     .sort(by="IBAN Examples", descending=True)
 )
 # trigger the processing
-print(df.collect())
+print(df.collect(engine='streaming'))
 duration = time.perf_counter() - start
 print(f'process_ibans for {sample_size} took {duration:.6f}')
 

@@ -3,6 +3,10 @@ C_WRAPPER_DIR := iban_validation_c
 DIST_C_DIR := $(DIST_DIR)/c
 DIST_WHL_DIR := $(DIST_DIR)/whl
 
+RUSTFLAGS_NATIVE := -C target-cpu=native -C opt-level=3
+RUSTFLAGS_X86_64_V3 := -C target-cpu=x86-64-v3 -C opt-level=3
+RUSTFLAGS_APPLE_M1 := -C target-cpu=apple-m1 -C opt-level=3
+
 # OS Specific command
 ifeq ($(OS),Windows_NT)
 	VENV_DIR := .venv
@@ -17,8 +21,10 @@ else
 endif
 
 # Cross-compilation targets
-MACOS_TARGETS := aarch64-apple-darwin x86_64-apple-darwin
-LINUX_TARGETS := x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+MACOS_AA_TARGETS := aarch64-apple-darwin
+MACOS_X8_TARGETS := x86_64-apple-darwin
+LINUX_AA_TARGETS := aarch64-unknown-linux-gnu
+LINUX_X8_TARGETS := x86_64-unknown-linux-gnu
 WINDOWS_TARGETS := x86_64-pc-windows-msvc
 PYTHON_VERSIONS := 3.9 3.10 3.11 3.12 3.13
 
@@ -71,7 +77,6 @@ iban_validation_wasm: iban_validation_rs_release
 	cp iban_validation_wasm/index.html docs/
 	wasm-pack build iban_validation_wasm --target bundler --release
 
-
 .PHONY: iban_validation_c
 iban_validation_c:
 	cargo build -p $(C_WRAPPER_DIR) --release
@@ -88,21 +93,21 @@ iban_validation_c_release: iban_validation_rs_release
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/ ;
 # macos gnu
 	rustup target add aarch64-apple-darwin
-	cargo build -p $(C_WRAPPER_DIR) --release --target aarch64-apple-darwin
+	RUSTFLAGS="$(RUSTFLAGS_APPLE_M1)" cargo build -p $(C_WRAPPER_DIR) --release --target aarch64-apple-darwin
 	mkdir -p $(DIST_C_DIR)/aarch64-apple-darwin
 	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/aarch64-apple-darwin/
 	cp target/aarch64-apple-darwin/release/lib$(C_WRAPPER_DIR).dylib $(DIST_C_DIR)/aarch64-apple-darwin/ || true
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/aarch64-apple-darwin/
 # linux gnu
 	rustup target add x86_64-unknown-linux-gnu
-	cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-unknown-linux-gnu
+	RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-unknown-linux-gnu
 	mkdir -p $(DIST_C_DIR)/x86_64-unknown-linux-gnu
 	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
 	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/x86_64-unknown-linux-gnu/ || true
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
 # build-windows:
 	rustup target add x86_64-pc-windows-gnu
-	cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-pc-windows-gnu
+	RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-pc-windows-gnu
 	mkdir -p $(DIST_C_DIR)/x86_64-pc-windows-gnu
 	cp target/x86_64-pc-windows-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-pc-windows-gnu/
 	cp target/x86_64-pc-windows-gnu/release/$(C_WRAPPER_DIR).dll $(DIST_C_DIR)/x86_64-pc-windows-gnu/ || true
@@ -134,22 +139,34 @@ iban_validation_polars_release:	clippy
 build_iban_validation_py_release:	clippy
 	$(call create_venv)
 	$(VENV_BIN)/maturin sdist -m iban_validation_py/Cargo.toml --out $(DIST_WHL_DIR)
-	$(foreach target,$(MACOS_TARGETS),\
+	$(foreach target,$(MACOS_AA_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
+			RUSTFLAGS="$(RUSTFLAGS_APPLE_M1)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
-	$(foreach target,$(LINUX_TARGETS),\
+	$(foreach target,$(MACOS_X8_TARGETS),\
+		$(foreach pyver,$(PYTHON_VERSIONS),\
+			$(call create_venv_py, $(pyver)) ;\
+			RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
+		)\
+	)
+	$(foreach target,$(LINUX_AA_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
 			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_WHL_DIR) ;\
 		)\
 	)
+	$(foreach target,$(LINUX_X8_TARGETS),\
+		$(foreach pyver,$(PYTHON_VERSIONS),\
+			$(call create_venv_py, $(pyver)) ;\
+			RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_WHL_DIR) ;\
+		)\
+	)
 	$(foreach target,$(WINDOWS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_WHL_DIR) ;\
+			RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_py/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 
@@ -160,13 +177,25 @@ ifeq ($(OS),Windows_NT)
 endif
 	$(call create_venv)
 	$(VENV_BIN)/maturin sdist -m iban_validation_polars/Cargo.toml --out $(DIST_WHL_DIR)
-	$(foreach target,$(MACOS_TARGETS),\
+	$(foreach target,$(MACOS_AA_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
+			RUSTFLAGS="$(RUSTFLAGS_APPLE_M1)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
-	$(foreach target,$(LINUX_TARGETS),\
+	$(foreach target,$(MACOS_X8_TARGETS),\
+		$(foreach pyver,$(PYTHON_VERSIONS),\
+			$(call create_venv_py, $(pyver)) ;\
+			RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release --strip --target $(target) --out $(DIST_WHL_DIR) ;\
+		)\
+	)
+	$(foreach target,$(LINUX_X8_TARGETS),\
+		$(foreach pyver,$(PYTHON_VERSIONS),\
+			$(call create_venv_py, $(pyver)) ;\
+			RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_WHL_DIR) ;\
+		)\
+	)
+	$(foreach target,$(LINUX_AA_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
 			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --manylinux 2014 --zig --out $(DIST_WHL_DIR) ;\
@@ -175,7 +204,7 @@ endif
 	$(foreach target,$(WINDOWS_TARGETS),\
 		$(foreach pyver,$(PYTHON_VERSIONS),\
 			$(call create_venv_py, $(pyver)) ;\
-			$(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_WHL_DIR) ;\
+			RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" $(VENV_BIN)/uv run --python $(pyver) python -m maturin build -m iban_validation_polars/Cargo.toml --release -i python$(pyver) --strip --target $(target) --out $(DIST_WHL_DIR) ;\
 		)\
 	)
 
@@ -186,11 +215,11 @@ publish_iban_validation_rs: test
 
 .PHONY: test
 test:	clippy iban_validation_preprocess iban_validation_wasm
-	cargo test
-	cargo test -p iban_validation_c
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test -p iban_validation_c
 	$(call create_venv)
-	$(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
-	$(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)"  $(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)"  $(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
 	$(VENV_BIN)/pytest --ignore=iban_validation_bench_py
 
 .PHONY: coverage
@@ -224,6 +253,6 @@ publishing_testpipy:
 # to execute the bench against other libraries
 .PHONY: iban_validation_bench_rs
 iban_validation_bench_rs: iban_validation_rs_release
-	cargo bench -p iban_validation_bench_rs
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo bench -p iban_validation_bench_rs
 	$(RMRF) iban_validation_bench_rs/criterion
 	$(MVF) target/criterion iban_validation_bench_rs/criterion
