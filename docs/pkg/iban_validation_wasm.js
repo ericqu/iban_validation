@@ -32,6 +32,22 @@ function getStringFromWasm0(ptr, len) {
 /**
  * @returns {string}
  */
+export function get_version_js() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+        const ret = wasm.get_version_js();
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+}
+
+/**
+ * @returns {string}
+ */
 export function get_source_file_js() {
     let deferred1_0;
     let deferred1_1;
@@ -106,20 +122,6 @@ function takeFromExternrefTable0(idx) {
 }
 /**
  * @param {string} input
- * @returns {boolean}
- */
-export function validate_iban_js(input) {
-    const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.validate_iban_js(ptr0, len0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return ret[0] !== 0;
-}
-
-/**
- * @param {string} input
  * @returns {JsIban}
  */
 export function parse_iban_js(input) {
@@ -133,19 +135,17 @@ export function parse_iban_js(input) {
 }
 
 /**
- * @returns {string}
+ * @param {string} input
+ * @returns {boolean}
  */
-export function get_version_js() {
-    let deferred1_0;
-    let deferred1_1;
-    try {
-        const ret = wasm.get_version_js();
-        deferred1_0 = ret[0];
-        deferred1_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+export function validate_iban_js(input) {
+    const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.validate_iban_js(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return ret[0] !== 0;
 }
 
 const JsIbanFinalization = (typeof FinalizationRegistry === 'undefined')
