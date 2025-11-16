@@ -8,6 +8,7 @@ target/
 *.pyc
 __pycache__/
 dist/
+fuzz/
 iban_validation_bench_py/data/test_file.csv
 zig-cc-wrapper.sh
 iban_validation_c/examples/example_c
