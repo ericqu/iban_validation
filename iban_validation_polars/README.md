@@ -76,6 +76,7 @@ This pluging does not raise exception under normal operation.
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
+ - 0.1.22: upgraded to latest Iban register (version 100), only Albania (AL) and Poland (PL) have changes affecting this project. updated to rust 1.91.1.
  - 0.1.21: upgraded to polars 0.52.0, rust 1.91, improved internal data structure. Enable modern CPU instruction on x86 (x86-64-v3) and Mac (M1) for python, polars and c packages.
  - 0.1.20: technical update upgraded to polars 0.51.0, rust 1.90
  - 0.1.19: technical update upgraded to polars 0.50.0, rust 1.89. Improved Polars documentation.

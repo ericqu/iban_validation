@@ -2,7 +2,7 @@ import polars as pl
 
 pl.Config.set_tbl_cols(15)
 pl.Config.set_tbl_rows(45)
-inputfile = "iban_validation_preprocess/iban_registry_v99.txt"
+inputfile = "iban_validation_preprocess/iban_registry_v100.txt"
 output_source_file = "iban_validation_rs/data/iban_sourcefile.txt"
 output_rust_codegen = "iban_validation_rs/src/iban_definition.rs"
 
@@ -82,10 +82,6 @@ def get_df_from_input(inputfile):
         df.with_columns(
             pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
             .then(pl.lit("5-7"))
-            .when(
-                pl.col("IBAN prefix country code (ISO 3166)") == "AL"
-            )  # according to PDF and Wise
-            .then(pl.lit("4-7"))
             .otherwise(pl.col("Branch identifier position within the BBAN"))
             .alias("Branch identifier position within the BBAN")
         )
@@ -93,9 +89,7 @@ def get_df_from_input(inputfile):
             pl.col("IBAN structure")
             .map_elements(process_iban_structure, return_dtype=pl.String)
             .alias("iban_struct"),
-            pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "JO")
-            .then(pl.lit("1-4"))
-            .when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
+            pl.when(pl.col("IBAN prefix country code (ISO 3166)") == "IQ")
             .then(pl.lit("1-4"))
             .otherwise(
                 pl.col("Bank identifier position within the BBAN").str.strip_chars()

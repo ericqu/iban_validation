@@ -32,22 +32,6 @@ function getStringFromWasm0(ptr, len) {
 /**
  * @returns {string}
  */
-export function get_version_js() {
-    let deferred1_0;
-    let deferred1_1;
-    try {
-        const ret = wasm.get_version_js();
-        deferred1_0 = ret[0];
-        deferred1_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-    }
-}
-
-/**
- * @returns {string}
- */
 export function get_source_file_js() {
     let deferred1_0;
     let deferred1_1;
@@ -132,6 +116,22 @@ export function parse_iban_js(input) {
         throw takeFromExternrefTable0(ret[1]);
     }
     return JsIban.__wrap(ret[0]);
+}
+
+/**
+ * @returns {string}
+ */
+export function get_version_js() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+        const ret = wasm.get_version_js();
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
 }
 
 /**
