@@ -19,6 +19,7 @@ In the iban_validation_bench_rs, benchmark of similar crates published on crates
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Changes
+ - 0.1.22: upgraded to latest Iban register (version 100), only Albania (AL) and Poland (PL) have changes affecting this project. updated to rust 1.91.1.
  - 0.1.21: upgraded to polars 0.52.0, rust 1.91, improved internal data structure. Enable modern CPU instruction on x86 (x86-64-v3) and Mac (M1) for python, polars and c packages.
  - 0.1.20: technical update upgraded to polars 0.51.0, rust 1.90
  - 0.1.19: technical update upgraded to polars 0.50.0, rust 1.89

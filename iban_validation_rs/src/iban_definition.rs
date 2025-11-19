@@ -79,7 +79,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
         bank_id_pos_s: Some(1),
         bank_id_pos_e: Some(3),
         branch_id_pos_s: Some(4),
-        branch_id_pos_e: Some(7),
+        branch_id_pos_e: Some(8),
         iban_struct_validators: &[
             simple_contains_n,
             simple_contains_n,
@@ -2713,10 +2713,10 @@ pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
     IbanFields {
         ctry_cd: [80, 76], // "PL"
         iban_len: 28,
-        bank_id_pos_s: None,
-        bank_id_pos_e: None,
-        branch_id_pos_s: Some(1),
-        branch_id_pos_e: Some(8),
+        bank_id_pos_s: Some(1),
+        bank_id_pos_e: Some(8),
+        branch_id_pos_s: None,
+        branch_id_pos_e: None,
         iban_struct_validators: &[
             simple_contains_n,
             simple_contains_n,

@@ -24,7 +24,7 @@ def test_iban():
     iban = IbanValidation("AL47212110090000000235698741")
     assert "AL47212110090000000235698741" == iban.stored_iban
     assert "212" == iban.iban_bank_id
-    assert "1100" == iban.iban_branch_id
+    assert "11009" == iban.iban_branch_id
 
     # # Invalid IBAN
     invalid_iban = IbanValidation("AL47212110090000000235658741")

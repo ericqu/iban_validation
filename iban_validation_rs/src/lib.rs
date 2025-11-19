@@ -540,7 +540,7 @@ mod tests {
         let the_test = Iban::new("AL47212110090000000235698741").unwrap();
         assert_eq!(the_test.get_iban(), "AL47212110090000000235698741");
         assert_eq!(the_test.iban_bank_id.unwrap(), "212");
-        assert_eq!(the_test.iban_branch_id.unwrap(), "1100");
+        assert_eq!(the_test.iban_branch_id.unwrap(), "11009");
         let the_test = Iban::new("DE89370400440532013000").unwrap();
         assert_eq!(the_test.get_iban(), "DE89370400440532013000");
         assert_eq!(the_test.iban_bank_id.unwrap(), "37040044");
@@ -663,7 +663,7 @@ mod tests {
 
     #[test]
     fn test_filename() {
-        assert_eq!(get_source_file(), "iban_registry_v99.txt");
+        assert_eq!(get_source_file(), "iban_registry_v100.txt");
     }
 
     #[test]
