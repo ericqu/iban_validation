@@ -7,3 +7,4 @@ schwifty
 polars==1.25.2
 pandas
 pyarrow
+python-stdnum

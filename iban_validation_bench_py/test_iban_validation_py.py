@@ -1,5 +1,6 @@
 import iban_validation_py as iv
 from iban_validation_polars import process_ibans as ipl_process_iban
+from stdnum import iban as stdnum_iban
 from schwifty import IBAN as sch_iban
 import pandas as pd
 import polars as pl
@@ -17,6 +18,8 @@ def ivp_check_v_iban(iban_str="DE44500105175407324931"):
 def ivp_check_iban(iban_str="DE44500105175407324931"):
     return iv.IbanValidation(iban_str)
 
+def pstdnum_check_iban(iban_str="DE44500105175407324931"):
+    stdnum_iban.validate(iban_str)
 
 def ibv_get_iban_info_pandas(iban_str):
     iban = iv.IbanValidation(iban_str)
@@ -144,6 +147,10 @@ def test_ivp_iban(benchmark):
     assert "50010517" == iban.iban_bank_id
     assert iban.iban_branch_id is None
 
+@pytest.mark.benchmark(group="single", warmup=True)
+def test_pstdnum_iban(benchmark):
+    benchmark(pstdnum_check_iban)
+ 
 
 @pytest.mark.benchmark(group="pandas")
 def test_ivp_pandas(benchmark):
