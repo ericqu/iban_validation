@@ -2,7 +2,7 @@
 A set of projects to facilitate validation of ibans and getting the bank identifier and branch identifier in Rust, Python and Polars.
 
 ## Structure
-The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI and conda (TODO). A small example in Python is included. The iban_validation_polars is a wrapper into a Polaris plugin, compiling through Maturin and published on Pypi, a short example is provided.
+The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polaris plugin, compiling through Maturin and published on Pypi, a short example is provided.
 
 ## Use Cases
 The package is not a general-purpose library to parse IBANs. The intention is not for a user-facing library (in other words, for backends, not frontends). Hence, the 'print' format, loosely documented in the Iban Registry, is not implemented. Further, both the input and output of the library are intended to be in the 'electronic' format. BBAN (Basic Bank Account Number) validation only validates that the length, the position of the bank identifier, and the branch identifiers are correct. Further country-specific validations are not performed. 
