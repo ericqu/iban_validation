@@ -192,18 +192,17 @@ def generate_from_struct_to_validator(iban_struct: str) -> str:
     rust_code = "["
     for idx, c in enumerate(iban_struct):
         if c.islower():
-            if c == 'n' :
-                rust_code += '\n\t\t\tsimple_contains_n,'
-            elif c == 'c':
-                rust_code += '\n\t\t\tsimple_contains_c,'
-            elif c == 'a':
-                rust_code += '\n\t\t\tsimple_contains_a,'
+            if c == "n":
+                rust_code += "\n\t\t\tsimple_contains_n,"
+            elif c == "c":
+                rust_code += "\n\t\t\tsimple_contains_c,"
+            elif c == "a":
+                rust_code += "\n\t\t\tsimple_contains_a,"
         else:
             rust_code += "\n\t\t\tliteral_{},".format(c.lower())
-    
-    rust_code += '\n\t\t],'
-    return rust_code
 
+    rust_code += "\n\t\t],"
+    return rust_code
 
 
 def pre_process_to_rust(inputfile, output_rust_codegen):
@@ -271,7 +270,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
             bank_id_pos_e,
             branch_id_pos_s,
             branch_id_pos_e,
-            generate_from_struct_to_validator(iban_struct)
+            generate_from_struct_to_validator(iban_struct),
         )
 
     # Close the array
