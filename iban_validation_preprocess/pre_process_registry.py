@@ -201,7 +201,7 @@ def generate_from_struct_to_validator(iban_struct: str) -> str:
         else:
             rust_code += "\n\t\t\tliteral_{},".format(c.lower())
     
-    rust_code += '\n\t],\n'
+    rust_code += '\n\t\t],'
     return rust_code
 
 

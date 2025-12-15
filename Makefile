@@ -46,6 +46,7 @@ endef
 iban_validation_preprocess:
 	$(call create_venv)
 	$(VENV_BIN)/python iban_validation_preprocess/pre_process_registry.py
+	cargo fmt -p iban_validation_rs
 
 .PHONY: iban_validation_rs_release
 iban_validation_rs_release:	iban_validation_preprocess clippy
