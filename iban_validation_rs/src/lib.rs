@@ -653,14 +653,6 @@ mod tests {
         assert_eq!(the_error, ValidationError::MissingCountry);
     }
 
-    // #[test]
-    // fn test_mod97_equivalence() {
-    //     // Test range of values to ensure equivalence
-    //     for x in 0..9_700 {
-    //         assert_eq!(div_arr_mod97(x), x % 97, "Failed for value {}", x);
-    //     }
-    // }
-
     #[test]
     fn test_filename() {
         assert_eq!(get_source_file(), "iban_registry_v101.txt");
