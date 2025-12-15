@@ -211,6 +211,7 @@ endif
 
 .PHONY: publish_iban_validation_rs
 publish_iban_validation_rs: test
+	cargo about generate about.hbs > THIRD_PARTY_LICENCES.html
 	cargo doc
 	cargo publish -p iban_validation_rs 
 
