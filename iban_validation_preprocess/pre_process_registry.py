@@ -262,8 +262,7 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
         branch_id_pos_s: {},
         branch_id_pos_e: {},
         iban_struct_validators: &{} 
-    }},
-""".format(
+    }},""".format(
             ctry_cd[0],
             ctry_cd[1],
             country_str,
@@ -272,7 +271,6 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
             bank_id_pos_e,
             branch_id_pos_s,
             branch_id_pos_e,
-            #         iban_struct: "{}", iban_struct,
             generate_from_struct_to_validator(iban_struct)
         )
 
