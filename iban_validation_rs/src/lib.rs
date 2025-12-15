@@ -663,7 +663,7 @@ mod tests {
 
     #[test]
     fn test_filename() {
-        assert_eq!(get_source_file(), "iban_registry_v100.txt");
+        assert_eq!(get_source_file(), "iban_registry_v101.txt");
     }
 
     #[test]

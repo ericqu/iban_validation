@@ -1,9 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export function get_source_file_js(): string;
-export function parse_iban_js(input: string): JsIban;
-export function get_version_js(): string;
-export function validate_iban_js(input: string): boolean;
+
 export class JsIban {
   private constructor();
   free(): void;
@@ -12,6 +9,14 @@ export class JsIban {
   readonly bank_id: string | undefined;
   readonly branch_id: string | undefined;
 }
+
+export function get_source_file_js(): string;
+
+export function get_version_js(): string;
+
+export function parse_iban_js(input: string): JsIban;
+
+export function validate_iban_js(input: string): boolean;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -34,6 +39,7 @@ export interface InitOutput {
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;
+
 /**
 * Instantiates the given `module`, which can either be bytes or
 * a precompiled `WebAssembly.Module`.
