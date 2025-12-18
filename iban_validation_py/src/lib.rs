@@ -19,6 +19,37 @@ fn validate_iban_with_error(iban_t: &str) -> PyResult<(bool, String)> {
     }
 }
 
+/// Error codes for IBAN validation failures
+enum IbanErrorCode {
+    Valid = 0,
+    TooShort = 1,
+    MissingCountry = 2,
+    InvalidCountry = 3,
+    StructureIncorrectForCountry = 4,
+    InvalidSizeForCountry = 5,
+    ModuloIncorrect = 6,
+}
+
+/// Validate the IBAN and return an error code
+/// Returns 0 if valid, or a specific error code (1-6) for different validation failures
+#[pyfunction]
+fn validate_iban_error_code(iban_t: &str) -> PyResult<i32> {
+    match iban_validation_rs::validate_iban_str(iban_t) {
+        Ok(_) => Ok(IbanErrorCode::Valid as i32),
+        Err(e) => {
+            let error_code = match e {
+                iban_validation_rs::ValidationError::TooShort(_) => IbanErrorCode::TooShort,
+                iban_validation_rs::ValidationError::MissingCountry => IbanErrorCode::MissingCountry,
+                iban_validation_rs::ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry,
+                iban_validation_rs::ValidationError::StructureIncorrectForCountry => IbanErrorCode::StructureIncorrectForCountry,
+                iban_validation_rs::ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSizeForCountry,
+                iban_validation_rs::ValidationError::ModuloIncorrect => IbanErrorCode::ModuloIncorrect,
+            };
+            Ok(error_code as i32)
+        }
+    }
+}
+
 /// Get original source file used
 #[pyfunction]
 fn iban_source_file() -> PyResult<&'static str> {
@@ -79,8 +110,18 @@ impl IbanValidation {
 fn iban_validation_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
     m.add_function(wrap_pyfunction!(validate_iban_with_error, m)?)?;
+    m.add_function(wrap_pyfunction!(validate_iban_error_code, m)?)?;
     m.add_function(wrap_pyfunction!(iban_source_file, m)?)?;
     m.add_class::<IbanValidation>()?;
+    // Add error code constants to the module
+    m.add("ERROR_VALID", 0)?;
+    m.add("ERROR_TOO_SHORT", 1)?;
+    m.add("ERROR_MISSING_COUNTRY", 2)?;
+    m.add("ERROR_INVALID_COUNTRY", 3)?;
+    m.add("ERROR_STRUCTURE_INCORRECT", 4)?;
+    m.add("ERROR_INVALID_SIZE", 5)?;
+    m.add("ERROR_MODULO_INCORRECT", 6)?;
+
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }

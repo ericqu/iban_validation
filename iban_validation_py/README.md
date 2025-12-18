@@ -3,9 +3,10 @@ A package to facilitate validation of IBANs and getting the bank identifier and 
 
 ## Short examples
 
-There are three ways to interact with the API:
+There are four ways to interact with the API:
  - Validate the iban with `validate_iban` this does not indicate what is incorrect when the iban in invalid.
  - Validate the iban with `validate_iban_with_error` does the same and give an error message when the iban is invalid.
+ - Validate the iban with `validate_iban_error_code` which returns an error code (0 for valid, 1-6 for specific errors).
  - create an `IbanValidation` which allows to select the validated iban, the branch_id and bank_id when relevant.
 
  See below code for illustration:
@@ -22,16 +23,51 @@ result, message = iban_validation_py.validate_iban_with_error('AL472121100900000
 assert(result is False)
 assert(message == 'IBAN Validation failed: The length of the input Iban does match the length for that country')   
 
+# Using error codes
+error_code = iban_validation_py.validate_iban_error_code('AL47212110090000000235698741')
+assert(error_code == iban_validation_py.ERROR_VALID)
+
+error_code = iban_validation_py.validate_iban_error_code('AL47212110090000000235698741VV')
+assert(error_code == iban_validation_py.ERROR_INVALID_SIZE)
+
+# Check specific error types
+if error_code == iban_validation_py.ERROR_TOO_SHORT:
+    print("IBAN is too short")
+elif error_code == iban_validation_py.ERROR_MISSING_COUNTRY:
+    print("IBAN missing country code")
+elif error_code == iban_validation_py.ERROR_INVALID_COUNTRY:
+    print("Invalid country code")
+elif error_code == iban_validation_py.ERROR_STRUCTURE_INCORRECT:
+    print("IBAN structure doesn't match country requirements")
+elif error_code == iban_validation_py.ERROR_INVALID_SIZE:
+    print("IBAN length doesn't match country requirements")
+elif error_code == iban_validation_py.ERROR_MODULO_INCORRECT:
+    print("IBAN checksum is incorrect")
+
 # # Valid IBAN
 iban = IbanValidation('AL47212110090000000235698741')
 assert('AL47212110090000000235698741' == iban.stored_iban)
 assert('212' == iban.iban_bank_id)
 assert('11009' == iban.iban_branch_id)
 ```
+
+## Error Codes
+
+The `validate_iban_error_code` function returns the following error codes:
+
+- `ERROR_VALID` (0): The IBAN is valid
+- `ERROR_TOO_SHORT` (1): The IBAN is too short (minimum length is 4)
+- `ERROR_MISSING_COUNTRY` (2): The IBAN doesn't start with a two-letter country code
+- `ERROR_INVALID_COUNTRY` (3): The country code is not recognized
+- `ERROR_STRUCTURE_INCORRECT` (4): The IBAN structure doesn't match the country's requirements
+- `ERROR_INVALID_SIZE` (5): The IBAN length doesn't match the expected length for that country
+- `ERROR_MODULO_INCORRECT` (6): The IBAN checksum (mod97) is incorrect
+
 ## Credit
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.24: added `validate_iban_error_code` function to return specific error codes for validation failures.
  - 0.1.23: upgraded to latest Iban register (version 101), only change Portugal (no branch anymore). updated to rust 1.92.0.
  - 0.1.22: upgraded to latest Iban register (version 100), only Albania (AL) and Poland (PL) have changes affecting this project. updated to rust 1.91.1.
  - 0.1.21: upgraded to polars 0.52.0, rust 1.91, improved internal data structure. Enable modern CPU instruction on x86 (x86-64-v3) and Mac (M1) for python, polars and c packages.
