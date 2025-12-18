@@ -39,11 +39,21 @@ fn validate_iban_error_code(iban_t: &str) -> PyResult<i32> {
         Err(e) => {
             let error_code = match e {
                 iban_validation_rs::ValidationError::TooShort(_) => IbanErrorCode::TooShort,
-                iban_validation_rs::ValidationError::MissingCountry => IbanErrorCode::MissingCountry,
-                iban_validation_rs::ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry,
-                iban_validation_rs::ValidationError::StructureIncorrectForCountry => IbanErrorCode::StructureIncorrectForCountry,
-                iban_validation_rs::ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSizeForCountry,
-                iban_validation_rs::ValidationError::ModuloIncorrect => IbanErrorCode::ModuloIncorrect,
+                iban_validation_rs::ValidationError::MissingCountry => {
+                    IbanErrorCode::MissingCountry
+                }
+                iban_validation_rs::ValidationError::InvalidCountry => {
+                    IbanErrorCode::InvalidCountry
+                }
+                iban_validation_rs::ValidationError::StructureIncorrectForCountry => {
+                    IbanErrorCode::StructureIncorrectForCountry
+                }
+                iban_validation_rs::ValidationError::InvalidSizeForCountry => {
+                    IbanErrorCode::InvalidSizeForCountry
+                }
+                iban_validation_rs::ValidationError::ModuloIncorrect => {
+                    IbanErrorCode::ModuloIncorrect
+                }
             };
             Ok(error_code as i32)
         }
