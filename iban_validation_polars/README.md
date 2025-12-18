@@ -76,6 +76,7 @@ This pluging does not raise exception under normal operation.
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
+ - 0.1.25: added forbidden checksums in the validation
  - 0.1.24: update to the python interface only
  - 0.1.23: upgraded to latest Iban register (version 101), only change Portugal (no branch anymore). updated to rust 1.92.0.
  - 0.1.22: upgraded to latest Iban register (version 100), only Albania (AL) and Poland (PL) have changes affecting this project. updated to rust 1.91.1.

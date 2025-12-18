@@ -28,6 +28,7 @@ enum IbanErrorCode {
     StructureIncorrectForCountry = 4,
     InvalidSizeForCountry = 5,
     ModuloIncorrect = 6,
+    InvalidChecksum = 7,
 }
 
 /// Validate the IBAN and return an error code
@@ -53,6 +54,9 @@ fn validate_iban_error_code(iban_t: &str) -> PyResult<i32> {
                 }
                 iban_validation_rs::ValidationError::ModuloIncorrect => {
                     IbanErrorCode::ModuloIncorrect
+                }
+                iban_validation_rs::ValidationError::InvalidChecksum => {
+                    IbanErrorCode::InvalidChecksum
                 }
             };
             Ok(error_code as i32)

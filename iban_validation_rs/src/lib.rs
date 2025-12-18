@@ -73,6 +73,8 @@ pub enum ValidationError {
     InvalidSizeForCountry,
     /// the modulo mod97 computation for the IBAN is invalid.
     ModuloIncorrect,
+    /// to avoid ambiguities some checksum are invalids (00, 01 and 99).
+    InvalidChecksum,
 }
 impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -101,6 +103,9 @@ impl fmt::Display for ValidationError {
                 f,
                 "The calculated mod97 for the iban indicates an incorrect Iban"
             ),
+            ValidationError::InvalidChecksum => {
+                write!(f, "The checksum is invalid it can not be 00, 01 or 99")
+            }
         }
     }
 }
@@ -165,6 +170,7 @@ const fn generate_mff_array() -> [[u8; 36]; 97] {
         while pseudo_newchar < 36 {
             let mut result: u32 = pseudo_acc as u32;
             result *= if pseudo_newchar < 10 { 10 } else { 100 }; // Multiply by 10 (or 100 for two-digit numbers)
+            // result =  if result == 0 {10} else {result * if pseudo_newchar < 10 {10} else {100}} ; // Multiply by 10 (or 100 for two-digit numbers)
             result = (result + pseudo_newchar as u32) % 97; // and add new digit
             array[pseudo_acc as usize][pseudo_newchar as usize] = result as u8;
 
@@ -212,6 +218,12 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
     // if we have invalid character at the boundary before starting to check them
     if !input_iban.is_char_boundary(4) {
         return Err(ValidationError::StructureIncorrectForCountry);
+    }
+
+    // forbidden checksums: it cannot be 00, 01 or 99
+    let check_code = &input_iban.as_bytes()[2..4];
+    if matches!(check_code, &[48, 48] | &[48, 49] | &[57, 57]) {
+        return Err(ValidationError::InvalidChecksum);
     }
 
     let input_re = input_iban[4..].bytes().chain(input_iban[..4].bytes());
@@ -324,6 +336,14 @@ mod tests {
     fn mini_test() {
         let al_test = "DE44500105175407324931";
         assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+    }
+
+    #[test]
+    fn forbiden_checksum_test() {
+        let al_test = "IQ98NBIQ850123456789012";
+        assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+        let al_test = "IQ01NBIQ850123456789012";
+        assert_eq!(validate_iban_str(al_test).unwrap_or(false), false);
     }
 
     #[test]
@@ -500,28 +520,6 @@ mod tests {
             ValidationError::StructureIncorrectForCountry
         );
     }
-
-    // #[test]
-    // fn check_map() {
-    //     // match IB_REG.get([b'F', b'R']) {
-    //     match get_iban_fields([b'F', b'R']) {
-    //         Some(ib_data) => {
-    //             println!("FR : {}", ib_data.iban_struct);
-    //             // assert_eq!(ib_data.iban_struct, "FRnnnnnnnnnnnncccccccccccnn");
-    //             assert_eq!(ib_data.iban_struct, "nnnnnnnnnncccccccccccnnFRnn");
-    //         }
-    //         _ => println!("FR IBan missing!"),
-    //     }
-
-    //     // let al_ib_struct = get_iban_fields([b'A', b'L'])
-    //     //     .expect("country does not existin in registry")
-    //     //     .iban_struct;
-    //     // assert_eq!("ALnnnnnnnnnncccccccccccccccc", al_ib_struct);
-    //     // assert_eq!("nnnnnnnnccccccccccccccccALnn", al_ib_struct);
-
-    //     // println!("Successfully loaded {} countries", IB_REG.len());
-    //     println!("Successfully loaded countries");
-    // }
 
     #[test]
     fn validate_iban_tostruct() {

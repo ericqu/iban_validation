@@ -21,6 +21,7 @@ pub enum IbanErrorCode {
     StructureIncorrectForCountry = -4,
     InvalidSize = -5,
     ModuloFailed = -6,
+    InvalidChecksum = -7,
 }
 
 /// A zero-copy string view for C strings
@@ -144,6 +145,7 @@ pub unsafe extern "C" fn iban_validate_short(
             }
             ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
             ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
+            ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
         },
     }
 }
@@ -198,6 +200,7 @@ pub unsafe extern "C" fn iban_validate_optimized(iban_str: *const c_char, len: u
             }
             ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
             ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
+            ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
         },
     }
 }
@@ -264,6 +267,7 @@ pub unsafe extern "C" fn iban_get_view(
                 }
                 ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
                 ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
+                ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
             };
             return error_code;
         }
@@ -338,6 +342,7 @@ pub unsafe extern "C" fn iban_validate(iban_str: *const c_char) -> c_int {
             }
             ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
             ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
+            ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
         },
     }
 }
@@ -544,7 +549,11 @@ mod tests {
                 "XX89370400440532013000",
                 IbanErrorCode::InvalidCountry as i32,
             ), // Invalid country code
-            ("DE00370400440532013000", IbanErrorCode::ModuloFailed as i32), // Invalid checksum
+            (
+                "DE00370400440532013000",
+                IbanErrorCode::InvalidChecksum as i32,
+            ), // Invalid checksum
+            ("DE96370400440532013000", IbanErrorCode::ModuloFailed as i32), // failed modulo
             ("D", IbanErrorCode::MissingCountry as i32),                  // Too short overall
             ("", IbanErrorCode::MissingCountry as i32),                   // Empty string
             (
@@ -573,7 +582,11 @@ mod tests {
                 "XX89370400440532013000",
                 IbanErrorCode::InvalidCountry as i32,
             ), // Invalid country code
-            ("DE00370400440532013000", IbanErrorCode::ModuloFailed as i32), // Invalid checksum
+            (
+                "DE00370400440532013000",
+                IbanErrorCode::InvalidChecksum as i32,
+            ), // Invalid checksum
+            ("DE96370400440532013000", IbanErrorCode::ModuloFailed as i32), // failed modulo
             ("D", IbanErrorCode::MissingCountry as i32),                  // Too short overall
             ("", IbanErrorCode::MissingCountry as i32),                   // Empty string
             (

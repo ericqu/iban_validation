@@ -67,6 +67,7 @@ The `validate_iban_error_code` function returns the following error codes:
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.25: added forbidden checksums in the validation
  - 0.1.24: added `validate_iban_error_code` function to return specific error codes for validation failures.
  - 0.1.23: upgraded to latest Iban register (version 101), only change Portugal (no branch anymore). updated to rust 1.92.0.
  - 0.1.22: upgraded to latest Iban register (version 100), only Albania (AL) and Poland (PL) have changes affecting this project. updated to rust 1.91.1.
