@@ -19,6 +19,7 @@ In the iban_validation_bench_rs, benchmark of similar crates published on crates
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Changes
+ - 0.1.26: added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14
  - 0.1.25: added forbidden checksums in the validation
  - 0.1.24: update to the python interface only
  - 0.1.23: upgraded to latest Iban register (version 101), only change Portugal (no branch anymore). updated to rust 1.92.0.

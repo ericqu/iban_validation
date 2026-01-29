@@ -210,6 +210,7 @@ def pre_process_to_rust(inputfile, output_rust_codegen):
 
     iban_min_len = pre_df.select(pl.min("iban_len")).item()
     iban_max_len = pre_df.select(pl.max("iban_len")).item()
+    iban_len_assertions = []
 
     rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::{{IbanFields, ValidationLetterError}};
@@ -250,6 +251,9 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
         # Convert country code to ASCII representation for comment
         country_str = (
             chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        )
+        iban_len_assertions.append(
+        f"""let _ = [(); ({iban_len} >= 4) as usize - 1]; // {country_str}"""
         )
 
         # Format the struct initialization
@@ -302,6 +306,15 @@ pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
 
 """
     rs_code += generate_literal_validators()
+    rs_code += """
+// Compile-time invariants
+const _: () = {
+"""
+    rs_code += "\n".join(iban_len_assertions)
+    rs_code += """
+};
+"""
+
     # Write to output file
     with open(output_rust_codegen, "w") as f:
         f.write(rs_code)
