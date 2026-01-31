@@ -44,6 +44,9 @@ elif error_code == iban_validation_py.ERROR_INVALID_SIZE:
 elif error_code == iban_validation_py.ERROR_MODULO_INCORRECT:
     print("IBAN checksum is incorrect")
 
+result = iban_validation_py.validate_print_iban('AL47 2121 1009 0000 0002 3569 8741')
+assert result is True
+
 # # Valid IBAN
 iban = IbanValidation('AL47212110090000000235698741')
 assert('AL47212110090000000235698741' == iban.stored_iban)

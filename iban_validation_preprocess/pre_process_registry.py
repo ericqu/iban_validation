@@ -256,10 +256,11 @@ pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
         f"""let _ = [(); ({iban_len} >= 4) as usize - 1]; // {country_str}"""
         )
 
+        # 
+
         # Format the struct initialization
         rs_code += """    IbanFields {{
-        ctry_cd: [{}, {}], // "{}"
-        iban_len: {},
+        ctry_cd: [{}, {}], // "{}" {} characters
         bank_id_pos_s: {},
         bank_id_pos_e: {},
         branch_id_pos_s: {},

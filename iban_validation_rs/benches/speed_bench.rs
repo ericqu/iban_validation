@@ -1,9 +1,15 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use iban_validation_rs::{validate_iban_get_numeric, validate_iban_str};
+use iban_validation_rs::{validate_iban_get_numeric, validate_iban_str, validate_iban_str_print};
 
 pub fn bench_validate_iban_str(c: &mut Criterion) {
     c.bench_function("bench_validate_iban_str", |b| {
         b.iter(|| validate_iban_str(black_box("DE44500105175407324931")))
+    });
+}
+
+pub fn bench_validate_print_iban_str(c: &mut Criterion) {
+    c.bench_function("validate_iban_str_print", |b| {
+        b.iter(|| validate_iban_str_print(black_box("DE44 5001 0517 5407 3249 31")))
     });
 }
 
@@ -138,6 +144,7 @@ criterion_group!(
     bench_validate_iban_str,
     bench_validate_iban_num,
     bench_validate_iban_str_long,
-    iban_validation_new_struct
+    iban_validation_new_struct,
+    bench_validate_print_iban_str
 );
 criterion_main!(benches);

@@ -4,8 +4,8 @@
 //! extern crate iban_validation_rs;
 //! use iban_validation_rs::{validate_iban_str, Iban};
 //!
-//! // This function attempts to create an IBAN from the input string and prints the IBAN, bank ID, and branch ID if successful — or an error message if the creation fails.
-//! fn print_iban_or_error(s: &str){
+//! // This function attempts to create an IBAN from the input string and displays the IBAN, bank ID, and branch ID if successful — or an error message if the creation fails.
+//! fn display_iban_or_error(s: &str){
 //!     match Iban::new(s) {
 //!         Ok(iban) => {
 //!             println!("IBAN: {}", iban.get_iban());
@@ -24,8 +24,8 @@
 //!
 //! fn main() {
 //!     println!("okay? {:?}", validate_iban_str("DE44500105175407324931"));
-//!     print_iban_or_error("DE44500105175407324931");
-//!     print_iban_or_error("FR1234");
+//!     display_iban_or_error("DE44500105175407324931");
+//!     display_iban_or_error("FR1234");
 //! }
 //! ```
 
@@ -42,8 +42,6 @@ type ValidatorFn = fn(u8) -> Result<usize, ValidationLetterError>;
 pub struct IbanFields {
     /// two-letter country codes as per ISO 3166-1
     pub ctry_cd: [u8; 2],
-    /// IBAN length, intentionnaly short, the length is sufficient but if something changes it will raise error quickly
-    pub iban_len: u8,
     /// position of bank identifier starting point
     pub bank_id_pos_s: Option<usize>,
     /// position of bank identifier end point
@@ -52,8 +50,6 @@ pub struct IbanFields {
     pub branch_id_pos_s: Option<usize>,
     /// position of branch identifier end point
     pub branch_id_pos_e: Option<usize>,
-    // /// contains the structure the IBan for a specific country should be (generated from the python code)
-    // pub iban_struct: &'static str,
     /// array of validation functions for each position (generated from the python code)
     iban_struct_validators: &'static [ValidatorFn],
 }
@@ -192,8 +188,6 @@ pub const fn get_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
-/// Validate than an Iban is valid according to the registry information
-/// return true when Iban is fine, together with information about the fields (so that it does not need to be looked up again later)
 pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), ValidationError> {
     let identified_country: [u8; 2] = match input_iban.get(..2) {
         Some(value) => value
@@ -208,7 +202,6 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         None => return Err(ValidationError::InvalidCountry),
     };
 
-    // let pattern = &iban_data.iban_struct;
     let validators = &iban_data.iban_struct_validators;
 
     if validators.len() != input_iban.len() {
@@ -222,7 +215,7 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
 
     // forbidden checksums: it cannot be 00, 01 or 99
     let check_code = &input_iban.as_bytes()[2..4];
-    if matches!(check_code, &[48, 48] | &[48, 49] | &[57, 57]) {
+    if matches!(check_code, &[b'0', b'0'] | &[b'0', b'1'] | &[b'9', b'9']) {
         return Err(ValidationError::InvalidChecksum);
     }
 
@@ -247,6 +240,71 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
 /// return true when Iban is fine, otherwise returns Error.
 pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
     validate_iban_with_data(input_iban).map(|(_, is_valid)| is_valid)
+}
+
+/// Validate an IBAN in user-friendly (print) format.
+/// Spaces are allowed and ignored.
+/// Other characters are rejected.
+pub fn validate_iban_str_print(input: &str) -> Result<bool, ValidationError> {
+    const RAW_LIMIT: usize = 64;
+
+    let mut raw = input.bytes();
+
+    let mut logical = raw.by_ref().take(RAW_LIMIT + 1).filter(|b| *b != b' ');
+
+    // Read country + check digits
+    let mut head = [0u8; 4];
+    for position in &mut head {
+        *position = logical
+            .next()
+            .ok_or(ValidationError::InvalidSizeForCountry)?;
+    }
+
+    let identified_country: [u8; 2] = head[0..2]
+        .try_into()
+        .map_err(|_| ValidationError::InvalidCountry)?;
+
+    // Forbidden checksums
+    match &head[2..4] {
+        [b'0', b'0'] | [b'0', b'1'] | [b'9', b'9'] => return Err(ValidationError::InvalidChecksum),
+        _ => {}
+    }
+
+    let iban_data = get_iban_fields(identified_country).ok_or(ValidationError::InvalidCountry)?;
+
+    let validators = iban_data.iban_struct_validators;
+
+    // remaining characters + checksum moved to end
+    let mut reordered = logical.chain(head);
+
+    // Mod97 computation
+    let mut acc: usize = 0;
+
+    for validator in validators {
+        let byte = reordered
+            .next()
+            .ok_or(ValidationError::InvalidSizeForCountry)?;
+
+        let m97digit =
+            validator(byte).map_err(|_| ValidationError::StructureIncorrectForCountry)?;
+        acc = MFF_ARRAY[acc][m97digit] as usize;
+    }
+
+    // if remaining reordered characters: input too long
+    if reordered.next().is_some() {
+        return Err(ValidationError::InvalidSizeForCountry);
+    }
+
+    // Any remaining raw characters = raw input too long
+    if raw.next().is_some() {
+        return Err(ValidationError::InvalidSizeForCountry);
+    }
+
+    if acc == 1 {
+        Ok(true)
+    } else {
+        Err(ValidationError::ModuloIncorrect)
+    }
 }
 
 /// Validate than an Iban is valid according to the registry information
@@ -916,5 +974,54 @@ mod tests {
         assert_eq!(the_test.get_iban(), "YE15CBYE0001018861234567891234");
         assert_eq!(the_test.iban_bank_id.unwrap(), "CBYE");
         assert_eq!(the_test.iban_branch_id.unwrap(), "0001");
+    }
+
+    #[test]
+    fn print_format_with_spaces() {
+        //                DE44 5001 0517 5407 3249 31
+        let iban = "DE44 5001 0517 5407 3249 31";
+        assert!(validate_iban_str_print(iban).unwrap());
+    }
+
+    #[test]
+    fn print_format_irregular_spaces() {
+        let iban = "D E 4 4   5001 0517   5407 3249 31 ";
+        assert!(validate_iban_str_print(iban).unwrap());
+        let iban = "DE44   5001 0517   5407 3249 31 ";
+        assert!(validate_iban_str_print(iban).unwrap());
+        let iban = "DE 44   5001 0517   5407 3249 31 ";
+        assert!(validate_iban_str_print(iban).unwrap());
+        let iban = "DE44   5001 0517   5407 3249 31                                                                             a";
+        assert_eq!(
+            validate_iban_str_print(iban).unwrap_err(),
+            ValidationError::InvalidSizeForCountry
+        );
+    }
+
+    #[test]
+    fn strict_rejects_spaces() {
+        let iban = "DE44 5001 0517 5407 3249 31";
+        assert!(validate_iban_str(iban).is_err());
+    }
+
+    #[test]
+    fn flexible_rejects_excessively_long_input() {
+        let mut s = String::from("DE44");
+        s.push_str(&" ".repeat(10_000));
+        s.push_str("500105175407324931");
+
+        assert!(
+            validate_iban_str_print(&s).is_err(),
+            "should fail fast on pathological input"
+        );
+    }
+
+    #[test]
+    fn flexible_rejects_extra_logical_chars() {
+        let iban = "DE44500105175407324931123";
+        assert!(
+            validate_iban_str_print(iban).is_err(),
+            "too many logical characters"
+        );
     }
 }

@@ -982,7 +982,7 @@ mod tests {
             ("G", "Single character"),
             ("GB", "Two characters"),
             ("GB8", "Three characters"),
-            ("GB82", "Four characters - minimal but still too short"),
+            ("GB82", "Four characters - minimal but incorrect"),
         ];
 
         for (iban, description) in test_cases.iter() {

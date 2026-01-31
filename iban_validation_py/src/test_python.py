@@ -3,6 +3,13 @@ from iban_validation_py import IbanValidation
 
 print("testing version ", iban_validation_py.__version__)
 
+VALID_IBAN = "AL47212110090000000235698741"
+#                   AL47 2121 1009 0000 0002 3569 8741
+VALID_IBAN_PRINT = "AL47 2121 1009 0000 0002 3569 8741"
+
+INVALID_IBAN = "AL47212110090000000235658741"
+INVALID_IBAN_PRINT = "AL47 2121 1009 0000 0002 3569 741"
+
 
 def test_validate_iban():
     assert iban_validation_py.validate_iban("AL47212110090000000235698741") is True
@@ -17,6 +24,26 @@ def test_validate_iban():
         message
         == "IBAN Validation failed: The length of the input Iban does match the length for that country"
     )
+
+
+def test_validate_print_iban():
+    assert iban_validation_py.validate_print_iban(VALID_IBAN_PRINT) is True
+    assert iban_validation_py.validate_print_iban(INVALID_IBAN_PRINT) is False
+    assert iban_validation_py.validate_print_iban("") is False
+
+
+def test_validate_print_iban_with_error():
+    result, message = iban_validation_py.validate_print_iban_with_error(
+        VALID_IBAN_PRINT
+    )
+    assert result is True
+    assert message == ""
+
+    result, message = iban_validation_py.validate_print_iban_with_error(
+        INVALID_IBAN_PRINT
+    )
+    assert result is False
+    assert message.startswith("IBAN Validation failed:")
 
 
 def test_iban():
@@ -39,13 +66,17 @@ def test_iban():
     assert invalid_iban.iban_branch_id is None
 
     # # Invalid IBAN
-    invalid_iban = IbanValidation("HN88CABF00000000000250005469HN88CABF00000000000250005469")
+    invalid_iban = IbanValidation(
+        "HN88CABF00000000000250005469HN88CABF00000000000250005469"
+    )
     assert invalid_iban.stored_iban is None
     assert invalid_iban.iban_bank_id is None
     assert invalid_iban.iban_branch_id is None
 
     # # Invalid IBAN
-    invalid_iban = IbanValidation("HN88ZZZZ00000000000250005469HN88CABF00000000000250005469")
+    invalid_iban = IbanValidation(
+        "HN88ZZZZ00000000000250005469HN88CABF00000000000250005469"
+    )
     assert invalid_iban.stored_iban is None
     assert invalid_iban.iban_bank_id is None
     assert invalid_iban.iban_branch_id is None
@@ -68,3 +99,5 @@ def test_iban():
 
 test_validate_iban()
 test_iban()
+test_validate_print_iban()
+test_validate_print_iban_with_error()
