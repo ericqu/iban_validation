@@ -82,6 +82,7 @@ int main() {
 See Makefile for compilation of the c/c++ examples, and the examples directory for more examples
 
 ## Changes
+ - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14
  - 0.1.25: added forbidden checksums in the validation
  - 0.1.23: upgraded to latest Iban register (version 101), only change Portugal (no branch anymore). updated to rust 1.92.0.
