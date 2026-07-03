@@ -63,6 +63,7 @@ def test_plugin():
     print(target_df)
     assert_frame_equal(res, target_df)
 
+
 def test_ipl_enrich_df_polars(csvfile="iban_validation_bench_py/data/test_file.csv"):
     df = (
         pl.scan_csv(csvfile)
@@ -72,7 +73,7 @@ def test_ipl_enrich_df_polars(csvfile="iban_validation_bench_py/data/test_file.c
             .struct.rename_fields(["valid_ibans", "bank_id", "branch_id"])
         )
         .unnest("iban_infos")
-        .collect(new_streaming=True)
+        .collect(engine="streaming")
     )
 
     print(df)

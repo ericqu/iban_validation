@@ -2,7 +2,6 @@
 
 export class JsIban {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(JsIban.prototype);
         obj.__wbg_ptr = ptr;
         JsIbanFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -119,11 +118,10 @@ export function validate_iban_js(input) {
     }
     return ret[0] !== 0;
 }
-
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
-        __wbg___wbindgen_throw_df03e93053e0f4bc: function(arg0, arg1) {
+        __wbg___wbindgen_throw_344f42d3211c4765: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
         },
         __wbindgen_cast_0000000000000001: function(arg0, arg1) {
@@ -149,11 +147,10 @@ function __wbg_get_imports() {
 
 const JsIbanFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_jsiban_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_jsiban_free(ptr, 1));
 
 function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return decodeText(ptr, len);
+    return decodeText(ptr >>> 0, len);
 }
 
 let cachedUint8ArrayMemory0 = null;
@@ -236,8 +233,9 @@ if (!('encodeInto' in cachedTextEncoder)) {
 
 let WASM_VECTOR_LEN = 0;
 
-let wasmModule, wasm;
+let wasmModule, wasmInstance, wasm;
 function __wbg_finalize_init(instance, module) {
+    wasmInstance = instance;
     wasm = instance.exports;
     wasmModule = module;
     cachedUint8ArrayMemory0 = null;
