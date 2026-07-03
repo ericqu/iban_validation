@@ -2,6 +2,7 @@
 Present iban_validation in a javascript propose a demo html file.
 
 ## Changes
+ - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14
  - 0.1.25: added forbidden checksums in the validation
