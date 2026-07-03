@@ -2,7 +2,7 @@
 A set of libraries to validate IBANs and extract bank and branch identifiers in Rust, Python, and Polars, with a focus on correctness, performance, and minimal memory usage.
 
 ## Structure
-The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polaris plugin, compiling through Maturin and published on Pypi, a short example is provided.
+The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided.
 
 ## Design Goals
 
