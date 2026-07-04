@@ -7,7 +7,7 @@ name = "iban_validation_polars"
 description = "A package to facilitate validation of IBANs and selecting Bank identifier and Branch identifier as a Polars plugin"
 long_description = "A package to facilitate validation of IBANs and selecting Bank identifier and Branch identifier as a Polars plugin"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Eric" }
 ]
