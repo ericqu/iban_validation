@@ -34,6 +34,7 @@ use std::error::Error;
 use std::fmt;
 
 mod iban_definition;
+pub use iban_definition::{IBAN_MAX_LEN, IBAN_MIN_LEN};
 
 type ValidatorFn = fn(u8) -> Result<usize, ValidationLetterError>;
 

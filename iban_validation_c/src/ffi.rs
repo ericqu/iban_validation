@@ -10,10 +10,8 @@ use iban_validation_rs::{
     Iban, ValidationError, validate_iban_get_numeric, validate_iban_str, validate_iban_with_data,
 };
 
-/// Shortest valid IBAN length across the registry (Norway, NO).
-const MIN_IBAN_LEN: usize = 15;
-/// Longest valid IBAN length across the registry (Russia, RU).
-const MAX_IBAN_LEN: usize = 33;
+const MIN_IBAN_LEN: usize = iban_validation_rs::IBAN_MIN_LEN as usize;
+const MAX_IBAN_LEN: usize = iban_validation_rs::IBAN_MAX_LEN as usize;
 
 /// Maps a core validation error to the corresponding C error code.
 /// Single source of truth so adding a `ValidationError` variant only needs one update.

@@ -216,8 +216,8 @@ def pre_process_to_rust(inputfile, output_rust_codegen):
 use crate::{{IbanFields, ValidationLetterError}};
 use crate::{{simple_contains_a, simple_contains_c, simple_contains_n}};
 
-pub const _IBAN_MIN_LEN: u8 = {};
-pub const _IBAN_MAX_LEN: u8 = {};
+pub const IBAN_MIN_LEN: u8 = {};
+pub const IBAN_MAX_LEN: u8 = {};
 
 pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
 """.format(iban_min_len, iban_max_len, len(pre_df))

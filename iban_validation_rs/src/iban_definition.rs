@@ -2,8 +2,8 @@
 use crate::{IbanFields, ValidationLetterError};
 use crate::{simple_contains_a, simple_contains_c, simple_contains_n};
 
-pub const _IBAN_MIN_LEN: u8 = 15;
-pub const _IBAN_MAX_LEN: u8 = 33;
+pub const IBAN_MIN_LEN: u8 = 15;
+pub const IBAN_MAX_LEN: u8 = 33;
 
 pub const IBAN_DEFINITIONS: [IbanFields; 104] = [
     IbanFields {
