@@ -37,9 +37,23 @@ pub fn iban_validation_rs_sd(c: &mut Criterion) {
     });
 }
 
+// for iban-check
+pub fn iban_check_sd(c: &mut Criterion) {
+    c.bench_function("iban_check_sd", |b| {
+        b.iter(|| iban_check::validate(black_box("DE44500105175407324931")))
+    });
+}
+
+// for use-iban
+pub fn use_iban_sd(c: &mut Criterion) {
+    c.bench_function("use_iban_sd", |b| {
+        b.iter(|| use_iban::Iban::from_str(black_box("DE44500105175407324931")))
+    });
+}
+
 criterion_group!(
     name = benches;
     config = Criterion::default();
-    targets = iban_validate_sd, iban_short_sd, iban_parser_sd, schwifty_sd, iban_validation_rs_sd
+    targets = iban_validate_sd, iban_short_sd, iban_parser_sd, schwifty_sd, iban_validation_rs_sd, iban_check_sd, use_iban_sd
 );
 criterion_main!(benches);
