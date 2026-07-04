@@ -54,6 +54,26 @@ assert('212' == iban.iban_bank_id)
 assert('11009' == iban.iban_branch_id)
 ```
 
+## Non-registry countries
+
+By default, only the official SWIFT IBAN registry countries validate. Pass the
+keyword-only `allow_non_registry=True` to any validation function, or to
+`IbanValidation`, to additionally accept 22 IBAN-shaped account numbers that are
+**not** in the official registry (community-sourced, weaker guarantees):
+
+```python
+iban_validation_py.validate_iban("AO49012345678901234567890")  # False (default)
+iban_validation_py.validate_iban("AO49012345678901234567890", allow_non_registry=True)  # True
+
+iban = IbanValidation("AO49012345678901234567890", allow_non_registry=True)
+assert iban.is_non_registry is True
+
+# the set of two-letter codes accepted only with allow_non_registry=True
+assert "AO" in iban_validation_py.NON_REGISTRY_COUNTRIES
+```
+
+`allow_non_registry` defaults to `False` everywhere, so existing code is unaffected.
+
 ## Error Codes
 
 The `validate_iban_error_code` function returns the following error codes:
@@ -70,6 +90,7 @@ The `validate_iban_error_code` function returns the following error codes:
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
+ - 0.1.29: added opt-in `allow_non_registry` keyword argument (default `False`) to every validation function and to `IbanValidation`, plus `IbanValidation.is_non_registry` and the `NON_REGISTRY_COUNTRIES` constant.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

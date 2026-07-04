@@ -8,15 +8,34 @@ export class JsIban {
     readonly bank_id: string | undefined;
     readonly branch_id: string | undefined;
     readonly iban: string;
+    /**
+     * Whether the matched country is one of the non-registry countries.
+     */
+    readonly is_non_registry: boolean;
 }
 
 export function get_source_file_js(): string;
 
 export function get_version_js(): string;
 
-export function parse_iban_js(input: string): JsIban;
+/**
+ * Lists the two-letter codes of the opt-in, non-registry countries.
+ */
+export function non_registry_countries_js(): string[];
 
-export function validate_iban_js(input: string): boolean;
+/**
+ * Validates and parses an IBAN. `allowNonRegistry` (default `false`) additionally
+ * accepts 22 IBAN-shaped account numbers that are not in the official SWIFT IBAN
+ * registry (community-sourced, weaker guarantees).
+ */
+export function parse_iban_js(input: string, allow_non_registry?: boolean | null): JsIban;
+
+/**
+ * Validates an IBAN. `allowNonRegistry` (default `false`) additionally accepts 22
+ * IBAN-shaped account numbers that are not in the official SWIFT IBAN registry
+ * (community-sourced, weaker guarantees).
+ */
+export function validate_iban_js(input: string, allow_non_registry?: boolean | null): boolean;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -28,10 +47,13 @@ export interface InitOutput {
     readonly jsiban_bank_id: (a: number) => [number, number];
     readonly jsiban_branch_id: (a: number) => [number, number];
     readonly jsiban_iban: (a: number) => [number, number];
-    readonly parse_iban_js: (a: number, b: number) => [number, number, number];
-    readonly validate_iban_js: (a: number, b: number) => [number, number, number];
+    readonly jsiban_is_non_registry: (a: number) => number;
+    readonly non_registry_countries_js: () => [number, number];
+    readonly parse_iban_js: (a: number, b: number, c: number) => [number, number, number];
+    readonly validate_iban_js: (a: number, b: number, c: number) => [number, number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+    readonly __externref_drop_slice: (a: number, b: number) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
     readonly __externref_table_dealloc: (a: number) => void;

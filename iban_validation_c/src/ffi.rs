@@ -7,11 +7,31 @@ use std::ptr;
 use std::slice;
 
 use iban_validation_rs::{
-    Iban, ValidationError, validate_iban_get_numeric, validate_iban_str, validate_iban_with_data,
+    CountrySet, Iban, ValidationError, is_non_registry_country, validate_iban_get_numeric,
+    validate_iban_get_numeric_with, validate_iban_str, validate_iban_str_with,
+    validate_iban_with_data, validate_iban_with_data_with,
 };
 
 const MIN_IBAN_LEN: usize = iban_validation_rs::IBAN_MIN_LEN as usize;
 const MAX_IBAN_LEN: usize = iban_validation_rs::IBAN_MAX_LEN as usize;
+
+/// Pass to the `_ex` entry points to additionally accept 22 IBAN-shaped account
+/// numbers that are not in the official SWIFT IBAN registry (community-sourced,
+/// weaker guarantees). Registry-only (the default) when unset.
+pub const IBAN_ALLOW_NON_REGISTRY: u32 = 0x1;
+
+/// Set on `IbanValidationResultEx::result_flags` / `IbanDataViewEx::result_flags`
+/// when the matched country is one of the opt-in, non-registry countries.
+pub const IBAN_RESULT_NON_REGISTRY: u32 = 0x1;
+
+#[inline]
+fn country_set(flags: u32) -> CountrySet {
+    if flags & IBAN_ALLOW_NON_REGISTRY != 0 {
+        CountrySet::WithNonRegistry
+    } else {
+        CountrySet::Registry
+    }
+}
 
 /// Maps a core validation error to the corresponding C error code.
 /// Single source of truth so adding a `ValidationError` variant only needs one update.
@@ -63,6 +83,18 @@ pub struct IbanValidationResult {
     bank_e: u8,     // bank id end point, when zero it is not available
     branch_s: u8,   // branch id starting point
     branch_e: u8,   // branch id end point, when zero it is not available
+}
+
+/// Same as [`IbanValidationResult`], plus `result_flags` (see `IBAN_RESULT_*`)
+/// reporting the matched country's classification. Used by the `_ex` entry points.
+#[repr(C)]
+pub struct IbanValidationResultEx {
+    is_valid: bool,
+    bank_s: u8,
+    bank_e: u8,
+    branch_s: u8,
+    branch_e: u8,
+    result_flags: u32,
 }
 
 impl StringView {
@@ -186,6 +218,98 @@ pub unsafe extern "C" fn iban_validate_short(
     }
 }
 
+/// Fills an `IbanValidationResultEx` from an already-decoded `&str`, running
+/// validation under the given `flags` (see `IBAN_ALLOW_NON_REGISTRY`). Shared by
+/// the `_ex` zero-copy entry points.
+fn validate_numeric_ex_into(
+    iban_rust_str: &str,
+    flags: u32,
+    result: &mut IbanValidationResultEx,
+) -> c_int {
+    match validate_iban_get_numeric_with(iban_rust_str, country_set(flags)) {
+        Ok((true, bank_s, bank_e, branch_s, branch_e)) => {
+            let cc: [u8; 2] = iban_rust_str.as_bytes()[0..2].try_into().unwrap();
+            result.is_valid = true;
+            result.bank_s = bank_s;
+            result.bank_e = bank_e;
+            result.branch_s = branch_s;
+            result.branch_e = branch_e;
+            result.result_flags = if is_non_registry_country(cc) {
+                IBAN_RESULT_NON_REGISTRY
+            } else {
+                0
+            };
+            IbanErrorCode::Valid as c_int
+        }
+        Ok((false, _, _, _, _)) => IbanErrorCode::Invalid as c_int,
+        Err(err) => map_validation_error(err),
+    }
+}
+
+/// Same as [`iban_validate_short`], with `flags` selecting the accepted country set
+/// (see `IBAN_ALLOW_NON_REGISTRY`) and `result_flags` on the output classifying the
+/// matched country (see `IBAN_RESULT_NON_REGISTRY`).
+///
+/// @param iban_str A null-terminated C string containing the IBAN to validate
+/// @param len Length of the string (if known), pass 0 to auto-detect length
+/// @param flags Bitmask of `IBAN_ALLOW_NON_REGISTRY`
+/// @param result the results needed to build the branch_id and bank_id (when available)
+/// @return Status code (see IbanErrorCode enum values)
+///
+/// # Safety
+/// The input must be a valid null-terminated C string.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_validate_short_ex(
+    iban_str: *const c_char,
+    len: usize,
+    flags: u32,
+    result: *mut IbanValidationResultEx,
+) -> c_int {
+    if iban_str.is_null() {
+        unsafe {
+            (*result).is_valid = false;
+            (*result).bank_s = 0;
+            (*result).bank_e = 0;
+            (*result).branch_s = 0;
+            (*result).branch_e = 0;
+            (*result).result_flags = 0;
+        };
+        return IbanErrorCode::MissingCountry as c_int;
+    }
+
+    let actual_len = match len {
+        0 => {
+            let mut i = 0;
+            while unsafe { *iban_str.add(i) != 0 } {
+                i += 1;
+            }
+            i
+        }
+        n => {
+            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
+                unsafe {
+                    (*result).is_valid = false;
+                    (*result).bank_s = 0;
+                    (*result).bank_e = 0;
+                    (*result).branch_s = 0;
+                    (*result).branch_e = 0;
+                    (*result).result_flags = 0;
+                };
+                return IbanErrorCode::InvalidSize as c_int;
+            }
+            n
+        }
+    };
+
+    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
+    let iban_rust_str = match std::str::from_utf8(bytes) {
+        Ok(s) => s,
+        Err(_) => return IbanErrorCode::Invalid as c_int,
+    };
+
+    unsafe { validate_numeric_ex_into(iban_rust_str, flags, &mut *result) }
+}
+
 /// Optimized IBAN validation using zero-copy approach
 ///
 /// @param iban_str A null-terminated C string containing the IBAN to validate
@@ -233,6 +357,55 @@ pub unsafe extern "C" fn iban_validate_optimized(iban_str: *const c_char, len: u
 
     // Validate the IBAN
     match validate_iban_str(iban_rust_str) {
+        Ok(true) => IbanErrorCode::Valid as c_int,
+        Ok(false) => IbanErrorCode::Invalid as c_int,
+        Err(err) => map_validation_error(err),
+    }
+}
+
+/// Same as [`iban_validate_optimized`], with `flags` selecting the accepted
+/// country set (see `IBAN_ALLOW_NON_REGISTRY`).
+///
+/// @param iban_str A null-terminated C string containing the IBAN to validate
+/// @param len Length of the string (if known), pass 0 to auto-detect length
+/// @param flags Bitmask of `IBAN_ALLOW_NON_REGISTRY`
+/// @return Status code (see IbanErrorCode enum values)
+///
+/// # Safety
+/// The input must be a valid null-terminated C string.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_validate_optimized_ex(
+    iban_str: *const c_char,
+    len: usize,
+    flags: u32,
+) -> c_int {
+    if iban_str.is_null() {
+        return IbanErrorCode::MissingCountry as c_int;
+    }
+
+    let actual_len = match len {
+        0 => {
+            let mut i = 0;
+            while unsafe { *iban_str.add(i) != 0 } {
+                i += 1;
+            }
+            i
+        }
+        n => {
+            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
+                return IbanErrorCode::InvalidSize as c_int;
+            }
+            n
+        }
+    };
+
+    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
+    let iban_rust_str = match std::str::from_utf8(bytes) {
+        Ok(s) => s,
+        Err(_) => return IbanErrorCode::Invalid as c_int,
+    };
+
+    match validate_iban_str_with(iban_rust_str, country_set(flags)) {
         Ok(true) => IbanErrorCode::Valid as c_int,
         Ok(false) => IbanErrorCode::Invalid as c_int,
         Err(err) => map_validation_error(err),
@@ -303,12 +476,69 @@ pub unsafe extern "C" fn iban_validate_span(
     }
 }
 
+/// Same as [`iban_validate_span`], with `flags` selecting the accepted country set
+/// (see `IBAN_ALLOW_NON_REGISTRY`) and `result_flags` on the output classifying the
+/// matched country (see `IBAN_RESULT_NON_REGISTRY`).
+///
+/// @param iban_str Pointer to `len` bytes of IBAN data (need not be NUL-terminated)
+/// @param len Exact number of valid bytes at `iban_str`
+/// @param flags Bitmask of `IBAN_ALLOW_NON_REGISTRY`
+/// @param result the results needed to build the branch_id and bank_id (when available)
+/// @return Status code (see IbanErrorCode enum values)
+///
+/// # Safety
+/// If `len > 0`, `iban_str` must point to at least `len` readable bytes. If `len == 0`,
+/// `iban_str` is never dereferenced and may be null or dangling. `result` must point to
+/// a valid `IbanValidationResultEx`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_validate_span_ex(
+    iban_str: *const c_char,
+    len: usize,
+    flags: u32,
+    result: *mut IbanValidationResultEx,
+) -> c_int {
+    unsafe {
+        (*result).is_valid = false;
+        (*result).bank_s = 0;
+        (*result).bank_e = 0;
+        (*result).branch_s = 0;
+        (*result).branch_e = 0;
+        (*result).result_flags = 0;
+    };
+
+    if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
+        return IbanErrorCode::InvalidSize as c_int;
+    }
+
+    if iban_str.is_null() {
+        return IbanErrorCode::MissingCountry as c_int;
+    }
+
+    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, len) };
+    let iban_rust_str = match std::str::from_utf8(bytes) {
+        Ok(s) => s,
+        Err(_) => return IbanErrorCode::Invalid as c_int,
+    };
+
+    unsafe { validate_numeric_ex_into(iban_rust_str, flags, &mut *result) }
+}
+
 /// Represents the IBAN data structure for C with zero-copy considerations
 #[repr(C)]
 pub struct IbanDataView {
     iban: StringView,      /* The IBAN as a string view */
     bank_id: StringView,   /* Bank identifier as a string view */
     branch_id: StringView, /* Branch identifier as a string view */
+}
+
+/// Same as [`IbanDataView`], plus `result_flags` (see `IBAN_RESULT_*`) reporting
+/// the matched country's classification. Filled by [`iban_get_view_ex`].
+#[repr(C)]
+pub struct IbanDataViewEx {
+    iban: StringView,
+    bank_id: StringView,
+    branch_id: StringView,
+    result_flags: u32,
 }
 
 /// Modified version of IbanData for when we need to own strings
@@ -388,6 +618,99 @@ pub unsafe extern "C" fn iban_get_view(
     }
 
     IbanErrorCode::Valid as c_int
+}
+
+/// Same as [`iban_get_view`], with `flags` selecting the accepted country set
+/// (see `IBAN_ALLOW_NON_REGISTRY`) and `result_flags` on the output classifying
+/// the matched country (see `IBAN_RESULT_NON_REGISTRY`).
+///
+/// @param iban_str A null-terminated C string containing the IBAN
+/// @param flags Bitmask of `IBAN_ALLOW_NON_REGISTRY`
+/// @param out_data Pointer to an IbanDataViewEx structure to fill
+/// @return 1 if valid, 0 or negative error code otherwise
+///
+/// # Safety
+/// This requires valid pointers and the caller must ensure iban_str remains valid
+/// while the returned view is in use.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_get_view_ex(
+    iban_str: *const c_char,
+    flags: u32,
+    out_data: *mut IbanDataViewEx,
+) -> c_int {
+    if iban_str.is_null() || out_data.is_null() {
+        return IbanErrorCode::MissingCountry as c_int;
+    }
+
+    let view = match unsafe { StringView::from_c_string(iban_str) } {
+        Some(v) => v,
+        None => return IbanErrorCode::Invalid as c_int,
+    };
+
+    let iban_rust_str = match unsafe { view.as_str() } {
+        Some(s) => s,
+        None => return IbanErrorCode::Invalid as c_int,
+    };
+
+    let iban_fields = match validate_iban_with_data_with(iban_rust_str, country_set(flags)) {
+        Ok((ibf, _)) => ibf,
+        Err(err) => return map_validation_error(err),
+    };
+
+    let cc: [u8; 2] = iban_rust_str.as_bytes()[0..2].try_into().unwrap();
+    unsafe {
+        (*out_data).iban = view;
+        (*out_data).result_flags = if is_non_registry_country(cc) {
+            IBAN_RESULT_NON_REGISTRY
+        } else {
+            0
+        };
+    }
+
+    if let (Some(start), Some(end)) = (iban_fields.bank_id_pos_s, iban_fields.bank_id_pos_e) {
+        unsafe {
+            (*out_data).bank_id = StringView {
+                ptr: iban_str.add(start + 3),
+                len: 1 + end - start,
+            }
+        };
+    }
+
+    if let (Some(start), Some(end)) = (iban_fields.branch_id_pos_s, iban_fields.branch_id_pos_e) {
+        unsafe {
+            (*out_data).branch_id = StringView {
+                ptr: iban_str.add(start + 3),
+                len: 1 + end - start,
+            }
+        };
+    }
+
+    IbanErrorCode::Valid as c_int
+}
+
+/// Reports whether a two-letter country code (as the first two characters of a
+/// null-terminated string) identifies one of the opt-in, non-registry countries.
+/// Always `false` when the `non_registry` feature is not compiled in.
+///
+/// @param cc A null-terminated string whose first two characters are the country code
+/// @return true if the country is a non-registry country
+///
+/// # Safety
+/// The input must be a valid null-terminated C string, or null (returns false).
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_country_is_non_registry(cc: *const c_char) -> bool {
+    if cc.is_null() {
+        return false;
+    }
+
+    let cstr = unsafe { CStr::from_ptr(cc) };
+    match cstr.to_str() {
+        Ok(s) if s.len() >= 2 => match s.as_bytes()[0..2].try_into() {
+            Ok(cc_bytes) => is_non_registry_country(cc_bytes),
+            Err(_) => false,
+        },
+        _ => false,
+    }
 }
 
 /// Original iban_validate function (unchanged - kept for compatibility)
@@ -1523,5 +1846,135 @@ mod tests {
         for handle in handles {
             handle.join().expect("worker thread panicked");
         }
+    }
+
+    const NON_REGISTRY_EXAMPLES: &[(&str, &str)] = &[
+        ("AO", "AO49012345678901234567890"),
+        ("MA", "MA36012345678901234567890123"),
+    ];
+
+    fn empty_result_ex() -> IbanValidationResultEx {
+        IbanValidationResultEx {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+            result_flags: 0,
+        }
+    }
+
+    #[test]
+    fn test_ex_default_rejects_non_registry() {
+        for (cc, iban) in NON_REGISTRY_EXAMPLES {
+            let c_iban = CString::new(*iban).unwrap();
+            let mut result = empty_result_ex();
+            let status = unsafe { iban_validate_short_ex(c_iban.as_ptr(), 0, 0, &mut result) };
+            assert_eq!(
+                status,
+                IbanErrorCode::InvalidCountry as i32,
+                "{cc} should be rejected by default"
+            );
+            assert!(!result.is_valid);
+
+            let status = unsafe { iban_validate_optimized_ex(c_iban.as_ptr(), 0, 0) };
+            assert_eq!(status, IbanErrorCode::InvalidCountry as i32);
+
+            let mut span_result = empty_result_ex();
+            let status =
+                unsafe { iban_validate_span_ex(c_iban.as_ptr(), iban.len(), 0, &mut span_result) };
+            assert_eq!(status, IbanErrorCode::InvalidCountry as i32);
+        }
+    }
+
+    #[test]
+    fn test_ex_opt_in_accepts_non_registry_and_sets_result_flag() {
+        for (cc, iban) in NON_REGISTRY_EXAMPLES {
+            let c_iban = CString::new(*iban).unwrap();
+            let mut result = empty_result_ex();
+            let status = unsafe {
+                iban_validate_short_ex(c_iban.as_ptr(), 0, IBAN_ALLOW_NON_REGISTRY, &mut result)
+            };
+            assert_eq!(status, IbanErrorCode::Valid as i32, "{cc} should validate");
+            assert!(result.is_valid);
+            assert_eq!(
+                result.result_flags & IBAN_RESULT_NON_REGISTRY,
+                IBAN_RESULT_NON_REGISTRY
+            );
+
+            let status =
+                unsafe { iban_validate_optimized_ex(c_iban.as_ptr(), 0, IBAN_ALLOW_NON_REGISTRY) };
+            assert_eq!(status, IbanErrorCode::Valid as i32);
+
+            let mut span_result = empty_result_ex();
+            let status = unsafe {
+                iban_validate_span_ex(
+                    c_iban.as_ptr(),
+                    iban.len(),
+                    IBAN_ALLOW_NON_REGISTRY,
+                    &mut span_result,
+                )
+            };
+            assert_eq!(status, IbanErrorCode::Valid as i32);
+            assert_eq!(
+                span_result.result_flags & IBAN_RESULT_NON_REGISTRY,
+                IBAN_RESULT_NON_REGISTRY
+            );
+        }
+    }
+
+    #[test]
+    fn test_ex_registry_country_does_not_set_result_flag() {
+        let iban = CString::new("DE89370400440532013000").unwrap();
+        let mut result = empty_result_ex();
+        let status = unsafe {
+            iban_validate_short_ex(iban.as_ptr(), 0, IBAN_ALLOW_NON_REGISTRY, &mut result)
+        };
+        assert_eq!(status, IbanErrorCode::Valid as i32);
+        assert_eq!(result.result_flags & IBAN_RESULT_NON_REGISTRY, 0);
+    }
+
+    #[test]
+    fn test_get_view_ex_bank_branch_extraction_and_flag() {
+        let iban_str = "MA36012345678901234567890123";
+        let c_iban = CString::new(iban_str).unwrap();
+        let mut out_data = IbanDataViewEx {
+            iban: StringView {
+                ptr: ptr::null(),
+                len: 0,
+            },
+            bank_id: StringView {
+                ptr: ptr::null(),
+                len: 0,
+            },
+            branch_id: StringView {
+                ptr: ptr::null(),
+                len: 0,
+            },
+            result_flags: 0,
+        };
+
+        let status =
+            unsafe { iban_get_view_ex(c_iban.as_ptr(), IBAN_ALLOW_NON_REGISTRY, &mut out_data) };
+        assert_eq!(status, IbanErrorCode::Valid as i32);
+        assert_eq!(
+            out_data.result_flags & IBAN_RESULT_NON_REGISTRY,
+            IBAN_RESULT_NON_REGISTRY
+        );
+        assert_eq!(unsafe { out_data.bank_id.as_str().unwrap() }, "01234");
+        assert_eq!(unsafe { out_data.branch_id.as_str().unwrap() }, "56789");
+    }
+
+    #[test]
+    fn test_iban_country_is_non_registry() {
+        for (_, iban) in NON_REGISTRY_EXAMPLES {
+            let cc = CString::new(&iban[0..2]).unwrap();
+            assert!(unsafe { iban_country_is_non_registry(cc.as_ptr()) });
+        }
+
+        let de = CString::new("DE").unwrap();
+        assert!(!unsafe { iban_country_is_non_registry(de.as_ptr()) });
+
+        assert!(!unsafe { iban_country_is_non_registry(ptr::null()) });
     }
 }

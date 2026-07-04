@@ -56,6 +56,14 @@ export class JsIban {
             wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
         }
     }
+    /**
+     * Whether the matched country is one of the non-registry countries.
+     * @returns {boolean}
+     */
+    get is_non_registry() {
+        const ret = wasm.jsiban_is_non_registry(this.__wbg_ptr);
+        return ret !== 0;
+    }
 }
 if (Symbol.dispose) JsIban.prototype[Symbol.dispose] = JsIban.prototype.free;
 
@@ -92,13 +100,28 @@ export function get_version_js() {
 }
 
 /**
+ * Lists the two-letter codes of the opt-in, non-registry countries.
+ * @returns {string[]}
+ */
+export function non_registry_countries_js() {
+    const ret = wasm.non_registry_countries_js();
+    var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+    wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+    return v1;
+}
+
+/**
+ * Validates and parses an IBAN. `allowNonRegistry` (default `false`) additionally
+ * accepts 22 IBAN-shaped account numbers that are not in the official SWIFT IBAN
+ * registry (community-sourced, weaker guarantees).
  * @param {string} input
+ * @param {boolean | null} [allow_non_registry]
  * @returns {JsIban}
  */
-export function parse_iban_js(input) {
+export function parse_iban_js(input, allow_non_registry) {
     const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.parse_iban_js(ptr0, len0);
+    const ret = wasm.parse_iban_js(ptr0, len0, isLikeNone(allow_non_registry) ? 0xFFFFFF : allow_non_registry ? 1 : 0);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -106,13 +129,17 @@ export function parse_iban_js(input) {
 }
 
 /**
+ * Validates an IBAN. `allowNonRegistry` (default `false`) additionally accepts 22
+ * IBAN-shaped account numbers that are not in the official SWIFT IBAN registry
+ * (community-sourced, weaker guarantees).
  * @param {string} input
+ * @param {boolean | null} [allow_non_registry]
  * @returns {boolean}
  */
-export function validate_iban_js(input) {
+export function validate_iban_js(input, allow_non_registry) {
     const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.validate_iban_js(ptr0, len0);
+    const ret = wasm.validate_iban_js(ptr0, len0, isLikeNone(allow_non_registry) ? 0xFFFFFF : allow_non_registry ? 1 : 0);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -149,6 +176,25 @@ const JsIbanFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_jsiban_free(ptr, 1));
 
+function getArrayJsValueFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    const mem = getDataViewMemory0();
+    const result = [];
+    for (let i = ptr; i < ptr + 4 * len; i += 4) {
+        result.push(wasm.__wbindgen_externrefs.get(mem.getUint32(i, true)));
+    }
+    wasm.__externref_drop_slice(ptr, len);
+    return result;
+}
+
+let cachedDataViewMemory0 = null;
+function getDataViewMemory0() {
+    if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
+        cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
+    }
+    return cachedDataViewMemory0;
+}
+
 function getStringFromWasm0(ptr, len) {
     return decodeText(ptr >>> 0, len);
 }
@@ -159,6 +205,10 @@ function getUint8ArrayMemory0() {
         cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
     }
     return cachedUint8ArrayMemory0;
+}
+
+function isLikeNone(x) {
+    return x === undefined || x === null;
 }
 
 function passStringToWasm0(arg, malloc, realloc) {
@@ -238,6 +288,7 @@ function __wbg_finalize_init(instance, module) {
     wasmInstance = instance;
     wasm = instance.exports;
     wasmModule = module;
+    cachedDataViewMemory0 = null;
     cachedUint8ArrayMemory0 = null;
     wasm.__wbindgen_start();
     return wasm;

@@ -81,7 +81,31 @@ int main() {
 ```
 See Makefile for compilation of the c/c++ examples, and the examples directory for more examples
 
+## Non-registry countries
+
+By default, only the official SWIFT IBAN registry countries validate. The
+zero-copy `_ex` entry points (`iban_validate_short_ex`, `iban_validate_optimized_ex`,
+`iban_validate_span_ex`, `iban_get_view_ex`) take a `uint32_t flags` argument;
+pass `IBAN_ALLOW_NON_REGISTRY` to additionally accept 22 IBAN-shaped account
+numbers that are **not** in the official registry (community-sourced, weaker
+guarantees). Their output structs (`IbanValidationResultEx`, `IbanDataViewEx`)
+add a `result_flags` field with the `IBAN_RESULT_NON_REGISTRY` bit set when the
+matched country is one of them:
+
+```c
+IbanValidationResultEx result = {0};
+int status = iban_validate_short_ex(iban_str, len, IBAN_ALLOW_NON_REGISTRY, &result);
+if (status == Valid && (result.result_flags & IBAN_RESULT_NON_REGISTRY)) {
+    printf("%s is a non-registry country\n", iban_str);
+}
+```
+
+`iban_country_is_non_registry(cc)` reports whether a two-letter country code is
+one of the non-registry countries. Passing `0` for `flags` (or using the
+original, non-`_ex` functions) keeps the existing registry-only behavior.
+
 ## Changes
+ - 0.1.29: added `_ex` variants (`iban_validate_short_ex`, `iban_validate_optimized_ex`, `iban_validate_span_ex`, `iban_get_view_ex`) accepting an `IBAN_ALLOW_NON_REGISTRY` flag, their `*Ex` result structs reporting `IBAN_RESULT_NON_REGISTRY`, and `iban_country_is_non_registry`.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

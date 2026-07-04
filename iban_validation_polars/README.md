@@ -64,6 +64,33 @@ Returns:
     - bank_code (str): Bank identifier code (when relevant and valid) otherwise empty
     - branch_code (str): Branch identifier code (when relevant and valid) otherwise empty
 
+## Non-registry countries
+
+By default, only the official SWIFT IBAN registry countries validate. Pass
+`allow_non_registry=True` to `process_ibans` to additionally accept 22
+IBAN-shaped account numbers that are **not** in the official registry
+(community-sourced, weaker guarantees):
+
+```python
+df.with_columns(
+    validated=process_ibans("ibans", allow_non_registry=True)
+    .str.split_exact(",", 2)
+    .struct.rename_fields(["valid_ibans", "bank_id", "branch_id"])
+).unnest("validated")
+```
+
+`allow_non_registry` defaults to `False`, so existing pipelines are unaffected.
+
+Use `country_status(column: pl.Expr) -> pl.Expr` to classify each IBAN as
+`"registry"`, `"non_registry"`, or `"invalid"` without needing to decide
+`allow_non_registry` up front - filter or group on the result in pure Polars:
+
+```python
+from iban_validation_polars import country_status
+
+df.with_columns(status=country_status("ibans"))
+```
+
 ## Common Use cases
  - Data Cleaning pipeline
  - Data validation report
@@ -76,6 +103,7 @@ This pluging does not raise exception under normal operation.
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
+ - 0.1.29: added opt-in `allow_non_registry` keyword argument (default `False`) to `process_ibans`, plus a new `country_status` expression classifying IBANs as "registry" / "non_registry" / "invalid".
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14
  - 0.1.25: added forbidden checksums in the validation

@@ -15,4 +15,4 @@ name = "iban_validation_wasm"
 
 [dependencies]
 wasm-bindgen = "0.2"
-iban_validation_rs = {path = "../iban_validation_rs" }
+iban_validation_rs = {path = "../iban_validation_rs", features = ["non_registry"] }

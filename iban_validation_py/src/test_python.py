@@ -97,7 +97,59 @@ def test_iban():
     assert "00128" == iban.iban_branch_id
 
 
+def test_non_registry_default_rejected():
+    non_registry_iban = "AO49012345678901234567890"
+    assert iban_validation_py.validate_iban(non_registry_iban) is False
+    assert (
+        iban_validation_py.validate_iban_error_code(non_registry_iban)
+        == iban_validation_py.ERROR_INVALID_COUNTRY
+    )
+
+    invalid_iban = IbanValidation(non_registry_iban)
+    assert invalid_iban.stored_iban is None
+    assert invalid_iban.is_non_registry is None
+
+
+def test_non_registry_opt_in_accepted():
+    non_registry_iban = "AO49012345678901234567890"
+    assert (
+        iban_validation_py.validate_iban(non_registry_iban, allow_non_registry=True)
+        is True
+    )
+    assert (
+        iban_validation_py.validate_iban_error_code(
+            non_registry_iban, allow_non_registry=True
+        )
+        == iban_validation_py.ERROR_VALID
+    )
+
+    iban = IbanValidation(non_registry_iban, allow_non_registry=True)
+    assert iban.stored_iban == non_registry_iban
+    assert iban.is_non_registry is True
+
+    # MA: bank 1-5, branch 6-10 within the BBAN
+    ma_iban = IbanValidation("MA36012345678901234567890123", allow_non_registry=True)
+    assert ma_iban.iban_bank_id == "01234"
+    assert ma_iban.iban_branch_id == "56789"
+
+
+def test_non_registry_country_set_membership():
+    assert "AO" in iban_validation_py.NON_REGISTRY_COUNTRIES
+    assert "MA" in iban_validation_py.NON_REGISTRY_COUNTRIES
+    assert "DE" not in iban_validation_py.NON_REGISTRY_COUNTRIES
+    assert len(iban_validation_py.NON_REGISTRY_COUNTRIES) == 22
+
+
+def test_is_non_registry_getter_for_registry_country():
+    iban = IbanValidation(VALID_IBAN, allow_non_registry=True)
+    assert iban.is_non_registry is False
+
+
 test_validate_iban()
 test_iban()
 test_validate_print_iban()
 test_validate_print_iban_with_error()
+test_non_registry_default_rejected()
+test_non_registry_opt_in_accepted()
+test_non_registry_country_set_membership()
+test_is_non_registry_getter_for_registry_country()

@@ -371,22 +371,33 @@ pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
 """
     rs_code += generate_lookup_arms(official_rows, "IBAN_DEFINITIONS")
-
-    has_non_registry = non_registry_df is not None and len(non_registry_df) > 0
-    if has_non_registry:
-        rs_code += """     _ => {
-            #[cfg(feature = "non_registry")]
-            { return get_non_registry_iban_fields(cc); }
-            #[allow(unreachable_code)]
-            None
-        }
+    rs_code += """     _ => None,
     }
 }
 
+/// Look up a country's `IbanFields` across the given [`crate::CountrySet`]: the
+/// official registry first, falling back to the opt-in non-registry table when
+/// `set` is [`crate::CountrySet::WithNonRegistry`] (a no-op when the `non_registry`
+/// feature is not compiled in).
+pub fn get_iban_fields_with(cc: [u8; 2], set: crate::CountrySet) -> Option<&'static IbanFields> {
+    get_iban_fields(cc).or_else(|| match set {
+        crate::CountrySet::Registry => None,
+        crate::CountrySet::WithNonRegistry => get_non_registry_fields(cc),
+    })
+}
+
+/// Whether `cc` identifies one of the opt-in, non-registry countries (always
+/// `false` when the `non_registry` feature is not compiled in).
+pub fn is_non_registry_country(cc: [u8; 2]) -> bool {
+    get_non_registry_fields(cc).is_some()
+}
+
 """
-    else:
-        rs_code += """     _ => None,
-    }
+
+    has_non_registry = non_registry_df is not None and len(non_registry_df) > 0
+    if not has_non_registry:
+        rs_code += """fn get_non_registry_fields(_cc: [u8; 2]) -> Option<&'static IbanFields> {
+    None
 }
 
 """
@@ -406,13 +417,31 @@ const _: () = {
         non_registry_array, non_registry_assertions = generate_iban_fields_array(
             non_registry_rows, "NON_REGISTRY_IBAN_DEFINITIONS"
         )
+
+        countries_entries = ",\n    ".join(
+            "[b'{}', b'{}']".format(chr(row["ctry_cd"][0]), chr(row["ctry_cd"][1]))
+            for row in non_registry_rows
+        )
+
         rs_code += """
+#[cfg(not(feature = "non_registry"))]
+fn get_non_registry_fields(_cc: [u8; 2]) -> Option<&'static IbanFields> {{
+    None
+}}
+
+/// Two-letter codes of the opt-in, non-registry countries, in the same order as
+/// [`NON_REGISTRY_IBAN_DEFINITIONS`].
 #[cfg(feature = "non_registry")]
-"""
+pub const NON_REGISTRY_COUNTRIES: &[[u8; 2]] = &[
+    {}
+];
+
+#[cfg(feature = "non_registry")]
+""".format(countries_entries)
         rs_code += non_registry_array
         rs_code += """
 #[cfg(feature = "non_registry")]
-fn get_non_registry_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
+fn get_non_registry_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
 """
         rs_code += generate_lookup_arms(

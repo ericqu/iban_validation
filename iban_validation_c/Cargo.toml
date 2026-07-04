@@ -14,4 +14,4 @@ name = "iban_validation_c"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-iban_validation_rs = {path = "../iban_validation_rs" }
+iban_validation_rs = {path = "../iban_validation_rs", features = ["non_registry"] }

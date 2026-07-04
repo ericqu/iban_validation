@@ -3595,15 +3595,25 @@ pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
         [86, 71] => Some(&IBAN_DEFINITIONS[101]), // VG
         [88, 75] => Some(&IBAN_DEFINITIONS[102]), // XK
         [89, 69] => Some(&IBAN_DEFINITIONS[103]), // YE
-        _ => {
-            #[cfg(feature = "non_registry")]
-            {
-                return get_non_registry_iban_fields(cc);
-            }
-            #[allow(unreachable_code)]
-            None
-        }
+        _ => None,
     }
+}
+
+/// Look up a country's `IbanFields` across the given [`crate::CountrySet`]: the
+/// official registry first, falling back to the opt-in non-registry table when
+/// `set` is [`crate::CountrySet::WithNonRegistry`] (a no-op when the `non_registry`
+/// feature is not compiled in).
+pub fn get_iban_fields_with(cc: [u8; 2], set: crate::CountrySet) -> Option<&'static IbanFields> {
+    get_iban_fields(cc).or_else(|| match set {
+        crate::CountrySet::Registry => None,
+        crate::CountrySet::WithNonRegistry => get_non_registry_fields(cc),
+    })
+}
+
+/// Whether `cc` identifies one of the opt-in, non-registry countries (always
+/// `false` when the `non_registry` feature is not compiled in).
+pub fn is_non_registry_country(cc: [u8; 2]) -> bool {
+    get_non_registry_fields(cc).is_some()
 }
 
 #[inline]
@@ -3972,6 +3982,39 @@ const _: () = {
     let _ = [(); (20 >= 4) as usize - 1]; // XK
     let _ = [(); (30 >= 4) as usize - 1]; // YE
 };
+
+#[cfg(not(feature = "non_registry"))]
+fn get_non_registry_fields(_cc: [u8; 2]) -> Option<&'static IbanFields> {
+    None
+}
+
+/// Two-letter codes of the opt-in, non-registry countries, in the same order as
+/// [`NON_REGISTRY_IBAN_DEFINITIONS`].
+#[cfg(feature = "non_registry")]
+pub const NON_REGISTRY_COUNTRIES: &[[u8; 2]] = &[
+    [b'A', b'O'],
+    [b'B', b'F'],
+    [b'B', b'J'],
+    [b'C', b'F'],
+    [b'C', b'G'],
+    [b'C', b'I'],
+    [b'C', b'M'],
+    [b'C', b'V'],
+    [b'D', b'Z'],
+    [b'G', b'A'],
+    [b'G', b'Q'],
+    [b'G', b'W'],
+    [b'I', b'R'],
+    [b'K', b'M'],
+    [b'M', b'A'],
+    [b'M', b'G'],
+    [b'M', b'L'],
+    [b'M', b'Z'],
+    [b'N', b'E'],
+    [b'S', b'N'],
+    [b'T', b'D'],
+    [b'T', b'G'],
+];
 
 #[cfg(feature = "non_registry")]
 pub const NON_REGISTRY_IBAN_DEFINITIONS: [IbanFields; 22] = [
@@ -4768,7 +4811,7 @@ pub const NON_REGISTRY_IBAN_DEFINITIONS: [IbanFields; 22] = [
 ];
 
 #[cfg(feature = "non_registry")]
-fn get_non_registry_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
+fn get_non_registry_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
         [65, 79] => Some(&NON_REGISTRY_IBAN_DEFINITIONS[0]), // AO
         [66, 70] => Some(&NON_REGISTRY_IBAN_DEFINITIONS[1]), // BF

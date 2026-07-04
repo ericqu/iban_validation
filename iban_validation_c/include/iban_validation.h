@@ -35,7 +35,7 @@
      const char* ptr;       /* Pointer to string data */
      size_t len;            /* Length of string (excluding null terminator) */
  } StringView;
- 
+
  /**
   * Zero-copy IBAN data view structure
   */
@@ -44,17 +44,55 @@
      StringView bank_id;    /* Bank identifier view */
      StringView branch_id;  /* Branch identifier view */
  } IbanDataView;
- 
+
+ /**
+  * Same as IbanDataView, plus result_flags (see IBAN_RESULT_* below) reporting
+  * the matched country's classification. Filled by iban_get_view_ex.
+  */
+ typedef struct {
+     StringView iban;
+     StringView bank_id;
+     StringView branch_id;
+     uint32_t result_flags;
+ } IbanDataViewEx;
+
  /**
   * hold short return value for the iban validation avoiding copy of chars
   */
  typedef struct {
      bool is_valid;       /* is it a valid iban */
      uint8_t bank_s;      /* bank id starting point */
-     uint8_t bank_e;      /* bank id end point, when zero it is not available */ 
+     uint8_t bank_e;      /* bank id end point, when zero it is not available */
      uint8_t branch_s;    /* branch id starting point */
      uint8_t branch_e;    /* branch id end point, when zero is not available */
  } IbanValidationResult;
+
+ /**
+  * Same as IbanValidationResult, plus result_flags (see IBAN_RESULT_* below)
+  * reporting the matched country's classification. Used by the _ex entry points.
+  */
+ typedef struct {
+     bool is_valid;
+     uint8_t bank_s;
+     uint8_t bank_e;
+     uint8_t branch_s;
+     uint8_t branch_e;
+     uint32_t result_flags;
+ } IbanValidationResultEx;
+
+ /**
+  * Pass to the _ex entry points (via `flags`) to additionally accept 22
+  * IBAN-shaped account numbers that are not in the official SWIFT IBAN
+  * registry (community-sourced, weaker guarantees). Registry-only (the
+  * default) when unset.
+  */
+ #define IBAN_ALLOW_NON_REGISTRY 0x1u
+
+ /**
+  * Set on IbanValidationResultEx::result_flags / IbanDataViewEx::result_flags
+  * when the matched country is one of the opt-in, non-registry countries.
+  */
+ #define IBAN_RESULT_NON_REGISTRY 0x1u
 
  /**
   * Structure to hold IBAN data (with allocations)
@@ -84,6 +122,19 @@
  int iban_validate_short(const char* iban_str, size_t len, IbanValidationResult* result);
 
  /**
+  * Same as iban_validate_short, with flags selecting the accepted country set
+  * (see IBAN_ALLOW_NON_REGISTRY) and result_flags on the output classifying
+  * the matched country (see IBAN_RESULT_NON_REGISTRY).
+  *
+  * @param iban_str A null-terminated string containing the IBAN to validate
+  * @param len Length of the string (if known), pass 0 to auto-detect length
+  * @param flags Bitmask of IBAN_ALLOW_NON_REGISTRY
+  * @param result the results needed to build the branch_id and bank_id (when available)
+  * @return Status code (see IbanErrorCode enum values)
+  */
+ int iban_validate_short_ex(const char* iban_str, size_t len, uint32_t flags, IbanValidationResultEx* result);
+
+ /**
   * Optimized IBAN validation using zero-copy approach
   * 
   * @param iban_str A null-terminated string containing the IBAN to validate
@@ -91,6 +142,17 @@
   * @return Status code (see IbanErrorCode enum values)
   */
  int iban_validate_optimized(const char* iban_str, size_t len);
+
+ /**
+  * Same as iban_validate_optimized, with flags selecting the accepted country
+  * set (see IBAN_ALLOW_NON_REGISTRY).
+  *
+  * @param iban_str A null-terminated string containing the IBAN to validate
+  * @param len Length of the string (if known), pass 0 to auto-detect length
+  * @param flags Bitmask of IBAN_ALLOW_NON_REGISTRY
+  * @return Status code (see IbanErrorCode enum values)
+  */
+ int iban_validate_optimized_ex(const char* iban_str, size_t len, uint32_t flags);
 
  /**
   * Zero-copy IBAN validation over an explicit byte span.
@@ -108,6 +170,19 @@
  int iban_validate_span(const char* iban_str, size_t len, IbanValidationResult* result);
 
  /**
+  * Same as iban_validate_span, with flags selecting the accepted country set
+  * (see IBAN_ALLOW_NON_REGISTRY) and result_flags on the output classifying
+  * the matched country (see IBAN_RESULT_NON_REGISTRY).
+  *
+  * @param iban_str Pointer to len bytes of IBAN data (need not be null-terminated)
+  * @param len Exact number of valid bytes at iban_str
+  * @param flags Bitmask of IBAN_ALLOW_NON_REGISTRY
+  * @param result the results needed to build the branch_id and bank_id (when available)
+  * @return Status code (see IbanErrorCode enum values)
+  */
+ int iban_validate_span_ex(const char* iban_str, size_t len, uint32_t flags, IbanValidationResultEx* result);
+
+ /**
   * Gets IBAN information without copying strings
   * Note: The returned data is only valid while iban_str is valid
   *
@@ -120,7 +195,30 @@
   * @return 1 if valid, 0 or negative error code otherwise
   */
  int iban_get_view(const char* iban_str, IbanDataView* out_data);
- 
+
+ /**
+  * Same as iban_get_view, with flags selecting the accepted country set (see
+  * IBAN_ALLOW_NON_REGISTRY) and result_flags on the output classifying the
+  * matched country (see IBAN_RESULT_NON_REGISTRY).
+  *
+  * @param iban_str A null-terminated string containing the IBAN
+  * @param flags Bitmask of IBAN_ALLOW_NON_REGISTRY
+  * @param out_data Pointer to an IbanDataViewEx structure to fill
+  * @return 1 if valid, 0 or negative error code otherwise
+  */
+ int iban_get_view_ex(const char* iban_str, uint32_t flags, IbanDataViewEx* out_data);
+
+ /**
+  * Reports whether a two-letter country code (as the first two characters of a
+  * null-terminated string) identifies one of the opt-in, non-registry
+  * countries. Always false when the library was built without the
+  * `non_registry` Cargo feature.
+  *
+  * @param cc A null-terminated string whose first two characters are the country code
+  * @return true if the country is a non-registry country
+  */
+ bool iban_country_is_non_registry(const char* cc);
+
  /**
   * Creates a new IBAN structure from a string
   * 

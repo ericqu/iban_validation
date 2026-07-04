@@ -31,18 +31,39 @@
 //!
 //! ## `non_registry` feature
 //!
-//! Off by default. When enabled, additionally accepts IBAN-shaped account
-//! numbers from 22 countries that are not published in the official SWIFT
-//! IBAN registry (community-sourced from schwifty's `overwrite.json`). Their
-//! structure specs carry weaker guarantees than the default, registry-backed
-//! country set.
+//! Off by default. When enabled, makes an additional 22 countries available
+//! for validation: IBAN-shaped account numbers that are not published in the
+//! official SWIFT IBAN registry (community-sourced from schwifty's
+//! `overwrite.json`). Their structure specs carry weaker guarantees than the
+//! default, registry-backed country set.
+//!
+//! Compiling in the feature does not change the default behavior: functions
+//! such as [`validate_iban_str`] and [`Iban::new`] remain registry-only. To
+//! opt into the non-registry country set at runtime, use the `_with` variants
+//! ([`validate_iban_str_with`], [`validate_iban_str_print_with`],
+//! [`Iban::new_with`]) with [`CountrySet::WithNonRegistry`].
 
-use iban_definition::get_iban_fields;
+use iban_definition::get_iban_fields_with;
 use std::error::Error;
 use std::fmt;
 
 mod iban_definition;
-pub use iban_definition::{IBAN_MAX_LEN, IBAN_MIN_LEN};
+#[cfg(feature = "non_registry")]
+pub use iban_definition::NON_REGISTRY_COUNTRIES;
+pub use iban_definition::{IBAN_MAX_LEN, IBAN_MIN_LEN, is_non_registry_country};
+
+/// Selects which country set validation should accept.
+///
+/// `Registry` (the default) only accepts the official SWIFT IBAN registry
+/// countries. `WithNonRegistry` additionally accepts the opt-in, community-sourced
+/// countries gated behind the `non_registry` Cargo feature; when that feature is
+/// not compiled in, `WithNonRegistry` behaves identically to `Registry`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum CountrySet {
+    #[default]
+    Registry,
+    WithNonRegistry,
+}
 
 type ValidatorFn = fn(u8) -> Result<usize, ValidationLetterError>;
 
@@ -198,6 +219,15 @@ pub const fn get_version() -> &'static str {
 }
 
 pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), ValidationError> {
+    validate_iban_with_data_with(input_iban, CountrySet::Registry)
+}
+
+/// Same as [`validate_iban_with_data`], but the accepted country set is chosen at
+/// runtime via `set`.
+pub fn validate_iban_with_data_with(
+    input_iban: &str,
+    set: CountrySet,
+) -> Result<(&IbanFields, bool), ValidationError> {
     let identified_country: [u8; 2] = match input_iban.get(..2) {
         Some(value) => value
             .as_bytes()
@@ -206,7 +236,7 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
         None => return Err(ValidationError::MissingCountry),
     };
 
-    let iban_data: &IbanFields = match get_iban_fields(identified_country) {
+    let iban_data: &IbanFields = match get_iban_fields_with(identified_country, set) {
         Some(pattern) => pattern,
         None => return Err(ValidationError::InvalidCountry),
     };
@@ -248,13 +278,25 @@ pub fn validate_iban_with_data(input_iban: &str) -> Result<(&IbanFields, bool), 
 /// Validate than an Iban is valid according to the registry information
 /// return true when Iban is fine, otherwise returns Error.
 pub fn validate_iban_str(input_iban: &str) -> Result<bool, ValidationError> {
-    validate_iban_with_data(input_iban).map(|(_, is_valid)| is_valid)
+    validate_iban_str_with(input_iban, CountrySet::Registry)
+}
+
+/// Same as [`validate_iban_str`], but the accepted country set is chosen at
+/// runtime via `set`.
+pub fn validate_iban_str_with(input_iban: &str, set: CountrySet) -> Result<bool, ValidationError> {
+    validate_iban_with_data_with(input_iban, set).map(|(_, is_valid)| is_valid)
 }
 
 /// Validate an IBAN in user-friendly (print) format.
 /// Spaces are allowed and ignored.
 /// Other characters are rejected.
 pub fn validate_iban_str_print(input: &str) -> Result<bool, ValidationError> {
+    validate_iban_str_print_with(input, CountrySet::Registry)
+}
+
+/// Same as [`validate_iban_str_print`], but the accepted country set is chosen at
+/// runtime via `set`.
+pub fn validate_iban_str_print_with(input: &str, set: CountrySet) -> Result<bool, ValidationError> {
     const RAW_LIMIT: usize = 64;
 
     let mut raw = input.bytes();
@@ -279,7 +321,8 @@ pub fn validate_iban_str_print(input: &str) -> Result<bool, ValidationError> {
         _ => {}
     }
 
-    let iban_data = get_iban_fields(identified_country).ok_or(ValidationError::InvalidCountry)?;
+    let iban_data =
+        get_iban_fields_with(identified_country, set).ok_or(ValidationError::InvalidCountry)?;
 
     let validators = iban_data.iban_struct_validators;
 
@@ -322,7 +365,16 @@ pub fn validate_iban_str_print(input: &str) -> Result<bool, ValidationError> {
 pub fn validate_iban_get_numeric(
     input_iban: &str,
 ) -> Result<(bool, u8, u8, u8, u8), ValidationError> {
-    let (iban_data, result) = validate_iban_with_data(input_iban)?;
+    validate_iban_get_numeric_with(input_iban, CountrySet::Registry)
+}
+
+/// Same as [`validate_iban_get_numeric`], but the accepted country set is chosen
+/// at runtime via `set`.
+pub fn validate_iban_get_numeric_with(
+    input_iban: &str,
+    set: CountrySet,
+) -> Result<(bool, u8, u8, u8, u8), ValidationError> {
+    let (iban_data, result) = validate_iban_with_data_with(input_iban, set)?;
 
     let (bank_s, bank_e) = match (iban_data.bank_id_pos_s, iban_data.bank_id_pos_e) {
         (Some(start), Some(end)) => (start + 3, end + 4),
@@ -361,7 +413,13 @@ pub struct Iban<'a> {
 /// building a valid Iban (validate and take the relavant slices).
 impl<'a> Iban<'a> {
     pub fn new(s: &'a str) -> Result<Self, ValidationError> {
-        let (iban_data, _) = validate_iban_with_data(s)?;
+        Self::new_with(s, CountrySet::Registry)
+    }
+
+    /// Same as [`Iban::new`], but the accepted country set is chosen at runtime
+    /// via `set`.
+    pub fn new_with(s: &'a str, set: CountrySet) -> Result<Self, ValidationError> {
+        let (iban_data, _) = validate_iban_with_data_with(s, set)?;
 
         let bank_id = Self::extract_identifier(s, iban_data.bank_id_pos_s, iban_data.bank_id_pos_e);
         let branch_id =

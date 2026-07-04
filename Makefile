@@ -218,6 +218,7 @@ publish_iban_validation_rs: test
 .PHONY: test
 test:	clippy iban_validation_preprocess iban_validation_wasm
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test -p iban_validation_rs --features non_registry
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test -p iban_validation_c
 	$(call create_venv)
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)"  $(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml

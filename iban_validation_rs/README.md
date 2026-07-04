@@ -90,8 +90,8 @@ Off by default, opt in with the `non_registry` Cargo feature:
 iban_validation_rs = { version = "...", features = ["non_registry"] }
 ```
 
-When enabled, validation additionally accepts IBAN-shaped account numbers for
-22 countries that are **not** published in the official SWIFT IBAN registry:
+When enabled, 22 additional countries become available for validation: IBAN-shaped
+account numbers that are **not** published in the official SWIFT IBAN registry:
 AO, BF, BJ, CF, CG, CI, CM, CV, DZ, GA, GQ, GW, IR, KM, MA, MG, ML, MZ, NE, SN,
 TD, TG.
 
@@ -101,8 +101,27 @@ correctness guarantees than the default, registry-backed country set. With the
 feature off, the accepted country set and generated registry code are
 byte-for-byte identical to a build without this feature.
 
+Compiling in the feature does **not** change default behavior: `validate_iban_str`,
+`validate_iban_str_print`, and `Iban::new` remain registry-only. Accepting the
+non-registry countries is always an explicit, per-call runtime choice, made with
+the `CountrySet` enum and the corresponding `_with` functions:
+
+```rust
+use iban_validation_rs::{validate_iban_str_with, CountrySet};
+
+// Registry-only (same as validate_iban_str):
+validate_iban_str_with("AO49012345678901234567890", CountrySet::Registry); // Err(InvalidCountry)
+
+// Opt in to the non-registry country set:
+validate_iban_str_with("AO49012345678901234567890", CountrySet::WithNonRegistry); // Ok(true)
+```
+
+`is_non_registry_country(cc)` reports whether a two-letter country code is one of
+the non-registry countries (always `false` when the feature is off), and
+`NON_REGISTRY_COUNTRIES` (available only with the feature on) lists them.
+
 # Changes
- - 0.1.29: added an opt-in, off-by-default `non_registry` Cargo feature exposing 22 non-registry IBAN countries (community-sourced, not SWIFT-registered).
+ - 0.1.29: `non_registry` countries are now a runtime opt-in (`CountrySet`, `validate_iban_str_with`, `validate_iban_str_print_with`, `Iban::new_with`) rather than folded into the default lookup whenever the feature is compiled in; added `is_non_registry_country` and `NON_REGISTRY_COUNTRIES`.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14
