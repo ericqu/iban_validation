@@ -9,15 +9,6 @@ struct ProcessKwargs {
     allow_non_registry: bool,
 }
 
-#[inline]
-fn country_set(allow_non_registry: bool) -> CountrySet {
-    if allow_non_registry {
-        CountrySet::WithNonRegistry
-    } else {
-        CountrySet::Registry
-    }
-}
-
 fn process_iban_str_str(value: &str, set: CountrySet, iban_valid: &mut String) {
     *iban_valid = String::from("");
 
@@ -49,7 +40,7 @@ fn process_iban_str_str(value: &str, set: CountrySet, iban_valid: &mut String) {
 
 #[polars_expr(output_type=String)]
 fn process_ibans(inputs: &[Series], kwargs: ProcessKwargs) -> PolarsResult<Series> {
-    let set = country_set(kwargs.allow_non_registry);
+    let set: CountrySet = kwargs.allow_non_registry.into();
     let ca = inputs[0].str()?;
     let out: StringChunked =
         ca.apply_into_string_amortized(|value, out| process_iban_str_str(value, set, out));

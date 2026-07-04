@@ -26,11 +26,7 @@ pub const IBAN_RESULT_NON_REGISTRY: u32 = 0x1;
 
 #[inline]
 fn country_set(flags: u32) -> CountrySet {
-    if flags & IBAN_ALLOW_NON_REGISTRY != 0 {
-        CountrySet::WithNonRegistry
-    } else {
-        CountrySet::Registry
-    }
+    (flags & IBAN_ALLOW_NON_REGISTRY != 0).into()
 }
 
 /// Maps a core validation error to the corresponding C error code.
@@ -131,6 +127,88 @@ impl StringView {
     }
 }
 
+/// Resolves a NUL-terminated C string to a `&str`, given `len` (`0` means
+/// auto-detect via NUL scan; a non-zero `len` is the caller-supplied, untrusted
+/// length and is range-checked before use). Shared by `iban_validate_short`/`_ex`
+/// and `iban_validate_optimized`/`_ex`. Never reads past the resolved length.
+///
+/// # Safety
+/// If non-null, `ptr` must, when `len == 0`, point to a NUL-terminated buffer of
+/// at most `MAX_IBAN_LEN` bytes before the terminator; otherwise it must point to
+/// at least `len` readable bytes.
+#[inline]
+unsafe fn resolve_nul_terminated_str<'a>(ptr: *const c_char, len: usize) -> Result<&'a str, c_int> {
+    if ptr.is_null() {
+        return Err(IbanErrorCode::MissingCountry as c_int);
+    }
+
+    let actual_len = match len {
+        0 => {
+            // Find the null terminator (caller guarantees a NUL-terminated string
+            // when len == 0, per this function's safety contract). The resulting
+            // actual_len is exactly the number of bytes before that NUL, so slicing
+            // it below is always in-bounds - no separate range check needed here;
+            // out-of-range lengths are handled downstream via MissingCountry /
+            // InvalidSizeForCountry, same as before this fix.
+            let mut i = 0;
+            while unsafe { *ptr.add(i) != 0 } {
+                i += 1;
+            }
+            i
+        }
+        n => {
+            // Explicit caller-supplied length: this is untrusted and must never be
+            // coerced to a different value (a previous `_ => 15` fallback did
+            // exactly that, causing an out-of-bounds read when `n` didn't match the
+            // caller's actual buffer size). Reject out-of-range lengths outright,
+            // before ever constructing a slice over the buffer.
+            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
+                return Err(IbanErrorCode::InvalidSize as c_int);
+            }
+            n
+        }
+    };
+
+    // Create a byte slice without copying or allocation
+    let bytes = unsafe { slice::from_raw_parts(ptr as *const u8, actual_len) };
+
+    // Convert to &str without copying - only validates UTF-8
+    std::str::from_utf8(bytes).map_err(|_| IbanErrorCode::Invalid as c_int)
+}
+
+/// Same as [`resolve_nul_terminated_str`], but for an explicit `(ptr, len)` byte
+/// span that need not be NUL-terminated (e.g. DuckDB's `string_t`). Shared by
+/// `iban_validate_span`/`_ex`. `len == 0` always means "empty input" and never
+/// triggers NUL-scanning; never reads more than `len` bytes.
+///
+/// # Safety
+/// If `len > 0`, `ptr` must point to at least `len` readable bytes. If `len == 0`,
+/// `ptr` is never dereferenced and may be null or dangling.
+#[inline]
+unsafe fn resolve_span_str<'a>(ptr: *const c_char, len: usize) -> Result<&'a str, c_int> {
+    if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
+        return Err(IbanErrorCode::InvalidSize as c_int);
+    }
+    if ptr.is_null() {
+        return Err(IbanErrorCode::MissingCountry as c_int);
+    }
+
+    // Create a byte slice without copying or allocation - bounded strictly by `len`
+    let bytes = unsafe { slice::from_raw_parts(ptr as *const u8, len) };
+    std::str::from_utf8(bytes).map_err(|_| IbanErrorCode::Invalid as c_int)
+}
+
+/// Bit for `IbanValidationResultEx::result_flags` / `IbanDataViewEx::result_flags`
+/// reflecting whether `cc` is one of the opt-in, non-registry countries.
+#[inline]
+fn non_registry_result_flags(cc: [u8; 2]) -> u32 {
+    if is_non_registry_country(cc) {
+        IBAN_RESULT_NON_REGISTRY
+    } else {
+        0
+    }
+}
+
 /// Optimized IBAN validation using zero-copy approach
 ///
 /// @param iban_str A null-terminated C string containing the IBAN to validate
@@ -146,59 +224,18 @@ pub unsafe extern "C" fn iban_validate_short(
     len: usize,
     result: *mut IbanValidationResult,
 ) -> c_int {
-    // Safety check for null pointer
-    if iban_str.is_null() {
-        unsafe {
-            (*result).is_valid = false;
-            (*result).bank_s = 0;
-            (*result).bank_e = 0;
-            (*result).branch_s = 0;
-            (*result).branch_e = 0;
-        };
-        return IbanErrorCode::MissingCountry as c_int;
-    }
-
-    let actual_len = match len {
-        0 => {
-            // Find the null terminator (caller guarantees a NUL-terminated string
-            // when len == 0, per this function's safety contract). The resulting
-            // actual_len is exactly the number of bytes before that NUL, so slicing
-            // it below is always in-bounds - no separate range check needed here;
-            // out-of-range lengths are handled downstream via MissingCountry /
-            // InvalidSizeForCountry, same as before this fix.
-            let mut i = 0;
-            while unsafe { *iban_str.add(i) != 0 } {
-                i += 1;
-            }
-            i
-        }
-        n => {
-            // Explicit caller-supplied length: this is untrusted and must never be
-            // coerced to a different value (the previous `_ => 15` fallback did
-            // exactly that, causing an out-of-bounds read when `n` didn't match the
-            // caller's actual buffer size). Reject out-of-range lengths outright,
-            // before ever constructing a slice over the buffer.
-            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
-                unsafe {
-                    (*result).is_valid = false;
-                    (*result).bank_s = 0;
-                    (*result).bank_e = 0;
-                    (*result).branch_s = 0;
-                    (*result).branch_e = 0;
-                };
-                return IbanErrorCode::InvalidSize as c_int;
-            }
-            n
-        }
-    };
-
-    // Create a byte slice without copying or allocation
-    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
-
-    // Convert to &str without copying - only validates UTF-8
-    let iban_rust_str = match std::str::from_utf8(bytes) {
+    let iban_rust_str = match unsafe { resolve_nul_terminated_str(iban_str, len) } {
         Ok(s) => s,
-        Err(_) => return IbanErrorCode::Invalid as c_int,
+        Err(code) => {
+            unsafe {
+                (*result).is_valid = false;
+                (*result).bank_s = 0;
+                (*result).bank_e = 0;
+                (*result).branch_s = 0;
+                (*result).branch_e = 0;
+            };
+            return code;
+        }
     };
 
     // Validate the IBAN
@@ -234,11 +271,7 @@ fn validate_numeric_ex_into(
             result.bank_e = bank_e;
             result.branch_s = branch_s;
             result.branch_e = branch_e;
-            result.result_flags = if is_non_registry_country(cc) {
-                IBAN_RESULT_NON_REGISTRY
-            } else {
-                0
-            };
+            result.result_flags = non_registry_result_flags(cc);
             IbanErrorCode::Valid as c_int
         }
         Ok((false, _, _, _, _)) => IbanErrorCode::Invalid as c_int,
@@ -265,46 +298,19 @@ pub unsafe extern "C" fn iban_validate_short_ex(
     flags: u32,
     result: *mut IbanValidationResultEx,
 ) -> c_int {
-    if iban_str.is_null() {
-        unsafe {
-            (*result).is_valid = false;
-            (*result).bank_s = 0;
-            (*result).bank_e = 0;
-            (*result).branch_s = 0;
-            (*result).branch_e = 0;
-            (*result).result_flags = 0;
-        };
-        return IbanErrorCode::MissingCountry as c_int;
-    }
-
-    let actual_len = match len {
-        0 => {
-            let mut i = 0;
-            while unsafe { *iban_str.add(i) != 0 } {
-                i += 1;
-            }
-            i
-        }
-        n => {
-            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
-                unsafe {
-                    (*result).is_valid = false;
-                    (*result).bank_s = 0;
-                    (*result).bank_e = 0;
-                    (*result).branch_s = 0;
-                    (*result).branch_e = 0;
-                    (*result).result_flags = 0;
-                };
-                return IbanErrorCode::InvalidSize as c_int;
-            }
-            n
-        }
-    };
-
-    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
-    let iban_rust_str = match std::str::from_utf8(bytes) {
+    let iban_rust_str = match unsafe { resolve_nul_terminated_str(iban_str, len) } {
         Ok(s) => s,
-        Err(_) => return IbanErrorCode::Invalid as c_int,
+        Err(code) => {
+            unsafe {
+                (*result).is_valid = false;
+                (*result).bank_s = 0;
+                (*result).bank_e = 0;
+                (*result).branch_s = 0;
+                (*result).branch_e = 0;
+                (*result).result_flags = 0;
+            };
+            return code;
+        }
     };
 
     unsafe { validate_numeric_ex_into(iban_rust_str, flags, &mut *result) }
@@ -320,39 +326,9 @@ pub unsafe extern "C" fn iban_validate_short_ex(
 /// The input must be a valid null-terminated C string.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn iban_validate_optimized(iban_str: *const c_char, len: usize) -> c_int {
-    // Safety check for null pointer
-    if iban_str.is_null() {
-        return IbanErrorCode::MissingCountry as c_int;
-    }
-
-    let actual_len = match len {
-        0 => {
-            // Find the null terminator (caller guarantees a NUL-terminated string
-            // when len == 0, per this function's safety contract). See
-            // iban_validate_short for why no separate range check is needed here.
-            let mut i = 0;
-            while unsafe { *iban_str.add(i) != 0 } {
-                i += 1;
-            }
-            i
-        }
-        n => {
-            // Explicit caller-supplied length: reject out-of-range values outright
-            // rather than coercing them (see iban_validate_short for rationale).
-            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
-                return IbanErrorCode::InvalidSize as c_int;
-            }
-            n
-        }
-    };
-
-    // Create a byte slice without copying or allocation
-    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
-
-    // Convert to &str without copying - only validates UTF-8
-    let iban_rust_str = match std::str::from_utf8(bytes) {
+    let iban_rust_str = match unsafe { resolve_nul_terminated_str(iban_str, len) } {
         Ok(s) => s,
-        Err(_) => return IbanErrorCode::Invalid as c_int,
+        Err(code) => return code,
     };
 
     // Validate the IBAN
@@ -379,30 +355,9 @@ pub unsafe extern "C" fn iban_validate_optimized_ex(
     len: usize,
     flags: u32,
 ) -> c_int {
-    if iban_str.is_null() {
-        return IbanErrorCode::MissingCountry as c_int;
-    }
-
-    let actual_len = match len {
-        0 => {
-            let mut i = 0;
-            while unsafe { *iban_str.add(i) != 0 } {
-                i += 1;
-            }
-            i
-        }
-        n => {
-            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
-                return IbanErrorCode::InvalidSize as c_int;
-            }
-            n
-        }
-    };
-
-    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, actual_len) };
-    let iban_rust_str = match std::str::from_utf8(bytes) {
+    let iban_rust_str = match unsafe { resolve_nul_terminated_str(iban_str, len) } {
         Ok(s) => s,
-        Err(_) => return IbanErrorCode::Invalid as c_int,
+        Err(code) => return code,
     };
 
     match validate_iban_str_with(iban_rust_str, country_set(flags)) {
@@ -443,21 +398,9 @@ pub unsafe extern "C" fn iban_validate_span(
         (*result).branch_e = 0;
     };
 
-    if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
-        return IbanErrorCode::InvalidSize as c_int;
-    }
-
-    if iban_str.is_null() {
-        return IbanErrorCode::MissingCountry as c_int;
-    }
-
-    // Create a byte slice without copying or allocation - bounded strictly by `len`
-    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, len) };
-
-    // Convert to &str without copying - only validates UTF-8
-    let iban_rust_str = match std::str::from_utf8(bytes) {
+    let iban_rust_str = match unsafe { resolve_span_str(iban_str, len) } {
         Ok(s) => s,
-        Err(_) => return IbanErrorCode::Invalid as c_int,
+        Err(code) => return code,
     };
 
     match validate_iban_get_numeric(iban_rust_str) {
@@ -506,18 +449,9 @@ pub unsafe extern "C" fn iban_validate_span_ex(
         (*result).result_flags = 0;
     };
 
-    if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
-        return IbanErrorCode::InvalidSize as c_int;
-    }
-
-    if iban_str.is_null() {
-        return IbanErrorCode::MissingCountry as c_int;
-    }
-
-    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, len) };
-    let iban_rust_str = match std::str::from_utf8(bytes) {
+    let iban_rust_str = match unsafe { resolve_span_str(iban_str, len) } {
         Ok(s) => s,
-        Err(_) => return IbanErrorCode::Invalid as c_int,
+        Err(code) => return code,
     };
 
     unsafe { validate_numeric_ex_into(iban_rust_str, flags, &mut *result) }
@@ -660,11 +594,7 @@ pub unsafe extern "C" fn iban_get_view_ex(
     let cc: [u8; 2] = iban_rust_str.as_bytes()[0..2].try_into().unwrap();
     unsafe {
         (*out_data).iban = view;
-        (*out_data).result_flags = if is_non_registry_country(cc) {
-            IBAN_RESULT_NON_REGISTRY
-        } else {
-            0
-        };
+        (*out_data).result_flags = non_registry_result_flags(cc);
     }
 
     if let (Some(start), Some(end)) = (iban_fields.bank_id_pos_s, iban_fields.bank_id_pos_e) {

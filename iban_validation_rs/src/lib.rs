@@ -65,6 +65,18 @@ pub enum CountrySet {
     WithNonRegistry,
 }
 
+impl From<bool> for CountrySet {
+    /// `true` maps to [`CountrySet::WithNonRegistry`], `false` to the default
+    /// [`CountrySet::Registry`]. Lets callers write `allow_non_registry.into()`.
+    fn from(allow_non_registry: bool) -> Self {
+        if allow_non_registry {
+            CountrySet::WithNonRegistry
+        } else {
+            CountrySet::Registry
+        }
+    }
+}
+
 type ValidatorFn = fn(u8) -> Result<usize, ValidationLetterError>;
 
 /// indicate which information is expected from the Iban Registry and in the record.
@@ -543,12 +555,11 @@ mod tests {
         }
     }
 
-    /// Sanity-checks the auto-generated per-country registry data: every definition's
+    /// Sanity-checks a table of per-country registry data: every definition's
     /// bank/branch positions must be internally consistent and within bounds, guarding
     /// against a bad regeneration from `iban_validation_preprocess/pre_process_registry.py`.
-    #[test]
-    fn registry_definitions_are_internally_consistent() {
-        for fields in iban_definition::IBAN_DEFINITIONS.iter() {
+    fn assert_definitions_consistent(defs: &[IbanFields]) {
+        for fields in defs {
             let len = fields.iban_struct_validators.len();
             assert!(len > 0, "{:?} has no validators", fields.ctry_cd);
 
@@ -572,33 +583,17 @@ mod tests {
         }
     }
 
+    #[test]
+    fn registry_definitions_are_internally_consistent() {
+        assert_definitions_consistent(&iban_definition::IBAN_DEFINITIONS);
+    }
+
     /// Same sanity checks as `registry_definitions_are_internally_consistent`, applied
     /// to the opt-in, non-registry country definitions.
     #[test]
     #[cfg(feature = "non_registry")]
     fn non_registry_definitions_are_internally_consistent() {
-        for fields in iban_definition::NON_REGISTRY_IBAN_DEFINITIONS.iter() {
-            let len = fields.iban_struct_validators.len();
-            assert!(len > 0, "{:?} has no validators", fields.ctry_cd);
-
-            if let (Some(s), Some(e)) = (fields.bank_id_pos_s, fields.bank_id_pos_e) {
-                assert!(s <= e, "{:?} bank_id start after end", fields.ctry_cd);
-                assert!(e < len, "{:?} bank_id end out of bounds", fields.ctry_cd);
-            }
-
-            if let (Some(s), Some(e)) = (fields.branch_id_pos_s, fields.branch_id_pos_e) {
-                assert!(s <= e, "{:?} branch_id start after end", fields.ctry_cd);
-                assert!(e < len, "{:?} branch_id end out of bounds", fields.ctry_cd);
-            }
-
-            if let (Some(bank_e), Some(branch_s)) = (fields.bank_id_pos_e, fields.branch_id_pos_s) {
-                assert!(
-                    branch_s > bank_e,
-                    "{:?} branch_id overlaps bank_id",
-                    fields.ctry_cd
-                );
-            }
-        }
+        assert_definitions_consistent(&iban_definition::NON_REGISTRY_IBAN_DEFINITIONS);
     }
 
     #[test]

@@ -1,21 +1,6 @@
 import polars as pl
 from polars.testing import assert_frame_equal
 from iban_validation_polars import process_ibans, country_status
-# from iban_validation_polars import process_ibans as ipl_process_iban
-
-df = pl.DataFrame(
-    {"ibans": ["AT611904300234573201", "CY17002001280000001200527600", "Test to fail"]}
-)
-
-res = (
-    df.with_columns(
-        validated=process_ibans("ibans")
-        .str.split_exact(",", 2)
-        .struct.rename_fields(["valid_ibans", "bank_id", "branch_id"])
-    )
-    .unnest("validated")
-    .sort(by="ibans", descending=True)
-)
 
 
 def test_plugin():

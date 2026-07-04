@@ -2,7 +2,7 @@
 A set of libraries to validate IBANs and extract bank and branch identifiers in Rust, Python, and Polars, with a focus on correctness, performance, and minimal memory usage.
 
 ## Structure
-The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided.
+The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided. Two further wrappers also depend on the core crate: iban_validation_wasm, a WebAssembly/JS wrapper (see the WASM section below), and iban_validation_c, a C/C++ FFI wrapper.
 
 ## Design Goals
 
@@ -96,6 +96,7 @@ See [details](iban_validation_bench_rs/README.md). Similar benchmarking was done
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Changes
+ - 0.1.29: added an opt-in, off-by-default `non_registry` Cargo feature to iban_validation_rs covering 22 non-SWIFT-registry countries, selected at runtime via `CountrySet`; surfaced consistently as `allow_non_registry`/`allowNonRegistry`/`IBAN_ALLOW_NON_REGISTRY` across the Python, Polars, WASM, and C wrappers, plus a registry/non_registry/invalid classification path (`is_non_registry` / `country_status`).
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

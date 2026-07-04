@@ -1,17 +1,5 @@
-use iban_validation_rs::CountrySet;
 use pyo3::prelude::*;
 use pyo3::types::PyFrozenSet;
-
-/// Maps the `allow_non_registry` keyword argument onto the core crate's runtime
-/// country-set selector.
-#[inline]
-fn country_set(allow_non_registry: bool) -> CountrySet {
-    if allow_non_registry {
-        CountrySet::WithNonRegistry
-    } else {
-        CountrySet::Registry
-    }
-}
 
 /// Error codes for IBAN validation failures
 enum IbanErrorCode {
@@ -25,11 +13,30 @@ enum IbanErrorCode {
     InvalidChecksum = 7,
 }
 
+/// Maps a core validation error to the corresponding `IbanErrorCode`.
+/// Single source of truth so adding a `ValidationError` variant only needs one update.
+#[inline]
+fn map_validation_error(err: iban_validation_rs::ValidationError) -> IbanErrorCode {
+    match err {
+        iban_validation_rs::ValidationError::TooShort(_) => IbanErrorCode::TooShort,
+        iban_validation_rs::ValidationError::MissingCountry => IbanErrorCode::MissingCountry,
+        iban_validation_rs::ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry,
+        iban_validation_rs::ValidationError::StructureIncorrectForCountry => {
+            IbanErrorCode::StructureIncorrectForCountry
+        }
+        iban_validation_rs::ValidationError::InvalidSizeForCountry => {
+            IbanErrorCode::InvalidSizeForCountry
+        }
+        iban_validation_rs::ValidationError::ModuloIncorrect => IbanErrorCode::ModuloIncorrect,
+        iban_validation_rs::ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum,
+    }
+}
+
 /// Indicate if the iban is valid or not
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_iban(iban_t: &str, allow_non_registry: bool) -> PyResult<bool> {
-    match iban_validation_rs::validate_iban_str_with(iban_t, country_set(allow_non_registry)) {
+    match iban_validation_rs::validate_iban_str_with(iban_t, allow_non_registry.into()) {
         Ok(_) => Ok(true),
         Err(_) => Ok(false),
     }
@@ -39,8 +46,7 @@ fn validate_iban(iban_t: &str, allow_non_registry: bool) -> PyResult<bool> {
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_print_iban(iban_t: &str, allow_non_registry: bool) -> PyResult<bool> {
-    match iban_validation_rs::validate_iban_str_print_with(iban_t, country_set(allow_non_registry))
-    {
+    match iban_validation_rs::validate_iban_str_print_with(iban_t, allow_non_registry.into()) {
         Ok(_) => Ok(true),
         Err(_) => Ok(false),
     }
@@ -51,7 +57,7 @@ fn validate_print_iban(iban_t: &str, allow_non_registry: bool) -> PyResult<bool>
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_iban_with_error(iban_t: &str, allow_non_registry: bool) -> PyResult<(bool, String)> {
-    match iban_validation_rs::validate_iban_str_with(iban_t, country_set(allow_non_registry)) {
+    match iban_validation_rs::validate_iban_str_with(iban_t, allow_non_registry.into()) {
         Ok(_) => Ok((true, String::new())),
         Err(e) => Ok((false, format!("IBAN Validation failed: {e}"))),
     }
@@ -65,8 +71,7 @@ fn validate_print_iban_with_error(
     iban_t: &str,
     allow_non_registry: bool,
 ) -> PyResult<(bool, String)> {
-    match iban_validation_rs::validate_iban_str_print_with(iban_t, country_set(allow_non_registry))
-    {
+    match iban_validation_rs::validate_iban_str_print_with(iban_t, allow_non_registry.into()) {
         Ok(_) => Ok((true, String::new())),
         Err(e) => Ok((false, format!("IBAN Validation failed: {e}"))),
     }
@@ -77,32 +82,9 @@ fn validate_print_iban_with_error(
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_iban_error_code(iban_t: &str, allow_non_registry: bool) -> PyResult<i32> {
-    match iban_validation_rs::validate_iban_str_with(iban_t, country_set(allow_non_registry)) {
+    match iban_validation_rs::validate_iban_str_with(iban_t, allow_non_registry.into()) {
         Ok(_) => Ok(IbanErrorCode::Valid as i32),
-        Err(e) => {
-            let error_code = match e {
-                iban_validation_rs::ValidationError::TooShort(_) => IbanErrorCode::TooShort,
-                iban_validation_rs::ValidationError::MissingCountry => {
-                    IbanErrorCode::MissingCountry
-                }
-                iban_validation_rs::ValidationError::InvalidCountry => {
-                    IbanErrorCode::InvalidCountry
-                }
-                iban_validation_rs::ValidationError::StructureIncorrectForCountry => {
-                    IbanErrorCode::StructureIncorrectForCountry
-                }
-                iban_validation_rs::ValidationError::InvalidSizeForCountry => {
-                    IbanErrorCode::InvalidSizeForCountry
-                }
-                iban_validation_rs::ValidationError::ModuloIncorrect => {
-                    IbanErrorCode::ModuloIncorrect
-                }
-                iban_validation_rs::ValidationError::InvalidChecksum => {
-                    IbanErrorCode::InvalidChecksum
-                }
-            };
-            Ok(error_code as i32)
-        }
+        Err(e) => Ok(map_validation_error(e) as i32),
     }
 }
 
@@ -111,33 +93,9 @@ fn validate_iban_error_code(iban_t: &str, allow_non_registry: bool) -> PyResult<
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_print_iban_error_code(iban_t: &str, allow_non_registry: bool) -> PyResult<i32> {
-    match iban_validation_rs::validate_iban_str_print_with(iban_t, country_set(allow_non_registry))
-    {
+    match iban_validation_rs::validate_iban_str_print_with(iban_t, allow_non_registry.into()) {
         Ok(_) => Ok(IbanErrorCode::Valid as i32),
-        Err(e) => {
-            let error_code = match e {
-                iban_validation_rs::ValidationError::TooShort(_) => IbanErrorCode::TooShort,
-                iban_validation_rs::ValidationError::MissingCountry => {
-                    IbanErrorCode::MissingCountry
-                }
-                iban_validation_rs::ValidationError::InvalidCountry => {
-                    IbanErrorCode::InvalidCountry
-                }
-                iban_validation_rs::ValidationError::StructureIncorrectForCountry => {
-                    IbanErrorCode::StructureIncorrectForCountry
-                }
-                iban_validation_rs::ValidationError::InvalidSizeForCountry => {
-                    IbanErrorCode::InvalidSizeForCountry
-                }
-                iban_validation_rs::ValidationError::ModuloIncorrect => {
-                    IbanErrorCode::ModuloIncorrect
-                }
-                iban_validation_rs::ValidationError::InvalidChecksum => {
-                    IbanErrorCode::InvalidChecksum
-                }
-            };
-            Ok(error_code as i32)
-        }
+        Err(e) => Ok(map_validation_error(e) as i32),
     }
 }
 
@@ -166,7 +124,7 @@ impl IbanValidation {
     #[new]
     #[pyo3(signature = (s, *, allow_non_registry = false))]
     pub fn new(s: &str, allow_non_registry: bool) -> PyResult<Self> {
-        match iban_validation_rs::Iban::new_with(s, country_set(allow_non_registry)) {
+        match iban_validation_rs::Iban::new_with(s, allow_non_registry.into()) {
             Ok(iban) => {
                 let cc: [u8; 2] = iban.get_iban().as_bytes()[0..2].try_into().unwrap();
                 Ok(Self {

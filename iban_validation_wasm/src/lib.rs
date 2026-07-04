@@ -3,11 +3,7 @@ use wasm_bindgen::prelude::*;
 
 #[inline]
 fn country_set(allow_non_registry: Option<bool>) -> CountrySet {
-    if allow_non_registry.unwrap_or(false) {
-        CountrySet::WithNonRegistry
-    } else {
-        CountrySet::Registry
-    }
+    allow_non_registry.unwrap_or(false).into()
 }
 
 /// Validates an IBAN. `allowNonRegistry` (default `false`) additionally accepts 22
@@ -70,10 +66,8 @@ impl JsIban {
 #[wasm_bindgen]
 pub fn parse_iban_js(input: &str, allow_non_registry: Option<bool>) -> Result<JsIban, JsValue> {
     let set = country_set(allow_non_registry);
-    match validate_iban_str_with(input, set) {
-        Ok(true) => {
-            let parsed = iban_validation_rs::Iban::new_with(input, set)
-                .map_err(|e| JsValue::from_str(&format!("Parse error: {}", e)))?;
+    match iban_validation_rs::Iban::new_with(input, set) {
+        Ok(parsed) => {
             let cc: [u8; 2] = input.as_bytes()[0..2].try_into().unwrap();
             Ok(JsIban {
                 iban: parsed.get_iban().to_string(),
@@ -82,7 +76,6 @@ pub fn parse_iban_js(input: &str, allow_non_registry: Option<bool>) -> Result<Js
                 is_non_registry: iban_validation_rs::is_non_registry_country(cc),
             })
         }
-        Ok(false) => Err(JsValue::from_str("Invalid IBAN")),
         Err(e) => Err(JsValue::from_str(&format!("Validation error: {}", e))),
     }
 }
