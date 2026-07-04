@@ -82,8 +82,27 @@ In particular:
 
 As a result, the library may appear lower-level than typical IBAN validation utilities, but it provides predictable behavior suitable for high-throughput systems.
 
+## Non-registry countries
+
+Off by default, opt in with the `non_registry` Cargo feature:
+
+```toml
+iban_validation_rs = { version = "...", features = ["non_registry"] }
+```
+
+When enabled, validation additionally accepts IBAN-shaped account numbers for
+22 countries that are **not** published in the official SWIFT IBAN registry:
+AO, BF, BJ, CF, CG, CI, CM, CV, DZ, GA, GQ, GW, IR, KM, MA, MG, ML, MZ, NE, SN,
+TD, TG.
+
+This data is community-sourced (from the `schwifty` Python library's
+`overwrite.json`), not SWIFT-registered, so their structure specs carry weaker
+correctness guarantees than the default, registry-backed country set. With the
+feature off, the accepted country set and generated registry code are
+byte-for-byte identical to a build without this feature.
 
 # Changes
+ - 0.1.29: added an opt-in, off-by-default `non_registry` Cargo feature exposing 22 non-registry IBAN countries (community-sourced, not SWIFT-registered).
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

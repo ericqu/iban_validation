@@ -28,6 +28,14 @@
 //!     display_iban_or_error("FR1234");
 //! }
 //! ```
+//!
+//! ## `non_registry` feature
+//!
+//! Off by default. When enabled, additionally accepts IBAN-shaped account
+//! numbers from 22 countries that are not published in the official SWIFT
+//! IBAN registry (community-sourced from schwifty's `overwrite.json`). Their
+//! structure specs carry weaker guarantees than the default, registry-backed
+//! country set.
 
 use iban_definition::get_iban_fields;
 use std::error::Error;
@@ -483,6 +491,35 @@ mod tests {
     #[test]
     fn registry_definitions_are_internally_consistent() {
         for fields in iban_definition::IBAN_DEFINITIONS.iter() {
+            let len = fields.iban_struct_validators.len();
+            assert!(len > 0, "{:?} has no validators", fields.ctry_cd);
+
+            if let (Some(s), Some(e)) = (fields.bank_id_pos_s, fields.bank_id_pos_e) {
+                assert!(s <= e, "{:?} bank_id start after end", fields.ctry_cd);
+                assert!(e < len, "{:?} bank_id end out of bounds", fields.ctry_cd);
+            }
+
+            if let (Some(s), Some(e)) = (fields.branch_id_pos_s, fields.branch_id_pos_e) {
+                assert!(s <= e, "{:?} branch_id start after end", fields.ctry_cd);
+                assert!(e < len, "{:?} branch_id end out of bounds", fields.ctry_cd);
+            }
+
+            if let (Some(bank_e), Some(branch_s)) = (fields.bank_id_pos_e, fields.branch_id_pos_s) {
+                assert!(
+                    branch_s > bank_e,
+                    "{:?} branch_id overlaps bank_id",
+                    fields.ctry_cd
+                );
+            }
+        }
+    }
+
+    /// Same sanity checks as `registry_definitions_are_internally_consistent`, applied
+    /// to the opt-in, non-registry country definitions.
+    #[test]
+    #[cfg(feature = "non_registry")]
+    fn non_registry_definitions_are_internally_consistent() {
+        for fields in iban_definition::NON_REGISTRY_IBAN_DEFINITIONS.iter() {
             let len = fields.iban_struct_validators.len();
             assert!(len > 0, "{:?} has no validators", fields.ctry_cd);
 

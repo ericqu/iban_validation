@@ -5,6 +5,21 @@ pl.Config.set_tbl_rows(45)
 inputfile = "iban_validation_preprocess/iban_registry_v102.txt"
 output_source_file = "iban_validation_rs/data/iban_sourcefile.txt"
 output_rust_codegen = "iban_validation_rs/src/iban_definition.rs"
+non_registry_inputfile = "iban_validation_preprocess/iban_registry_non_registry.csv"
+
+
+# preprocess and check iban structure
+def process_iban_structure(i_structure_e: str):
+    iso3166 = i_structure_e[0:2]
+    i = 2
+    next_exclamation = 0
+    while i_structure_e.find("!", i) > 0:
+        next_exclamation = i_structure_e.find("!", i)
+        num = int(i_structure_e[i:next_exclamation])
+        letter = str(i_structure_e[next_exclamation + 1 : next_exclamation + 2])
+        iso3166 = str(iso3166) + num * letter
+        i = next_exclamation + 2
+    return iso3166
 
 
 def pre_process_filename(inputfile, output_source_file):
@@ -64,19 +79,6 @@ def get_df_from_input(inputfile):
             ],
         }
     )
-
-    # preprocess and check iban structure
-    def process_iban_structure(i_structure_e: str):
-        iso3166 = i_structure_e[0:2]
-        i = 2
-        next_exclamation = 0
-        while i_structure_e.find("!", i) > 0:
-            next_exclamation = i_structure_e.find("!", i)
-            num = int(i_structure_e[i:next_exclamation])
-            letter = str(i_structure_e[next_exclamation + 1 : next_exclamation + 2])
-            iso3166 = str(iso3166) + num * letter
-            i = next_exclamation + 2
-        return iso3166
 
     pre_df = (
         df.with_columns(
@@ -168,6 +170,131 @@ def get_df_from_input(inputfile):
     return pre_df
 
 
+def get_non_registry_df_from_input(inputfile):
+    """Load the non-registry IBAN countries CSV into the same
+    schema produced by get_df_from_input, so the two can feed the same
+    codegen helpers. No territory remapping applies to this data source."""
+    import csv
+
+    def parse_pos(pos: str):
+        if not pos:
+            return None, None
+        start, end = pos.split("-")
+        return int(start), int(end)
+
+    rows = []
+    with open(inputfile, newline="") as f:
+        for record in csv.DictReader(f):
+            iban_struct = process_iban_structure(record["iban_structure"])
+            iban_struct = iban_struct[4:] + iban_struct[0:4]
+            bank_id_pos_s, bank_id_pos_e = parse_pos(record["bank_id_pos"])
+            branch_id_pos_s, branch_id_pos_e = parse_pos(record["branch_id_pos"])
+            rows.append(
+                {
+                    "ctry_cd": [ord(c) for c in record["country_code"]],
+                    "iban_len": int(record["iban_length"]),
+                    "bank_id_pos_s": bank_id_pos_s,
+                    "bank_id_pos_e": bank_id_pos_e,
+                    "branch_id_pos_s": branch_id_pos_s,
+                    "branch_id_pos_e": branch_id_pos_e,
+                    "iban_struct": iban_struct,
+                }
+            )
+
+    return pl.DataFrame(
+        rows,
+        schema={
+            "ctry_cd": pl.List(pl.UInt16),
+            "iban_len": pl.UInt16,
+            "bank_id_pos_s": pl.UInt16,
+            "bank_id_pos_e": pl.UInt16,
+            "branch_id_pos_s": pl.UInt16,
+            "branch_id_pos_e": pl.UInt16,
+            "iban_struct": pl.String,
+        },
+    )
+
+
+def generate_iban_fields_array(rows, array_name: str) -> tuple[str, list[str]]:
+    """Build the `pub const {array_name}: [IbanFields; N] = [...]` literal plus
+    a compile-time length assertion per row."""
+    entries = []
+    assertions = []
+    for row in rows:
+        ctry_cd = row["ctry_cd"]
+        iban_len = row["iban_len"]
+        bank_id_pos_s = (
+            f"Some({row['bank_id_pos_s']})"
+            if row["bank_id_pos_s"] is not None
+            else "None"
+        )
+        bank_id_pos_e = (
+            f"Some({row['bank_id_pos_e']})"
+            if row["bank_id_pos_e"] is not None
+            else "None"
+        )
+        branch_id_pos_s = (
+            f"Some({row['branch_id_pos_s']})"
+            if row["branch_id_pos_s"] is not None
+            else "None"
+        )
+        branch_id_pos_e = (
+            f"Some({row['branch_id_pos_e']})"
+            if row["branch_id_pos_e"] is not None
+            else "None"
+        )
+        iban_struct = row["iban_struct"]
+
+        country_str = (
+            chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        )
+        assertions.append(
+            f"""let _ = [(); ({iban_len} >= 4) as usize - 1]; // {country_str}"""
+        )
+
+        entries.append(
+            """    IbanFields {{
+        ctry_cd: [{}, {}], // "{}" {} characters
+        bank_id_pos_s: {},
+        bank_id_pos_e: {},
+        branch_id_pos_s: {},
+        branch_id_pos_e: {},
+        iban_struct_validators: &{}
+    }},""".format(
+                ctry_cd[0],
+                ctry_cd[1],
+                country_str,
+                iban_len,
+                bank_id_pos_s,
+                bank_id_pos_e,
+                branch_id_pos_s,
+                branch_id_pos_e,
+                generate_from_struct_to_validator(iban_struct),
+            )
+        )
+
+    array_code = "pub const {}: [IbanFields; {}] = [\n".format(array_name, len(entries))
+    array_code += "\n".join(entries)
+    array_code += "\n];\n"
+    return array_code, assertions
+
+
+def generate_lookup_arms(rows, array_name: str) -> str:
+    """Build the `[cc0, cc1] => Some(&{array_name}[i]), // CC` match arms."""
+    arms = []
+    for counter, row in enumerate(rows):
+        ctry_cd = row["ctry_cd"]
+        country_str = (
+            chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
+        )
+        arms.append(
+            "      [{}, {}] => Some(&{}[{}]), // {}".format(
+                ctry_cd[0], ctry_cd[1], array_name, counter, country_str
+            )
+        )
+    return "\n".join(arms) + "\n"
+
+
 def generate_literal_validators() -> str:
     """Generate all literal_XX functions for A-Z"""
     functions = []
@@ -205,12 +332,24 @@ def generate_from_struct_to_validator(iban_struct: str) -> str:
     return rust_code
 
 
-def pre_process_to_rust(inputfile, output_rust_codegen):
+def pre_process_to_rust(inputfile, output_rust_codegen, non_registry_inputfile=None):
     pre_df = get_df_from_input(inputfile)
 
+    # official min/max drive the public consts; non-registry data must fit
+    # within these bounds but never widens them.
     iban_min_len = pre_df.select(pl.min("iban_len")).item()
     iban_max_len = pre_df.select(pl.max("iban_len")).item()
-    iban_len_assertions = []
+
+    non_registry_df = None
+    if non_registry_inputfile is not None:
+        non_registry_df = get_non_registry_df_from_input(non_registry_inputfile)
+        if len(non_registry_df) > 0:
+            non_registry_min_len = non_registry_df.select(pl.min("iban_len")).item()
+            non_registry_max_len = non_registry_df.select(pl.max("iban_len")).item()
+            assert iban_min_len <= non_registry_min_len and non_registry_max_len <= iban_max_len, (
+                f"non-registry iban_len range [{non_registry_min_len}, {non_registry_max_len}] "
+                f"falls outside official [{iban_min_len}, {iban_max_len}]"
+            )
 
     rs_code = """// Auto-generated from iban_validation_preprocess/pre_process_registry.py, do not edit manually
 use crate::{{IbanFields, ValidationLetterError}};
@@ -219,100 +358,75 @@ use crate::{{simple_contains_a, simple_contains_c, simple_contains_n}};
 pub const IBAN_MIN_LEN: u8 = {};
 pub const IBAN_MAX_LEN: u8 = {};
 
-pub const IBAN_DEFINITIONS: [IbanFields; {}] = [
-""".format(iban_min_len, iban_max_len, len(pre_df))
+""".format(iban_min_len, iban_max_len)
 
-    for row in pre_df.iter_rows(named=True):
-        # Extract values and handle None values
-        ctry_cd = row["ctry_cd"]
-        iban_len = row["iban_len"]
-        bank_id_pos_s = (
-            f"Some({row['bank_id_pos_s']})"
-            if row["bank_id_pos_s"] is not None
-            else "None"
-        )
-        bank_id_pos_e = (
-            f"Some({row['bank_id_pos_e']})"
-            if row["bank_id_pos_e"] is not None
-            else "None"
-        )
-        branch_id_pos_s = (
-            f"Some({row['branch_id_pos_s']})"
-            if row["branch_id_pos_s"] is not None
-            else "None"
-        )
-        branch_id_pos_e = (
-            f"Some({row['branch_id_pos_e']})"
-            if row["branch_id_pos_e"] is not None
-            else "None"
-        )
-        iban_struct = row["iban_struct"]
-
-        # Convert country code to ASCII representation for comment
-        country_str = (
-            chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
-        )
-        iban_len_assertions.append(
-        f"""let _ = [(); ({iban_len} >= 4) as usize - 1]; // {country_str}"""
-        )
-
-        # 
-
-        # Format the struct initialization
-        rs_code += """    IbanFields {{
-        ctry_cd: [{}, {}], // "{}" {} characters
-        bank_id_pos_s: {},
-        bank_id_pos_e: {},
-        branch_id_pos_s: {},
-        branch_id_pos_e: {},
-        iban_struct_validators: &{} 
-    }},""".format(
-            ctry_cd[0],
-            ctry_cd[1],
-            country_str,
-            iban_len,
-            bank_id_pos_s,
-            bank_id_pos_e,
-            branch_id_pos_s,
-            branch_id_pos_e,
-            generate_from_struct_to_validator(iban_struct),
-        )
-
-    # Close the array
-    rs_code += "];\n"
+    official_rows = list(pre_df.iter_rows(named=True))
+    official_array, official_assertions = generate_iban_fields_array(
+        official_rows, "IBAN_DEFINITIONS"
+    )
+    rs_code += official_array
 
     rs_code += """
 pub fn get_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
     match cc {
 """
-    counter = 0
-    for row in pre_df.iter_rows(named=True):
-        ctry_cd = row["ctry_cd"]
-        # Convert country code to ASCII representation for comment
-        country_str = (
-            chr(ctry_cd[0]) + chr(ctry_cd[1]) if isinstance(ctry_cd, list) else "??"
-        )
-        rs_code += """      [{}, {}] => Some(&IBAN_DEFINITIONS[{}]), // {}
-""".format(
-            ctry_cd[0],
-            ctry_cd[1],
-            counter,
-            country_str,
-        )
-        counter += 1
+    rs_code += generate_lookup_arms(official_rows, "IBAN_DEFINITIONS")
 
-    rs_code += """     _ => None,
+    has_non_registry = non_registry_df is not None and len(non_registry_df) > 0
+    if has_non_registry:
+        rs_code += """     _ => {
+            #[cfg(feature = "non_registry")]
+            { return get_non_registry_iban_fields(cc); }
+            #[allow(unreachable_code)]
+            None
+        }
     }
 }
 
 """
+    else:
+        rs_code += """     _ => None,
+    }
+}
+
+"""
+
     rs_code += generate_literal_validators()
     rs_code += """
 // Compile-time invariants
 const _: () = {
 """
-    rs_code += "\n".join(iban_len_assertions)
+    rs_code += "\n".join(official_assertions)
     rs_code += """
+};
+"""
+
+    if has_non_registry:
+        non_registry_rows = list(non_registry_df.iter_rows(named=True))
+        non_registry_array, non_registry_assertions = generate_iban_fields_array(
+            non_registry_rows, "NON_REGISTRY_IBAN_DEFINITIONS"
+        )
+        rs_code += """
+#[cfg(feature = "non_registry")]
+"""
+        rs_code += non_registry_array
+        rs_code += """
+#[cfg(feature = "non_registry")]
+fn get_non_registry_iban_fields(cc: [u8; 2]) -> Option<&'static IbanFields> {
+    match cc {
+"""
+        rs_code += generate_lookup_arms(
+            non_registry_rows, "NON_REGISTRY_IBAN_DEFINITIONS"
+        )
+        rs_code += """     _ => None,
+    }
+}
+
+#[cfg(feature = "non_registry")]
+const _: () = {
+"""
+        rs_code += "\n".join(non_registry_assertions)
+        rs_code += """
 };
 """
 
@@ -324,5 +438,5 @@ const _: () = {
 
 
 if __name__ == "__main__":
-    pre_process_to_rust(inputfile, output_rust_codegen)
+    pre_process_to_rust(inputfile, output_rust_codegen, non_registry_inputfile)
     pre_process_filename(inputfile, output_source_file)

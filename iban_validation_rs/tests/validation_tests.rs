@@ -712,6 +712,25 @@ fn print_format_rejects_non_space_whitespace() {
     );
 }
 
+/// Guards against the non-registry country codes leaking into the
+/// default, registry-only country set.
+#[test]
+#[cfg(not(feature = "non_registry"))]
+fn non_registry_countries_rejected_without_feature() {
+    let tc = vec![
+        "AO49012345678901234567890",
+        "MA36012345678901234567890123",
+        "DZ090123456789012345678901",
+    ];
+
+    for iban in &tc {
+        assert_eq!(
+            validate_iban_str(iban).unwrap_err(),
+            ValidationError::InvalidCountry
+        );
+    }
+}
+
 /// Every country example from the IBAN registry's official examples file validates,
 /// giving broad, low-maintenance coverage across all supported countries.
 #[test]

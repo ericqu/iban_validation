@@ -12,6 +12,13 @@ exclude = ["benches/", "data/IBAN Examples.txt", "examples/"]
 
 [dependencies]
 
+[features]
+default = []
+# Accepts IBAN-shaped account numbers for 22 countries that use an IBAN-shaped
+# account number but are not published in the official SWIFT IBAN registry.
+# This data is community-sourced (schwifty's overwrite.json), not
+# SWIFT-registered, so treat it as a weaker guarantee than the default set.
+non_registry = []
 
 [dev-dependencies]
 criterion = "0.5"
