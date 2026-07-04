@@ -10,6 +10,28 @@ use iban_validation_rs::{
     Iban, ValidationError, validate_iban_get_numeric, validate_iban_str, validate_iban_with_data,
 };
 
+/// Shortest valid IBAN length across the registry (Norway, NO).
+const MIN_IBAN_LEN: usize = 15;
+/// Longest valid IBAN length across the registry (Russia, RU).
+const MAX_IBAN_LEN: usize = 33;
+
+/// Maps a core validation error to the corresponding C error code.
+/// Single source of truth so adding a `ValidationError` variant only needs one update.
+#[inline]
+fn map_validation_error(err: ValidationError) -> c_int {
+    match err {
+        ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
+        ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
+        ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
+        ValidationError::StructureIncorrectForCountry => {
+            IbanErrorCode::StructureIncorrectForCountry as c_int
+        }
+        ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
+        ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
+        ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
+    }
+}
+
 /// Error codes for IBAN validation (unchanged)
 #[repr(C)]
 pub enum IbanErrorCode {
@@ -24,7 +46,11 @@ pub enum IbanErrorCode {
     InvalidChecksum = -7,
 }
 
-/// A zero-copy string view for C strings
+/// A zero-copy string view for C strings.
+///
+/// Legacy/NUL-terminated-buffer path (backs `iban_get_view`). Not recommended for
+/// buffers that aren't NUL-terminated (e.g. DuckDB's `string_t`) - use
+/// `iban_validate_short`/`iban_validate_span` instead for that calling convention.
 #[repr(C)]
 pub struct StringView {
     ptr: *const c_char,
@@ -59,15 +85,16 @@ impl StringView {
             return None;
         }
 
-        // Find plausible length of null-terminated string
-        let mut len = 10;
-        while len < 40 {
+        // Find the null terminator, scanning from byte 0 so a string shorter than
+        // MAX_IBAN_LEN can never cause an out-of-bounds read.
+        let mut len = 0;
+        while len <= MAX_IBAN_LEN {
             if unsafe { *ptr.add(len) } == 0 {
                 break;
             }
             len += 1;
         }
-        if !(15..=35).contains(&len) {
+        if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
             return None;
         }
         Some(StringView { ptr, len })
@@ -103,15 +130,36 @@ pub unsafe extern "C" fn iban_validate_short(
 
     let actual_len = match len {
         0 => {
-            // Find the null terminator
+            // Find the null terminator (caller guarantees a NUL-terminated string
+            // when len == 0, per this function's safety contract). The resulting
+            // actual_len is exactly the number of bytes before that NUL, so slicing
+            // it below is always in-bounds - no separate range check needed here;
+            // out-of-range lengths are handled downstream via MissingCountry /
+            // InvalidSizeForCountry, same as before this fix.
             let mut i = 0;
             while unsafe { *iban_str.add(i) != 0 } {
                 i += 1;
             }
             i
         }
-        15..=33 => len,
-        _ => 15,
+        n => {
+            // Explicit caller-supplied length: this is untrusted and must never be
+            // coerced to a different value (the previous `_ => 15` fallback did
+            // exactly that, causing an out-of-bounds read when `n` didn't match the
+            // caller's actual buffer size). Reject out-of-range lengths outright,
+            // before ever constructing a slice over the buffer.
+            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
+                unsafe {
+                    (*result).is_valid = false;
+                    (*result).bank_s = 0;
+                    (*result).bank_e = 0;
+                    (*result).branch_s = 0;
+                    (*result).branch_e = 0;
+                };
+                return IbanErrorCode::InvalidSize as c_int;
+            }
+            n
+        }
     };
 
     // Create a byte slice without copying or allocation
@@ -136,17 +184,7 @@ pub unsafe extern "C" fn iban_validate_short(
             IbanErrorCode::Valid as c_int
         }
         Ok((false, _, _, _, _)) => IbanErrorCode::Invalid as c_int,
-        Err(err) => match err {
-            ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
-            ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
-            ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
-            ValidationError::StructureIncorrectForCountry => {
-                IbanErrorCode::StructureIncorrectForCountry as c_int
-            }
-            ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
-            ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
-            ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
-        },
+        Err(err) => map_validation_error(err),
     }
 }
 
@@ -167,15 +205,23 @@ pub unsafe extern "C" fn iban_validate_optimized(iban_str: *const c_char, len: u
 
     let actual_len = match len {
         0 => {
-            // Find the null terminator
+            // Find the null terminator (caller guarantees a NUL-terminated string
+            // when len == 0, per this function's safety contract). See
+            // iban_validate_short for why no separate range check is needed here.
             let mut i = 0;
             while unsafe { *iban_str.add(i) != 0 } {
                 i += 1;
             }
             i
         }
-        15..=33 => len,
-        _ => 15,
+        n => {
+            // Explicit caller-supplied length: reject out-of-range values outright
+            // rather than coercing them (see iban_validate_short for rationale).
+            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&n) {
+                return IbanErrorCode::InvalidSize as c_int;
+            }
+            n
+        }
     };
 
     // Create a byte slice without copying or allocation
@@ -191,17 +237,71 @@ pub unsafe extern "C" fn iban_validate_optimized(iban_str: *const c_char, len: u
     match validate_iban_str(iban_rust_str) {
         Ok(true) => IbanErrorCode::Valid as c_int,
         Ok(false) => IbanErrorCode::Invalid as c_int,
-        Err(err) => match err {
-            ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
-            ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
-            ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
-            ValidationError::StructureIncorrectForCountry => {
-                IbanErrorCode::StructureIncorrectForCountry as c_int
-            }
-            ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
-            ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
-            ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
-        },
+        Err(err) => map_validation_error(err),
+    }
+}
+
+/// Zero-copy IBAN validation over an explicit byte span.
+///
+/// Purpose-built for callers whose buffers are NOT NUL-terminated (e.g. DuckDB's
+/// `duckdb_string_t`/`string_t`, which is a pointer+length pair with no guaranteed
+/// trailing NUL). Unlike `iban_validate_short`, `len == 0` always means "empty input"
+/// (rejected immediately) and never triggers NUL-scanning. Never reads more than
+/// `len` bytes from `iban_str`.
+///
+/// @param iban_str Pointer to `len` bytes of IBAN data (need not be NUL-terminated)
+/// @param len Exact number of valid bytes at `iban_str`
+/// @param result the results needed to build the branch_id and bank_id (when available)
+/// @return Status code (see IbanErrorCode enum values)
+///
+/// # Safety
+/// If `len > 0`, `iban_str` must point to at least `len` readable bytes. If `len == 0`,
+/// `iban_str` is never dereferenced and may be null or dangling. `result` must point to
+/// a valid `IbanValidationResult`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn iban_validate_span(
+    iban_str: *const c_char,
+    len: usize,
+    result: *mut IbanValidationResult,
+) -> c_int {
+    unsafe {
+        (*result).is_valid = false;
+        (*result).bank_s = 0;
+        (*result).bank_e = 0;
+        (*result).branch_s = 0;
+        (*result).branch_e = 0;
+    };
+
+    if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
+        return IbanErrorCode::InvalidSize as c_int;
+    }
+
+    if iban_str.is_null() {
+        return IbanErrorCode::MissingCountry as c_int;
+    }
+
+    // Create a byte slice without copying or allocation - bounded strictly by `len`
+    let bytes = unsafe { slice::from_raw_parts(iban_str as *const u8, len) };
+
+    // Convert to &str without copying - only validates UTF-8
+    let iban_rust_str = match std::str::from_utf8(bytes) {
+        Ok(s) => s,
+        Err(_) => return IbanErrorCode::Invalid as c_int,
+    };
+
+    match validate_iban_get_numeric(iban_rust_str) {
+        Ok((true, bank_s, bank_e, branch_s, branch_e)) => {
+            unsafe {
+                (*result).is_valid = true;
+                (*result).bank_s = bank_s;
+                (*result).bank_e = bank_e;
+                (*result).branch_s = branch_s;
+                (*result).branch_e = branch_e;
+            };
+            IbanErrorCode::Valid as c_int
+        }
+        Ok((false, _, _, _, _)) => IbanErrorCode::Invalid as c_int,
+        Err(err) => map_validation_error(err),
     }
 }
 
@@ -223,6 +323,10 @@ pub struct IbanData {
 
 /// Gets IBAN information without copying strings
 /// Note: The returned data is only valid while iban_str is valid
+///
+/// Legacy/NUL-terminated-buffer path. Not recommended for buffers that aren't
+/// NUL-terminated (e.g. DuckDB's `string_t`) - use `iban_validate_short`/
+/// `iban_validate_span` instead for that calling convention.
 ///
 /// @param iban_str A null-terminated C string containing the IBAN
 /// @param out_data Pointer to an IbanDataView structure to fill
@@ -256,21 +360,7 @@ pub unsafe extern "C" fn iban_get_view(
     // Create the Iban struct
     let iban_fields = match validate_iban_with_data(iban_rust_str) {
         Ok((ibf, _)) => ibf,
-        Err(err) => {
-            // Convert error to appropriate error code
-            let error_code = match err {
-                ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
-                ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
-                ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
-                ValidationError::StructureIncorrectForCountry => {
-                    IbanErrorCode::StructureIncorrectForCountry as c_int
-                }
-                ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
-                ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
-                ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
-            };
-            return error_code;
-        }
+        Err(err) => return map_validation_error(err),
     };
 
     // Fill out the data view structure
@@ -281,30 +371,20 @@ pub unsafe extern "C" fn iban_get_view(
 
     // For a zero-copy solution, we need to extract positions of bank_id and branch_id
     // from the original IBAN string if possible
-    if let Some(pos) = iban_fields.bank_id_pos_s {
+    if let (Some(start), Some(end)) = (iban_fields.bank_id_pos_s, iban_fields.bank_id_pos_e) {
         unsafe {
             (*out_data).bank_id = StringView {
-                ptr: iban_str.add(pos + 3), // Point to the substring in the original string
-                len: 1 + iban_fields
-                    .bank_id_pos_e
-                    .expect("bank_id end position missing")
-                    - iban_fields
-                        .bank_id_pos_s
-                        .expect("bank_id start pos missing"),
+                ptr: iban_str.add(start + 3), // Point to the substring in the original string
+                len: 1 + end - start,
             }
         };
     }
 
-    if let Some(pos) = iban_fields.branch_id_pos_s {
+    if let (Some(start), Some(end)) = (iban_fields.branch_id_pos_s, iban_fields.branch_id_pos_e) {
         unsafe {
-            (*out_data).bank_id = StringView {
-                ptr: iban_str.add(pos + 3), // Point to the substring in the original string
-                len: 1 + iban_fields
-                    .branch_id_pos_e
-                    .expect("branch_id end position missing")
-                    - iban_fields
-                        .branch_id_pos_s
-                        .expect("branch_id start pos missing"),
+            (*out_data).branch_id = StringView {
+                ptr: iban_str.add(start + 3), // Point to the substring in the original string
+                len: 1 + end - start,
             }
         };
     }
@@ -333,17 +413,7 @@ pub unsafe extern "C" fn iban_validate(iban_str: *const c_char) -> c_int {
     match validate_iban_str(iban_rust_str) {
         Ok(true) => IbanErrorCode::Valid as c_int,
         Ok(false) => IbanErrorCode::Invalid as c_int,
-        Err(err) => match err {
-            ValidationError::TooShort(_) => IbanErrorCode::TooShort as c_int,
-            ValidationError::MissingCountry => IbanErrorCode::MissingCountry as c_int,
-            ValidationError::InvalidCountry => IbanErrorCode::InvalidCountry as c_int,
-            ValidationError::StructureIncorrectForCountry => {
-                IbanErrorCode::StructureIncorrectForCountry as c_int
-            }
-            ValidationError::InvalidSizeForCountry => IbanErrorCode::InvalidSize as c_int,
-            ValidationError::ModuloIncorrect => IbanErrorCode::ModuloFailed as c_int,
-            ValidationError::InvalidChecksum => IbanErrorCode::InvalidChecksum as c_int,
-        },
+        Err(err) => map_validation_error(err),
     }
 }
 
@@ -461,6 +531,7 @@ pub extern "C" fn iban_error_message(error_code: c_int) -> *const c_char {
     static STRUCTURE_INCORRECT: &[u8] = b"IBAN structure is incorrect for the country\0";
     static INVALID_SIZE: &[u8] = b"IBAN length is invalid for the country\0";
     static MODULO_FAILED: &[u8] = b"IBAN checksum (mod-97) is incorrect\0";
+    static INVALID_CHECKSUM: &[u8] = b"IBAN checksum is invalid (00, 01, or 99 not allowed)\0";
     static UNKNOWN: &[u8] = b"Unknown error code\0";
 
     let bytes = match error_code {
@@ -472,6 +543,7 @@ pub extern "C" fn iban_error_message(error_code: c_int) -> *const c_char {
         -4 => STRUCTURE_INCORRECT,
         -5 => INVALID_SIZE,
         -6 => MODULO_FAILED,
+        -7 => INVALID_CHECKSUM,
         _ => UNKNOWN,
     };
 
@@ -1262,6 +1334,196 @@ mod tests {
                 "Should not be too short for {}",
                 description
             );
+        }
+    }
+
+    // Real, mod-97-verified maximum-length IBAN (RU, 33 chars) - the previous
+    // `_ => 15` fallback would have silently truncated this to 15 bytes.
+    const RU_MAX_LEN_IBAN: &str = "RU0204452560040702810412345678901";
+    // Real minimum-length IBAN (NO, 15 chars).
+    const NO_MIN_LEN_IBAN: &str = "NO9386011117947";
+
+    #[test]
+    fn test_ru_max_length_round_trip() {
+        assert_eq!(RU_MAX_LEN_IBAN.len(), MAX_IBAN_LEN);
+        let c_string = CString::new(RU_MAX_LEN_IBAN).unwrap();
+        let mut result = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+
+        let status =
+            unsafe { iban_validate_short(c_string.as_ptr(), RU_MAX_LEN_IBAN.len(), &mut result) };
+        assert_eq!(status, IbanErrorCode::Valid as i32);
+        assert!(result.is_valid);
+        assert_eq!((result.bank_s, result.bank_e), (4, 13));
+        assert_eq!((result.branch_s, result.branch_e), (13, 18));
+
+        let mut span_result = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+        let span_status = unsafe {
+            iban_validate_span(
+                RU_MAX_LEN_IBAN.as_ptr() as *const c_char,
+                RU_MAX_LEN_IBAN.len(),
+                &mut span_result,
+            )
+        };
+        assert_eq!(span_status, IbanErrorCode::Valid as i32);
+        assert!(span_result.is_valid);
+        assert_eq!((span_result.bank_s, span_result.bank_e), (4, 13));
+        assert_eq!((span_result.branch_s, span_result.branch_e), (13, 18));
+    }
+
+    #[test]
+    fn test_no_min_length_round_trip() {
+        assert_eq!(NO_MIN_LEN_IBAN.len(), MIN_IBAN_LEN);
+        let c_string = CString::new(NO_MIN_LEN_IBAN).unwrap();
+        let mut result = IbanValidationResult {
+            is_valid: false,
+            bank_s: 0,
+            bank_e: 0,
+            branch_s: 0,
+            branch_e: 0,
+        };
+
+        let status =
+            unsafe { iban_validate_short(c_string.as_ptr(), NO_MIN_LEN_IBAN.len(), &mut result) };
+        assert_eq!(status, IbanErrorCode::Valid as i32);
+        assert!(result.is_valid);
+    }
+
+    /// Reproduces the DuckDB threat model precisely: a buffer sized *exactly* to
+    /// `len` bytes (no over-allocation, no NUL guarantee), covering lengths both
+    /// inside and outside the valid IBAN range. Before the fix, out-of-range
+    /// lengths caused `iban_validate_short`/`iban_validate_optimized` to read 15
+    /// bytes from a possibly-shorter buffer - an out-of-bounds read. Run this test
+    /// under `cargo +nightly miri test -p iban_validation_c` to prove no UB remains.
+    #[test]
+    fn test_no_oob_read_for_arbitrary_lengths() {
+        for &len in &[0usize, 1, 4, 10, 14, 15, 20, 33, 34, 50, 255] {
+            let buf: Vec<u8> = (0..len).map(|i| b'A' + (i % 26) as u8).collect();
+            assert_eq!(buf.len(), len);
+
+            let mut span_result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+            // `Vec::as_ptr()` is well-defined (non-null, dangling-but-valid) even for
+            // an empty (len == 0) vector, and `iban_validate_span` never dereferences
+            // it when the length check fails first.
+            let ptr = buf.as_ptr() as *const c_char;
+            let status = unsafe { iban_validate_span(ptr, len, &mut span_result) };
+            if !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
+                assert_eq!(
+                    status,
+                    IbanErrorCode::InvalidSize as i32,
+                    "len={len} should be rejected as InvalidSize without reading past the buffer"
+                );
+                assert!(!span_result.is_valid);
+            }
+
+            // iban_validate_short/optimized only accept a real C string (NUL-terminated);
+            // append a NUL so length auto-detection isn't exercised, and pass the exact
+            // buffer length explicitly - the code path under test.
+            let mut nul_terminated = buf.clone();
+            nul_terminated.push(0);
+            let mut short_result = IbanValidationResult {
+                is_valid: false,
+                bank_s: 0,
+                bank_e: 0,
+                branch_s: 0,
+                branch_e: 0,
+            };
+            let short_status = unsafe {
+                iban_validate_short(
+                    nul_terminated.as_ptr() as *const c_char,
+                    len,
+                    &mut short_result,
+                )
+            };
+            let optimized_status =
+                unsafe { iban_validate_optimized(nul_terminated.as_ptr() as *const c_char, len) };
+            // len == 0 means "auto-detect via NUL scan" for these two functions (a
+            // different, pre-existing contract from iban_validate_span) - the
+            // resulting actual_len is always in-bounds by construction, so no
+            // InvalidSize is guaranteed here; the core validator reports its own
+            // appropriate error (e.g. MissingCountry for an empty string). The
+            // out-of-range rejection only applies to an explicit nonzero length.
+            if len != 0 && !(MIN_IBAN_LEN..=MAX_IBAN_LEN).contains(&len) {
+                assert_eq!(short_status, IbanErrorCode::InvalidSize as i32);
+                assert_eq!(optimized_status, IbanErrorCode::InvalidSize as i32);
+            }
+        }
+    }
+
+    #[test]
+    fn test_error_message_invalid_checksum() {
+        let message_ptr = iban_error_message(IbanErrorCode::InvalidChecksum as i32);
+        let message = unsafe { CStr::from_ptr(message_ptr).to_str().unwrap() };
+        assert!(message.to_lowercase().contains("checksum"));
+    }
+
+    /// Cheap concurrency regression insurance: with no mutable global state today,
+    /// this should always pass - it exists so a future change that adds shared
+    /// state (e.g. a cache) breaks loudly instead of silently under concurrent use,
+    /// matching the DuckDB requirement of calling this library from many threads.
+    #[test]
+    fn test_concurrent_validation_matches_single_threaded() {
+        let inputs: Vec<(&str, i32)> = vec![
+            ("DE89370400440532013000", IbanErrorCode::Valid as i32),
+            ("GB29NWBK60161331926819", IbanErrorCode::Valid as i32),
+            (RU_MAX_LEN_IBAN, IbanErrorCode::Valid as i32),
+            (NO_MIN_LEN_IBAN, IbanErrorCode::Valid as i32),
+            (
+                "DE00370400440532013000",
+                IbanErrorCode::InvalidChecksum as i32,
+            ),
+            (
+                "XX89370400440532013000",
+                IbanErrorCode::InvalidCountry as i32,
+            ),
+        ];
+
+        let handles: Vec<_> = (0..8)
+            .map(|_| {
+                let inputs = inputs.clone();
+                std::thread::spawn(move || {
+                    for _ in 0..2000 {
+                        for (iban, expected) in &inputs {
+                            let mut result = IbanValidationResult {
+                                is_valid: false,
+                                bank_s: 0,
+                                bank_e: 0,
+                                branch_s: 0,
+                                branch_e: 0,
+                            };
+                            let status = unsafe {
+                                iban_validate_span(
+                                    iban.as_ptr() as *const c_char,
+                                    iban.len(),
+                                    &mut result,
+                                )
+                            };
+                            assert_eq!(status, *expected, "mismatch for {iban} under concurrency");
+                        }
+                    }
+                })
+            })
+            .collect();
+
+        for handle in handles {
+            handle.join().expect("worker thread panicked");
         }
     }
 }

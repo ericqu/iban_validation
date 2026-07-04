@@ -25,6 +25,7 @@
      StructureIncorrect = -4, /* IBAN structure is incorrect for the country */
      InvalidSize = -5,      /* IBAN length is invalid for the country */
      ModuloFailed = -6,     /* IBAN checksum (mod-97) is incorrect */
+     InvalidChecksum = -7,  /* IBAN checksum is invalid (00, 01, or 99 not allowed) */
  };
 
  /**
@@ -90,11 +91,30 @@
   * @return Status code (see IbanErrorCode enum values)
   */
  int iban_validate_optimized(const char* iban_str, size_t len);
- 
+
+ /**
+  * Zero-copy IBAN validation over an explicit byte span.
+  *
+  * Purpose-built for callers whose buffers are NOT null-terminated (e.g. DuckDB's
+  * duckdb_string_t/string_t, a pointer+length pair with no guaranteed trailing NUL).
+  * Unlike iban_validate_short, len == 0 always means "empty input" (rejected
+  * immediately) and never triggers NUL-scanning. Never reads more than len bytes.
+  *
+  * @param iban_str Pointer to len bytes of IBAN data (need not be null-terminated)
+  * @param len Exact number of valid bytes at iban_str
+  * @param result the results needed to build the branch_id and bank_id (when available)
+  * @return Status code (see IbanErrorCode enum values)
+  */
+ int iban_validate_span(const char* iban_str, size_t len, IbanValidationResult* result);
+
  /**
   * Gets IBAN information without copying strings
   * Note: The returned data is only valid while iban_str is valid
-  * 
+  *
+  * Legacy/null-terminated-buffer path. Not recommended for buffers that aren't
+  * null-terminated (e.g. DuckDB's string_t) - use iban_validate_short/
+  * iban_validate_span instead for that calling convention.
+  *
   * @param iban_str A null-terminated string containing the IBAN
   * @param out_data Pointer to an IbanDataView structure to fill
   * @return 1 if valid, 0 or negative error code otherwise
