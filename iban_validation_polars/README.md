@@ -91,8 +91,10 @@ from iban_validation_polars import country_status
 df.with_columns(status=country_status("ibans"))
 ```
 
+
+
 ## Common Use cases
- - Data Cleaning pipeline
+ - Data Cleaning pipeline  (see pandera_example.md)
  - Data validation report
  - Extracting valid IBANs only (filter for non-empty valid IBANs)
 
