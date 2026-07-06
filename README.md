@@ -1,6 +1,9 @@
 # Iban Validation
 A set of libraries to validate IBANs and extract bank and branch identifiers in Rust, Python, and Polars, with a focus on correctness, performance, and minimal memory usage.
 
+## WASM
+While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
+
 ## Structure
 The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided. Two further wrappers also depend on the core crate: iban_validation_wasm, a WebAssembly/JS wrapper (see the WASM section below), and iban_validation_c, a C/C++ FFI wrapper.
 
@@ -91,9 +94,6 @@ Some of the Makefile were inspired by the makefiles on the [Polars project](http
 In the iban_validation_bench_rs, benchmark of similar crates published on crates.io is presented. 
 While this library prioritizes performance and correctness, other libraries may provide higher-level conveniences such as automatic normalization or formatting, which may be more suitable for frontend or interactive use cases.
 See [details](iban_validation_bench_rs/README.md). Similar benchmarking was done on Python libraries see [details](iban_validation_bench_py/README.md).
-
-## WASM
-While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Changes
  - 0.1.29: added an opt-in, off-by-default `non_registry` Cargo feature to iban_validation_rs covering 22 non-SWIFT-registry countries, selected at runtime via `CountrySet`; surfaced consistently as `allow_non_registry`/`allowNonRegistry`/`IBAN_ALLOW_NON_REGISTRY` across the Python, Polars, WASM, and C wrappers, plus a registry/non_registry/invalid classification path (`is_non_registry` / `country_status`).
