@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IBAN validation WASM/JS</title>
+    <title>Free IBAN Checker — validates in your browser</title>
     <style>
         * {
             box-sizing: border-box;
@@ -33,7 +33,7 @@
             margin: 20px 0;
         }
         
-        input[type="text"] {
+        input[type="text"], select {
             width: 100%;
             max-width: 400px;
             padding: 12px;
@@ -43,7 +43,14 @@
             margin-bottom: 10px;
             font-family: sans-serif;
         }
-        
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
         button {
             padding: 12px 20px;
             font-size: 1rem;
@@ -62,7 +69,14 @@
         #output {
             margin: 20px 0;
             font-size: 1rem;
+        }
+
+        #output.error {
             color: #d32f2f;
+        }
+
+        #output.success {
+            color: #2e7d32;
         }
         
         table {
@@ -122,6 +136,12 @@
     <p>Version: <span id="version">Loading...</span> | Source file: <span id="sourcefile">Loading...</span></p>
 
     <form id="ibanForm">
+        <label for="ibanSamples">Try a sample IBAN:</label>
+        <select id="ibanSamples">
+            <option value="">-- select a sample IBAN --</option>
+        </select>
+
+        <label for="ibanInput">IBAN:</label>
         <input type="text" id="ibanInput" placeholder="Enter IBAN here" />
         <br>
         <button type="submit">Validate</button>
@@ -142,44 +162,133 @@
 
     <p>The processing is done on the browser not outsourced to a third party. More details about the underlying code is available at: 
     <a href="https://github.com/ericqu/iban_validation">https://github.com/ericqu/iban_validation</a> for the overall project and 
-    <a href="https://github.com/ericqu/iban_validation/iban_validation_wasm">https://github.com/ericqu/iban_validation/iban_validation_wasm</a> for the WASM wrapper.</p>
+    <a href="https://github.com/ericqu/iban_validation/blob/main/iban_validation_wasm/README.md">https://github.com/ericqu/iban_validation/blob/main/iban_validation_wasm/README.md</a> for the WASM wrapper.</p>
     <p>It only indicates if the IBAN is valid according to the standard, it does not ensure the account exists</p>
+    <p>Need to validate a large file of IBANs at once? There is also a Python Polars plugin for that, see
+    <a href="https://github.com/ericqu/iban_validation/blob/main/iban_validation_polars/README.md">https://github.com/ericqu/iban_validation/blob/main/iban_validation_polars/README.md</a>.</p>
 
     <script type="module">
         import init, { get_version_js, get_source_file_js, parse_iban_js } from 'https://ericqu.github.io/iban_validation/pkg/iban_validation_wasm.js';
+
+        // Sample IBANs taken from iban_validation_rs/data/IBAN Examples.txt
+        const sampleIbans = [
+            "AL35202111090000000001234567", "AD1400080001001234567890", "AT483200000012345864",
+            "AZ77VTBA00000000001234567890", "BH02CITI00001077181611", "BY86AKBB10100000002966000000",
+            "BE71096123456769", "BA393385804800211234", "BR1500000000000010932840814P2",
+            "BG18RZBB91550123456789", "BI1320001100010000123456789", "CR23015108410026012345",
+            "HR1723600001101234565", "CY21002001950000357001234567", "CZ5508000000001234567899",
+            "DK9520000123456789", "DJ2110002010010409943020008", "DO22ACAU00000000000123456789",
+            "EG800002000156789012345180002", "SV43ACAT00000000000000123123", "EE471000001020145685",
+            "FK12SC987654321098", "FO9264600123456789", "FI1410093000123458",
+            "FR7630006000011234567890189", "GE60NB0000000123456789", "DE75512108001245126199",
+            "GI56XAPO000001234567890", "GR9608100010000001234567890", "GL8964710123456789",
+            "GT20AGRO00000000001234567890", "VA59001123000012345678", "HU93116000060000000012345676",
+            "IS750001121234563108962099", "IQ20CBIQ861800101010500", "IE64IRCE92050112345678",
+            "IL170108000000012612345", "IT60X0542811101000000123456", "JO71CBJO0000000000001234567890",
+            "KZ244350000012344567", "XK051212012345678906", "KW81CBKU0000000000001234560101",
+            "LV97HABA0012345678910", "LB92000700000000123123456123", "LY38021001000000123456789",
+            "LI7408806123456789012", "LT601010012345678901", "LU120010001234567891",
+            "MT31MALT01100000000000000000123", "MR1300020001010000123456753", "MU43BOMM0101123456789101000MUR",
+            "MD21EX000000000001234567", "MC5810096180790123456789085", "MN580050099123456789",
+            "ME25505000012345678951", "NL02ABNA0123456789", "NI79BAMC00000000000003123123",
+            "MK07200002785123453", "NO8330001234567", "PK36SCBL0000001123456702",
+            "PS92PALS000000000400123456702", "PL10105000997603123456789123", "PT50002700000001234567833",
+            "QA54QNBA000000000000693123456", "RO66BACX0000001234567890", "RU0204452560040702810412345678901",
+            "LC14BOSL123456789012345678901234", "SM76P0854009812123456789123", "ST23000200000289355710148",
+            "SA4420000001234567891234", "RS35105008123123123173", "SC74MCBL01031234567890123456USD",
+            "SK8975000000000012345671", "SI56192001234567892", "SO061000001123123456789",
+            "ES7921000813610123456789", "SD8811123456789012", "OM040280000012345678901",
+            "SE7280000810340009783242", "CH5604835012345678009", "TL380010012345678910106",
+            "TN5904018104004942712345", "TR320010009999901234567890", "UA903052992990004149123456789",
+            "AE460090000000123456789", "GB33BUKB20201555555555", "VG07ABVI0000000123456789",
+            "YE09CBKU0000000000001234560101", "HN88CABF00000000000250005469",
+        ];
+
+        // A few deliberately broken IBANs, useful to see how validation errors are reported
+        const invalidSampleIbans = [
+            { iban: "DE00512108001245126199", reason: "incorrect check digits" },
+            { iban: "NL99ABNA0123456789", reason: "incorrect check digits" },
+            { iban: "GB33BUKB2020155555", reason: "too short for the country" },
+            { iban: "ZZ36SCBL0000001123456702", reason: "unknown country code" },
+        ];
+
+        // Convert a two-letter ISO country code into its flag emoji
+        function countryCodeToFlagEmoji(code) {
+            return code
+                .toUpperCase()
+                .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+        }
+
+        function populateSampleDropdown() {
+            const select = document.getElementById("ibanSamples");
+
+            const validGroup = document.createElement("optgroup");
+            validGroup.label = "Valid IBANs";
+            for (const iban of sampleIbans) {
+                const opt = document.createElement("option");
+                opt.value = iban;
+                opt.textContent = `${countryCodeToFlagEmoji(iban.slice(0, 2))} ${iban}`;
+                validGroup.appendChild(opt);
+            }
+            select.appendChild(validGroup);
+
+            const invalidGroup = document.createElement("optgroup");
+            invalidGroup.label = "Invalid IBANs (for testing)";
+            for (const { iban, reason } of invalidSampleIbans) {
+                const opt = document.createElement("option");
+                opt.value = iban;
+                opt.textContent = `⚠️ ${iban} (${reason})`;
+                invalidGroup.appendChild(opt);
+            }
+            select.appendChild(invalidGroup);
+
+            select.addEventListener("change", () => {
+                if (!select.value) return;
+                document.getElementById("ibanInput").value = select.value;
+                document.getElementById("ibanForm").requestSubmit();
+                select.value = "";
+            });
+        }
 
         async function main() {
             await init();
             document.getElementById("version").textContent = get_version_js();
             document.getElementById("sourcefile").textContent = get_source_file_js();
 
+            populateSampleDropdown();
+
             document.getElementById("ibanForm").addEventListener("submit", async (event) => {
                 event.preventDefault();
-                
+
                 // Get input and preprocess: convert to uppercase and remove spaces
                 const rawInput = document.getElementById("ibanInput").value;
                 const cleanedInput = rawInput.toUpperCase().replace(/\s/g, '');
 
                 document.getElementById("ibanInput").value = cleanedInput;
-                
+
                 const output = document.getElementById("output");
                 const table = document.getElementById("ibanTable");
                 const row = document.getElementById("ibanRow");
 
                 output.textContent = '';
+                output.className = '';
                 row.innerHTML = '';
                 table.style.display = 'none';
 
                 try {
                     const result = parse_iban_js(cleanedInput);
+                    const flag = countryCodeToFlagEmoji(result.iban.slice(0, 2));
+                    output.textContent = `✅ Valid IBAN ${flag}`;
+                    output.className = 'success';
                     row.innerHTML = `<tr>
-                        <td>${result.iban}</td>
+                        <td>${flag} ${result.iban}</td>
                         <td>${result.bank_id || ''}</td>
                         <td>${result.branch_id || ''}</td>
                     </tr>`;
                     table.style.display = '';
                 } catch (e) {
                     output.textContent = `❌ ${e}`;
+                    output.className = 'error';
                 }
             });
         }
