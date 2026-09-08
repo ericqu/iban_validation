@@ -22,7 +22,8 @@ name = "iban_validation_cli"
 path = "src/main.rs"
 
 [dependencies]
-iban_validation_rs = { path = "../iban_validation_rs", features = ["non_registry"] }
+# keep `version` in sync with [workspace.package] version; crates.io requires it
+iban_validation_rs = { path = "../iban_validation_rs", version = "0.1.29", features = ["non_registry"] }
 
 [dev-dependencies]
 proptest = "1"
