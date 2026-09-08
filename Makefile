@@ -20,6 +20,13 @@ else
 	MVF := mv -f
 endif
 
+# Cross-compilation linkers. These are deliberately NOT in .cargo/config.toml: that
+# file applies to every build, so pinning a cross-toolchain linker there breaks
+# native builds on Linux (CI and contributors), where x86_64-unknown-linux-gnu is
+# the host target rather than a cross target. Override if your toolchain differs.
+LINUX_X8_LINKER ?= x86_64-unknown-linux-gnu-gcc
+WINDOWS_GNU_LINKER ?= x86_64-w64-mingw32-gcc
+
 # Cross-compilation targets
 MACOS_AA_TARGETS := aarch64-apple-darwin
 MACOS_X8_TARGETS := x86_64-apple-darwin
@@ -101,14 +108,14 @@ iban_validation_c_release: iban_validation_rs_release
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/aarch64-apple-darwin/
 # linux gnu
 	rustup target add x86_64-unknown-linux-gnu
-	RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-unknown-linux-gnu
+	RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$(LINUX_X8_LINKER)" cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-unknown-linux-gnu
 	mkdir -p $(DIST_C_DIR)/x86_64-unknown-linux-gnu
 	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
 	cp target/x86_64-unknown-linux-gnu/release/lib$(C_WRAPPER_DIR).so $(DIST_C_DIR)/x86_64-unknown-linux-gnu/ || true
 	cp $(C_WRAPPER_DIR)/include/*.h $(DIST_C_DIR)/x86_64-unknown-linux-gnu/
 # build-windows:
 	rustup target add x86_64-pc-windows-gnu
-	RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-pc-windows-gnu
+	RUSTFLAGS="$(RUSTFLAGS_X86_64_V3)" CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="$(WINDOWS_GNU_LINKER)" cargo build -p $(C_WRAPPER_DIR) --release --target x86_64-pc-windows-gnu
 	mkdir -p $(DIST_C_DIR)/x86_64-pc-windows-gnu
 	cp target/x86_64-pc-windows-gnu/release/lib$(C_WRAPPER_DIR).a $(DIST_C_DIR)/x86_64-pc-windows-gnu/
 	cp target/x86_64-pc-windows-gnu/release/$(C_WRAPPER_DIR).dll $(DIST_C_DIR)/x86_64-pc-windows-gnu/ || true

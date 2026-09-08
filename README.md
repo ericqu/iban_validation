@@ -209,7 +209,7 @@ While this library prioritizes performance and correctness, other libraries may 
 See [details](iban_validation_bench_rs/README.md). Similar benchmarking was done on Python libraries see [details](iban_validation_bench_py/README.md).
 
 ## Changes
- - 0.1.29: added an opt-in, off-by-default `non_registry` Cargo feature to iban_validation_rs covering 22 non-SWIFT-registry countries, selected at runtime via `CountrySet`; surfaced consistently as `allow_non_registry`/`allowNonRegistry`/`IBAN_ALLOW_NON_REGISTRY` across the Python, Polars, WASM, and C wrappers, plus a registry/non_registry/invalid classification path (`is_non_registry` / `country_status`).
+- 0.1.29: `non_registry` countries are now a runtime opt-in (`CountrySet`, `validate_iban_str_with`, `validate_iban_str_print_with`, `Iban::new_with`) rather than folded into the default lookup whenever the feature is compiled in; added `is_non_registry_country` and `NON_REGISTRY_COUNTRIES`. Upgrade to polars 0.55.2 and rust 1.98.1.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

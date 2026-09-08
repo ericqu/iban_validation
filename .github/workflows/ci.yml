@@ -8,12 +8,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  # .cargo/config.toml pins `x86_64-unknown-linux-gnu-gcc` as the linker for this
-  # target, which is what cross-building releases from macOS needs. On a Linux
-  # runner that target is the *host*, and that cross-toolchain binary does not
-  # exist, so point it back at the native linker. Cargo gives environment
-  # variables precedence over .cargo/config.toml.
-  CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: cc
 
 jobs:
   check:
