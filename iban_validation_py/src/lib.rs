@@ -78,7 +78,7 @@ fn validate_print_iban_with_error(
 }
 
 /// Validate the IBAN and return an error code
-/// Returns 0 if valid, or a specific error code (1-6) for different validation failures
+/// Returns 0 if valid, or a specific error code (1-7) for different validation failures
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_iban_error_code(iban_t: &str, allow_non_registry: bool) -> PyResult<i32> {
@@ -89,7 +89,7 @@ fn validate_iban_error_code(iban_t: &str, allow_non_registry: bool) -> PyResult<
 }
 
 /// Validate the IBAN in 'print' (use-friendly / with extra spaces) and return an error code
-/// Returns 0 if valid, or a specific error code (1-6) for different validation failures
+/// Returns 0 if valid, or a specific error code (1-7) for different validation failures
 #[pyfunction]
 #[pyo3(signature = (iban_t, *, allow_non_registry = false))]
 fn validate_print_iban_error_code(iban_t: &str, allow_non_registry: bool) -> PyResult<i32> {
@@ -187,6 +187,7 @@ fn iban_validation_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("ERROR_STRUCTURE_INCORRECT", 4)?;
     m.add("ERROR_INVALID_SIZE", 5)?;
     m.add("ERROR_MODULO_INCORRECT", 6)?;
+    m.add("ERROR_INVALID_CHECKSUM", 7)?;
 
     // Two-letter codes of the opt-in, non-registry countries (see `allow_non_registry`).
     let non_registry_countries = iban_validation_rs::NON_REGISTRY_COUNTRIES

@@ -145,6 +145,41 @@ def test_is_non_registry_getter_for_registry_country():
     assert iban.is_non_registry is False
 
 
+def test_forbidden_checksum_error_code():
+    for forbidden in ("00", "01", "99"):
+        iban = "AL" + forbidden + VALID_IBAN[4:]
+        assert (
+            iban_validation_py.validate_iban_error_code(iban)
+            == iban_validation_py.ERROR_INVALID_CHECKSUM
+        )
+
+
+def test_type_stub_covers_public_api():
+    """The .pyi is maintained by hand: fail loudly when it drifts from the module."""
+    import ast
+    from pathlib import Path
+
+    stub_path = Path(iban_validation_py.__file__).with_name("__init__.pyi")
+    assert stub_path.is_file(), "py.typed package is missing its __init__.pyi"
+    stub = ast.parse(stub_path.read_text())
+
+    declared = set()
+    for node in stub.body:
+        if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+            declared.add(node.name)
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            declared.add(node.target.id)
+
+    exported = set(iban_validation_py.__all__)
+    assert exported <= declared, f"missing from __init__.pyi: {sorted(exported - declared)}"
+    assert declared <= exported, f"stubbed but not exported: {sorted(declared - exported)}"
+
+    stubbed_class = next(n for n in stub.body if isinstance(n, ast.ClassDef))
+    members = {n.name for n in stubbed_class.body if isinstance(n, ast.FunctionDef)}
+    runtime = {n for n in dir(IbanValidation) if not n.startswith("_")}
+    assert runtime <= members, f"missing from IbanValidation stub: {sorted(runtime - members)}"
+
+
 test_validate_iban()
 test_iban()
 test_validate_print_iban()
@@ -153,3 +188,5 @@ test_non_registry_default_rejected()
 test_non_registry_opt_in_accepted()
 test_non_registry_country_set_membership()
 test_is_non_registry_getter_for_registry_country()
+test_type_stub_covers_public_api()
+test_forbidden_checksum_error_code()

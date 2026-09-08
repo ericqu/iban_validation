@@ -85,12 +85,19 @@ The `validate_iban_error_code` function returns the following error codes:
 - `ERROR_STRUCTURE_INCORRECT` (4): The IBAN structure doesn't match the country's requirements
 - `ERROR_INVALID_SIZE` (5): The IBAN length doesn't match the expected length for that country
 - `ERROR_MODULO_INCORRECT` (6): The IBAN checksum (mod97) is incorrect
+- `ERROR_INVALID_CHECKSUM` (7): The check digits are one of the forbidden values (00, 01 or 99)
+
+## Type hints
+
+The package ships inline type stubs (`__init__.pyi`) and a PEP 561 `py.typed` marker,
+so editors and type checkers (mypy, pyright) resolve the signatures of every function
+and of `IbanValidation` without any extra stub package.
 
 ## Credit
 Cheers to the [Pyo3 Maturin](https://github.com/PyO3/maturin) project! It made this package possible.
 
 ## Changes
- - 0.1.29: added opt-in `allow_non_registry` keyword argument (default `False`) to every validation function and to `IbanValidation`, plus `IbanValidation.is_non_registry` and the `NON_REGISTRY_COUNTRIES` constant.
+ - 0.1.29: added the `ERROR_INVALID_CHECKSUM` (7) constant, which `validate_iban_error_code` could already return; added inline type stubs (`py.typed` + `__init__.pyi`) so the package is typed for mypy/pyright; added opt-in `allow_non_registry` keyword argument (default `False`) to every validation function and to `IbanValidation`, plus `IbanValidation.is_non_registry` and the `NON_REGISTRY_COUNTRIES` constant.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14
