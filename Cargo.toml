@@ -7,6 +7,7 @@ members = [
     "iban_validation_polars",
     "iban_validation_bench_rs",
     "iban_validation_c",
+    "iban_validation_cli",
     "iban_validation_wasm",
     "fuzz"]
 default-members = ["iban_validation_rs"]

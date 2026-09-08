@@ -1,0 +1,28 @@
+[package]
+name = "iban_validation_cli"
+version = { workspace = true }
+edition = { workspace = true }
+authors = [ "Eric Quéré" ]
+readme = "README.md"
+homepage = "https://github.com/ericqu/iban_validation"
+license = "MIT"
+repository = "https://github.com/ericqu/iban_validation"
+description = "Command line IBAN validation: validate IBANs from stdin or a file and print bank and branch identifiers."
+documentation = "https://docs.rs/iban_validation_cli"
+keywords = ["iban", "validation", "cli", "banking", "finance"]
+categories = ["command-line-utilities", "finance"]
+rust-version = "1.85"
+
+[lib]
+name = "iban_validation_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "iban-validate"
+path = "src/main.rs"
+
+[dependencies]
+iban_validation_rs = { path = "../iban_validation_rs", features = ["non_registry"] }
+
+[dev-dependencies]
+proptest = "1"

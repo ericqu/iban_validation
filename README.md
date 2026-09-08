@@ -9,7 +9,8 @@
 [![MSRV](https://img.shields.io/badge/MSRV-1.85-blue.svg)](#minimum-supported-rust-version)
 [![License: MIT](https://img.shields.io/crates/l/iban_validation_rs.svg)](LICENSE)
 
-Validate IBANs and extract bank and branch identifiers, in **Rust, Python, Polars, C and WASM**.
+Validate IBANs and extract bank and branch identifiers, in **Rust, Python, Polars, C and WASM**,
+or straight from the **command line**.
 Single pass over the input, no allocation on the hot path, country structures generated from the
 official SWIFT IBAN registry (v102, Jun 2026).
 
@@ -68,6 +69,21 @@ df.with_columns(
 ).unnest("validated")
 ```
 
+### Command line
+
+```sh
+cargo install iban_validation_cli
+```
+
+```sh
+$ echo DE44500105175407324931 | iban-validate
+DE44500105175407324931	valid	50010517	-
+```
+
+Reads standard input or a file, one IBAN per line, and exits non-zero when any of them is
+invalid. `--format csv` writes a header and an error column for loading into a dataframe.
+[Details.](iban_validation_cli/README.md)
+
 Also available for [C/C++](iban_validation_c/README.md) and
 [WebAssembly](iban_validation_wasm/README.md).
 
@@ -118,7 +134,7 @@ Rust **1.85** (edition 2024). The MSRV is verified in CI on every push.
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Structure
-The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided. Two further wrappers also depend on the core crate: iban_validation_wasm, a WebAssembly/JS wrapper (see the WASM section below), and iban_validation_c, a C/C++ FFI wrapper.
+The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided. Three further projects also depend on the core crate: iban_validation_wasm, a WebAssembly/JS wrapper (see the WASM section below), iban_validation_c, a C/C++ FFI wrapper, and iban_validation_cli, a dependency-free command line front end (the `iban-validate` binary) for trying the library or using it from a shell pipeline without writing code.
 
 ## Design Goals
 
@@ -209,7 +225,7 @@ While this library prioritizes performance and correctness, other libraries may 
 See [details](iban_validation_bench_rs/README.md). Similar benchmarking was done on Python libraries see [details](iban_validation_bench_py/README.md).
 
 ## Changes
-- 0.1.29: `non_registry` countries are now a runtime opt-in (`CountrySet`, `validate_iban_str_with`, `validate_iban_str_print_with`, `Iban::new_with`) rather than folded into the default lookup whenever the feature is compiled in; added `is_non_registry_country` and `NON_REGISTRY_COUNTRIES`. Upgrade to polars 0.55.2 and rust 1.98.1.
+- 0.1.29: added iban_validation_cli, a command line front end installable with `cargo install iban_validation_cli`. `non_registry` countries are now a runtime opt-in (`CountrySet`, `validate_iban_str_with`, `validate_iban_str_print_with`, `Iban::new_with`) rather than folded into the default lookup whenever the feature is compiled in; added `is_non_registry_country` and `NON_REGISTRY_COUNTRIES`. Upgrade to polars 0.55.2 and rust 1.98.1.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

@@ -89,6 +89,14 @@ iban_validation_wasm: iban_validation_rs_release
 iban_validation_c:
 	cargo build -p $(C_WRAPPER_DIR) --release
 
+.PHONY: iban_validation_cli
+iban_validation_cli:
+	cargo build -p iban_validation_cli --release
+
+.PHONY: iban_validation_cli_install
+iban_validation_cli_install: iban_validation_cli
+	cargo install --path iban_validation_cli --force
+
 .PHONY: iban_validation_c_release
 iban_validation_c_release: iban_validation_rs_release
 	$(call create_venv)
@@ -222,11 +230,16 @@ publish_iban_validation_rs: test
 	cargo doc
 	cargo publish -p iban_validation_rs 
 
+.PHONY: publish_iban_validation_cli
+publish_iban_validation_cli: test
+	cargo publish -p iban_validation_cli
+
 .PHONY: test
 test:	clippy iban_validation_preprocess iban_validation_wasm
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test -p iban_validation_rs --features non_registry
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test -p iban_validation_c
+	RUSTFLAGS="$(RUSTFLAGS_NATIVE)" cargo test -p iban_validation_cli
 	$(call create_venv)
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)"  $(VENV_BIN)/maturin develop -m iban_validation_polars/Cargo.toml
 	RUSTFLAGS="$(RUSTFLAGS_NATIVE)"  $(VENV_BIN)/maturin develop -m iban_validation_py/Cargo.toml
@@ -241,11 +254,13 @@ clippy:
 	cargo update
 	cargo fmt -p iban_validation_rs
 	cargo fmt -p iban_validation_c
+	cargo fmt -p iban_validation_cli
 	cargo fmt -p iban_validation_py
 	cargo fmt -p iban_validation_polars
 	cargo fmt -p iban_validation_bench_rs
 	cargo clippy -p iban_validation_rs
 	cargo clippy -p iban_validation_c
+	cargo clippy -p iban_validation_cli
 	cargo clippy -p iban_validation_py
 	cargo clippy -p iban_validation_polars
 	cargo clippy -p iban_validation_bench_rs

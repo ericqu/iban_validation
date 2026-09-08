@@ -31,12 +31,14 @@ jobs:
           cargo clippy -p iban_validation_rs --all-targets -- -D warnings
           cargo clippy -p iban_validation_rs --all-targets --features non_registry -- -D warnings
           cargo clippy -p iban_validation_c --all-targets -- -D warnings
+          cargo clippy -p iban_validation_cli --all-targets -- -D warnings
 
       - name: Test
         run: |
           cargo test -p iban_validation_rs
           cargo test -p iban_validation_rs --features non_registry
           cargo test -p iban_validation_c
+          cargo test -p iban_validation_cli
 
   msrv:
     name: MSRV (1.85)
@@ -51,4 +53,6 @@ jobs:
           rustc --version
 
       - name: Check
-        run: cargo check -p iban_validation_rs --all-features
+        run: |
+          cargo check -p iban_validation_rs --all-features
+          cargo check -p iban_validation_cli
