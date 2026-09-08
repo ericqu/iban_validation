@@ -9,6 +9,10 @@ license = "MIT"
 repository = "https://github.com/ericqu/iban_validation"
 description = "Facilitate validation of ibans and selecting Bank identifier and Branch identifier in Rust."
 exclude = ["benches/", "data/IBAN Examples.txt", "examples/"]
+documentation = "https://docs.rs/iban_validation_rs"
+keywords = ["iban", "validation", "banking", "finance", "sepa"]
+categories = ["finance", "parser-implementations", "text-processing"]
+rust-version = "1.85"
 
 [dependencies]
 

@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: fmt / clippy / test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt,clippy
+          rustup default stable
+          rustc --version
+
+      - name: Format
+        run: cargo fmt --all -- --check
+
+      # Lib targets only, matching the `clippy` target in the Makefile.
+      - name: Clippy
+        run: |
+          cargo clippy -p iban_validation_rs -- -D warnings
+          cargo clippy -p iban_validation_rs --features non_registry -- -D warnings
+          cargo clippy -p iban_validation_c -- -D warnings
+
+      - name: Test
+        run: |
+          cargo test -p iban_validation_rs
+          cargo test -p iban_validation_rs --features non_registry
+          cargo test -p iban_validation_c
+
+  msrv:
+    name: MSRV (1.85)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install 1.85 toolchain
+        run: |
+          rustup toolchain install 1.85.0 --profile minimal
+          rustup default 1.85.0
+          rustc --version
+
+      - name: Check
+        run: cargo check -p iban_validation_rs --all-features

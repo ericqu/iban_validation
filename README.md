@@ -1,5 +1,118 @@
-# Iban Validation
-A set of libraries to validate IBANs and extract bank and branch identifiers in Rust, Python, and Polars, with a focus on correctness, performance, and minimal memory usage.
+# IBAN Validation
+
+[![CI](https://github.com/ericqu/iban_validation/actions/workflows/ci.yml/badge.svg)](https://github.com/ericqu/iban_validation/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/iban_validation_rs.svg)](https://crates.io/crates/iban_validation_rs)
+[![Downloads](https://img.shields.io/crates/d/iban_validation_rs.svg)](https://crates.io/crates/iban_validation_rs)
+[![docs.rs](https://img.shields.io/docsrs/iban_validation_rs)](https://docs.rs/iban_validation_rs)
+[![PyPI](https://img.shields.io/pypi/v/iban_validation_py.svg?label=pypi%20iban_validation_py)](https://pypi.org/project/iban_validation_py/)
+[![PyPI](https://img.shields.io/pypi/v/iban_validation_polars.svg?label=pypi%20iban_validation_polars)](https://pypi.org/project/iban_validation_polars/)
+[![MSRV](https://img.shields.io/badge/MSRV-1.85-blue.svg)](#minimum-supported-rust-version)
+[![License: MIT](https://img.shields.io/crates/l/iban_validation_rs.svg)](LICENSE)
+
+Validate IBANs and extract bank and branch identifiers, in **Rust, Python, Polars, C and WASM**.
+Single pass over the input, no allocation on the hot path, country structures generated from the
+official SWIFT IBAN registry (v102, Jun 2026).
+
+**28 ns per validation in Rust** — 3.8x faster than the next fastest crate, and the Polars plugin
+validates a column ~216x faster than schwifty. [Details below.](#performance)
+
+## Quickstart
+
+### Rust
+
+```sh
+cargo add iban_validation_rs
+```
+
+```rust
+use iban_validation_rs::{validate_iban_str, Iban};
+
+// Just a yes/no answer:
+assert!(validate_iban_str("DE44500105175407324931").is_ok());
+
+// Or parse once and read the identifiers back:
+let iban = Iban::new("DE44500105175407324931").unwrap();
+assert_eq!(iban.get_iban(), "DE44500105175407324931");
+assert_eq!(iban.iban_bank_id, Some("50010517"));
+```
+
+### Python
+
+```sh
+pip install iban_validation_py
+```
+
+```python
+from iban_validation_py import IbanValidation, validate_iban
+
+assert validate_iban("AL47212110090000000235698741") is True
+
+iban = IbanValidation("AL47212110090000000235698741")
+print(iban.stored_iban, iban.iban_bank_id, iban.iban_branch_id)
+```
+
+### Polars
+
+```sh
+pip install iban_validation_polars
+```
+
+```python
+import polars as pl
+from iban_validation_polars import process_ibans
+
+df.with_columns(
+    validated=process_ibans("iban_column")
+    .str.split_exact(",", 2)
+    .struct.rename_fields(["valid_iban", "bank_id", "branch_id"])
+).unnest("validated")
+```
+
+Also available for [C/C++](iban_validation_c/README.md) and
+[WebAssembly](iban_validation_wasm/README.md).
+
+## Performance
+
+Validating one IBAN and extracting the bank and branch identifiers.
+
+**Rust crates** (Criterion, lower is better):
+
+| Crate | Time |
+| --- | --- |
+| **iban_validation_rs** | **28 ns** |
+| [iban_check](https://docs.rs/iban-check/latest/iban_check/) 0.1.0 | 97 ns |
+| [iban_validate](https://crates.io/crates/iban_validate) 5.0 | 106 ns |
+| [iban](https://crates.io/crates/iban) 0.2.0 | 143 ns |
+| [use_iban](https://github.com/RustUse/use-finance) 0.1.0 | 150 ns |
+| [iban_parser](https://crates.io/crates/iban_parser) 0.2.2 | 796 ns |
+| [schwifty](https://crates.io/crates/schwifty) 0.3.2 | 43,443 ns |
+
+**Python, single call** (pytest-benchmark):
+
+| Library | Time | Relative |
+| --- | --- | --- |
+| **iban_validation_py** | **124 ns** | 1.0x |
+| [schwifty](https://github.com/mdomke/schwifty) | 6,163 ns | 50x slower |
+| [python-stdnum](https://arthurdejong.org/python-stdnum/) | 8,530 ns | 69x slower |
+
+**Whole Polars column** — this is what the plugin exists for:
+
+| Approach | Time | Relative |
+| --- | --- | --- |
+| **iban_validation_polars** (plugin) | **4.9 ms** | 1.0x |
+| iban_validation_py via `map_elements` | 279 ms | 57x slower |
+| schwifty | 1,065 ms | 216x slower |
+| python-stdnum | 1,322 ms | 268x slower |
+
+Full methodology and raw output: [Rust benchmarks](iban_validation_bench_rs/README.md),
+[Python benchmarks](iban_validation_bench_py/README.md). These numbers come from one machine and
+are refreshed occasionally rather than every release — benchmark your own workload before relying
+on them. Other libraries may offer conveniences (formatting, normalization) that this one
+deliberately does not.
+
+## Minimum Supported Rust Version
+
+Rust **1.85** (edition 2024). The MSRV is verified in CI on every push.
 
 ## WASM
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
