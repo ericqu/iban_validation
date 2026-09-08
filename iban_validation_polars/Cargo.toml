@@ -15,8 +15,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 iban_validation_rs = {path = "../iban_validation_rs", features = ["non_registry"] }
-pyo3 = {version = "0.28.3" ,  features = ["extension-module", "generate-import-lib"] }
-pyo3-polars = {version = "0.27.0" ,  features = ["derive"] }
+pyo3 = {version = "0.29.2" ,  features = ["extension-module", "generate-import-lib"] }
+pyo3-polars = {version = "0.28.0" ,  features = ["derive"] }
 serde = {version = "*" ,  features = ["derive"] }
-polars = {version = "0.54.4" , features=[], default-features = false}
+polars = {version = "0.55.2" , features=[], default-features = false}
 

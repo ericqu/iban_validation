@@ -3992,28 +3992,8 @@ fn get_non_registry_fields(_cc: [u8; 2]) -> Option<&'static IbanFields> {
 /// [`NON_REGISTRY_IBAN_DEFINITIONS`].
 #[cfg(feature = "non_registry")]
 pub const NON_REGISTRY_COUNTRIES: &[[u8; 2]] = &[
-    [b'A', b'O'],
-    [b'B', b'F'],
-    [b'B', b'J'],
-    [b'C', b'F'],
-    [b'C', b'G'],
-    [b'C', b'I'],
-    [b'C', b'M'],
-    [b'C', b'V'],
-    [b'D', b'Z'],
-    [b'G', b'A'],
-    [b'G', b'Q'],
-    [b'G', b'W'],
-    [b'I', b'R'],
-    [b'K', b'M'],
-    [b'M', b'A'],
-    [b'M', b'G'],
-    [b'M', b'L'],
-    [b'M', b'Z'],
-    [b'N', b'E'],
-    [b'S', b'N'],
-    [b'T', b'D'],
-    [b'T', b'G'],
+    *b"AO", *b"BF", *b"BJ", *b"CF", *b"CG", *b"CI", *b"CM", *b"CV", *b"DZ", *b"GA", *b"GQ", *b"GW",
+    *b"IR", *b"KM", *b"MA", *b"MG", *b"ML", *b"MZ", *b"NE", *b"SN", *b"TD", *b"TG",
 ];
 
 #[cfg(feature = "non_registry")]

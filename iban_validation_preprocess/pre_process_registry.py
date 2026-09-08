@@ -419,7 +419,7 @@ const _: () = {
         )
 
         countries_entries = ",\n    ".join(
-            "[b'{}', b'{}']".format(chr(row["ctry_cd"][0]), chr(row["ctry_cd"][1]))
+            '*b"{}{}"'.format(chr(row["ctry_cd"][0]), chr(row["ctry_cd"][1]))
             for row in non_registry_rows
         )
 
