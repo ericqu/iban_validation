@@ -12,7 +12,7 @@ fn main() -> ExitCode {
     match real_main() {
         Ok(code) => code,
         Err(message) => {
-            eprintln!("iban-validate: {message}");
+            eprintln!("iban_validation_cli: {message}");
             ExitCode::from(USAGE_EXIT_CODE as u8)
         }
     }

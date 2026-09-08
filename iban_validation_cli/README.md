@@ -13,15 +13,15 @@ code. Like the core crate it has no dependencies (argument parsing included).
 cargo install iban_validation_cli
 ```
 
-The installed binary is called `iban-validate`.
+The installed binary carries the crate's name, `iban_validation_cli`.
 
 ## Use
 
 ```sh
-$ echo DE44500105175407324931 | iban-validate
+$ echo DE44500105175407324931 | iban_validation_cli
 DE44500105175407324931	valid	50010517	-
 
-$ printf 'AL47212110090000000235698741\nAL4721211009000000023569874Q\n' | iban-validate
+$ printf 'AL47212110090000000235698741\nAL4721211009000000023569874Q\n' | iban_validation_cli
 AL47212110090000000235698741	valid	212	11009
 AL4721211009000000023569874Q	invalid	The calculated mod97 for the iban indicates an incorrect Iban
 ```
@@ -32,7 +32,7 @@ Text output is tab separated: `iban`, `valid`/`invalid`, then the bank and branc
 CSV output adds a header and an error column, for loading straight into a dataframe:
 
 ```sh
-$ iban-validate --format csv ibans.txt
+$ iban_validation_cli --format csv ibans.txt
 iban,valid,bank_id,branch_id,error
 DE44500105175407324931,valid,50010517,,
 FR1234,invalid,,,The length of the input Iban does match the length for that country
@@ -41,7 +41,7 @@ FR1234,invalid,,,The length of the input Iban does match the length for that cou
 `--quiet` reports through the exit code only, which is what you want in a check step:
 
 ```sh
-$ iban-validate --quiet ibans.txt && echo "all good"
+$ iban_validation_cli --quiet ibans.txt && echo "all good"
 ```
 
 ## Options

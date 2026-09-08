@@ -64,10 +64,10 @@ pub struct Report {
 
 /// Usage text, also shown when the arguments do not parse.
 pub const USAGE: &str = "\
-iban-validate - validate IBANs and extract bank and branch identifiers
+iban_validation_cli - validate IBANs and extract bank and branch identifiers
 
 USAGE:
-    iban-validate [OPTIONS] [FILE]
+    iban_validation_cli [OPTIONS] [FILE]
 
     FILE is read one IBAN per line; empty lines are skipped. When FILE is absent
     or is `-`, standard input is read instead.
@@ -86,14 +86,14 @@ EXIT CODES:
     2  the arguments or the input file could not be used
 
 EXAMPLES:
-    echo DE44500105175407324931 | iban-validate
-    iban-validate --format csv ibans.txt > checked.csv
+    echo DE44500105175407324931 | iban_validation_cli
+    iban_validation_cli --format csv ibans.txt > checked.csv
 ";
 
 /// Version text for `--version`, naming the registry the country data was generated from.
 pub fn version_text() -> String {
     format!(
-        "iban-validate {} (iban_validation_rs {}, registry {})",
+        "iban_validation_cli {} (iban_validation_rs {}, registry {})",
         env!("CARGO_PKG_VERSION"),
         get_version(),
         get_source_file().trim()
@@ -422,7 +422,7 @@ mod tests {
     #[test]
     fn version_text_names_the_registry() {
         let text = version_text();
-        assert!(text.starts_with("iban-validate "));
+        assert!(text.starts_with("iban_validation_cli "));
         assert!(text.contains(get_version()));
         assert!(text.contains("iban_registry_v"));
     }

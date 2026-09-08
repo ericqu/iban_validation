@@ -76,7 +76,7 @@ cargo install iban_validation_cli
 ```
 
 ```sh
-$ echo DE44500105175407324931 | iban-validate
+$ echo DE44500105175407324931 | iban_validation_cli
 DE44500105175407324931	valid	50010517	-
 ```
 
@@ -134,7 +134,7 @@ Rust **1.85** (edition 2024). The MSRV is verified in CI on every push.
 While experimental the library can be tested as JS/WASM here: https://ericqu.github.io/iban_validation/
 
 ## Structure
-The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided. Three further projects also depend on the core crate: iban_validation_wasm, a WebAssembly/JS wrapper (see the WASM section below), iban_validation_c, a C/C++ FFI wrapper, and iban_validation_cli, a dependency-free command line front end (the `iban-validate` binary) for trying the library or using it from a shell pipeline without writing code.
+The primary validation logic is written in Rust in the iban_validation_rs project. There is a Criterion benchmark to validate if changes are affecting performance positively. Two projects depend on it: the iban_validation_py, a Python wrapper using Maturin to compile, which is intended to be published in PyPI. A small example in Python is included. The iban_validation_polars is a wrapper into a Polars plugin, compiling through Maturin and published on Pypi, a short example is provided. Three further projects also depend on the core crate: iban_validation_wasm, a WebAssembly/JS wrapper (see the WASM section below), iban_validation_c, a C/C++ FFI wrapper, and iban_validation_cli, a dependency-free command line front end for trying the library or using it from a shell pipeline without writing code.
 
 ## Design Goals
 

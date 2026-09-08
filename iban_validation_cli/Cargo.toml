@@ -18,7 +18,7 @@ name = "iban_validation_cli"
 path = "src/lib.rs"
 
 [[bin]]
-name = "iban-validate"
+name = "iban_validation_cli"
 path = "src/main.rs"
 
 [dependencies]

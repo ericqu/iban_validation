@@ -187,7 +187,7 @@ fn empty_input_is_a_clean_run() {
 // binary level
 // ---------------------------------------------------------------------------
 
-const BIN: &str = env!("CARGO_BIN_EXE_iban-validate");
+const BIN: &str = env!("CARGO_BIN_EXE_iban_validation_cli");
 
 struct Output {
     code: i32,
@@ -276,7 +276,7 @@ fn help_and_version_exit_zero() {
     let version = spawn(&["--version"], "");
     assert_eq!(version.code, 0);
     assert!(
-        version.stdout.starts_with("iban-validate "),
+        version.stdout.starts_with("iban_validation_cli "),
         "{}",
         version.stdout
     );
