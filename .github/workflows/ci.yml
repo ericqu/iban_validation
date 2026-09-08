@@ -25,12 +25,12 @@ jobs:
       - name: Format
         run: cargo fmt --all -- --check
 
-      # Lib targets only, matching the `clippy` target in the Makefile.
+      # --all-targets covers tests and benches, not just the lib.
       - name: Clippy
         run: |
-          cargo clippy -p iban_validation_rs -- -D warnings
-          cargo clippy -p iban_validation_rs --features non_registry -- -D warnings
-          cargo clippy -p iban_validation_c -- -D warnings
+          cargo clippy -p iban_validation_rs --all-targets -- -D warnings
+          cargo clippy -p iban_validation_rs --all-targets --features non_registry -- -D warnings
+          cargo clippy -p iban_validation_c --all-targets -- -D warnings
 
       - name: Test
         run: |

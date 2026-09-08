@@ -598,7 +598,7 @@ mod tests {
 
     #[test]
     fn get_iban_fields_looks_up_by_country_code() {
-        assert!(iban_definition::get_iban_fields([b'D', b'E']).is_some());
-        assert!(iban_definition::get_iban_fields([b'Z', b'Z']).is_none());
+        assert!(iban_definition::get_iban_fields(*b"DE").is_some());
+        assert!(iban_definition::get_iban_fields(*b"ZZ").is_none());
     }
 }

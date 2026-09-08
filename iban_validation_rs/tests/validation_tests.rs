@@ -3,15 +3,15 @@ use iban_validation_rs::*;
 #[test]
 fn mini_test() {
     let al_test = "DE44500105175407324931";
-    assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+    assert!(validate_iban_str(al_test).unwrap_or(false));
 }
 
 #[test]
 fn forbiden_checksum_test() {
     let al_test = "IQ98NBIQ850123456789012";
-    assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+    assert!(validate_iban_str(al_test).unwrap_or(false));
     let al_test = "IQ01NBIQ850123456789012";
-    assert_eq!(validate_iban_str(al_test).unwrap_or(false), false);
+    assert!(!validate_iban_str(al_test).unwrap_or(false));
 }
 
 #[test]
@@ -27,7 +27,7 @@ fn al_iban() {
         ValidationError::InvalidSizeForCountry
     );
     let al_test = "AL47212110090000000235698741";
-    assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+    assert!(validate_iban_str(al_test).unwrap_or(false));
     let al_test = "A7212110090000000235698741";
     assert_eq!(
         validate_iban_str(al_test).unwrap_err(),
@@ -64,7 +64,7 @@ fn al_iban() {
         ValidationError::InvalidSizeForCountry
     );
     let al_test = "AD1200012030200359100100";
-    assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+    assert!(validate_iban_str(al_test).unwrap_or(false));
 
     let tc = vec![
         "AD1200012030200359100100",
@@ -158,23 +158,23 @@ fn al_iban() {
     ];
 
     for al_test in &tc {
-        assert_eq!(validate_iban_str(al_test).unwrap_or(false), true);
+        assert!(validate_iban_str(al_test).unwrap_or(false));
     }
 }
 
 #[test]
 fn lower_case_ibans() {
     let mt_test = "MT84MALT011000012345MTLCAST001S";
-    assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+    assert!(validate_iban_str(mt_test).unwrap_or(false));
 
     let mt_test = "MT84MALT011000012345MTLCAST001s";
-    assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+    assert!(validate_iban_str(mt_test).unwrap_or(false));
 
     let mt_test = "MT84MALT011000012345mtlCAST001s";
-    assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+    assert!(validate_iban_str(mt_test).unwrap_or(false));
 
     let mt_test = "MT84MALT011000012345mtlcast001s";
-    assert_eq!(validate_iban_str(mt_test).unwrap_or(false), true);
+    assert!(validate_iban_str(mt_test).unwrap_or(false));
 
     let mt_test = "MT84malt011000012345mtlcast001s";
     assert_eq!(
@@ -237,7 +237,7 @@ fn validate_iban_tostruct() {
 fn validate_iban_to_nums() {
     let s = "AT483200000012345864";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 9);
     assert_eq!(branch_s, 0);
@@ -246,7 +246,7 @@ fn validate_iban_to_nums() {
 
     let s = "AT611904300234573201";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 9);
     assert_eq!(branch_s, 0);
@@ -255,7 +255,7 @@ fn validate_iban_to_nums() {
 
     let s = "CY17002001280000001200527600";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 7);
     assert_eq!(branch_s, 7);
@@ -265,7 +265,7 @@ fn validate_iban_to_nums() {
 
     let s = "DE89370400440532013000";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 12);
     assert_eq!(branch_s, 0);
@@ -274,7 +274,7 @@ fn validate_iban_to_nums() {
 
     let s = "FR1420041010050500013M02606";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 9);
     assert_eq!(branch_s, 0);
@@ -283,7 +283,7 @@ fn validate_iban_to_nums() {
 
     let s = "GB29NWBK60161331926819";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 8);
     assert_eq!(branch_s, 8);
@@ -293,7 +293,7 @@ fn validate_iban_to_nums() {
 
     let s = "IQ98NBIQ850123456789012";
     let (res, bank_s, bank_e, branch_s, branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!(bank_s, 4);
     assert_eq!(bank_e, 8);
     assert_eq!(branch_s, 8);
@@ -303,7 +303,7 @@ fn validate_iban_to_nums() {
 
     let s = "AZ21NABZ00000000137010001944";
     let (res, bank_s, bank_e, _branch_s, _branch_e) = validate_iban_get_numeric(s).unwrap();
-    assert_eq!(true, res);
+    assert!(res);
     assert_eq!("NABZ", &s[bank_s as usize..bank_e as usize]);
 
     let s = "DEFR";
@@ -370,10 +370,14 @@ fn test_modulo_incorrect() {
 #[test]
 fn test_from_fuzz() {
     let spe_from_fuzz = "ILM\u{7bd}\0\0\0\0\0\0\0\0\0M\0\0\0J\0\0\0I";
-    assert_eq!(validate_iban_str(spe_from_fuzz).unwrap_or(false), false);
+    assert!(!validate_iban_str(spe_from_fuzz).unwrap_or(false));
 }
 
 /// Regression test from fuzz/artifacts/fuzz_target_1/crash-11e2231fa03ef6cc4fd61b3b7894a9bcc6a180dc
+// The trailing `\0\00` is copied verbatim from the fuzz crash artifact. Rewriting it as
+// `\x0000` to satisfy clippy::octal_escapes would keep the same bytes but lose the
+// byte-for-byte correspondence with the artifact, so the literal stays as the fuzzer produced it.
+#[allow(clippy::octal_escapes)]
 #[test]
 fn test_from_fuzz_egem() {
     let spe_from_fuzz = "EGE\u{7bd}0q0j\0\0\0\0\0\0\0\0,00~000000\0\00";
@@ -747,9 +751,8 @@ fn all_registry_examples_validate() {
     assert_eq!(ibans.len(), 89, "expected fixture to list 89 example IBANs");
 
     for iban in &ibans {
-        assert_eq!(
+        assert!(
             validate_iban_str(iban).unwrap_or(false),
-            true,
             "expected {iban} to be a valid IBAN"
         );
     }

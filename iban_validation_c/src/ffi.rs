@@ -1531,7 +1531,7 @@ mod tests {
     fn test_invalid_utf8() {
         // This test requires creating invalid UTF-8, which is tricky in safe Rust
         // We'll simulate it by creating a raw byte array and converting to *const c_char
-        let invalid_utf8 = vec![b'G', b'B', b'8', b'2', 0xFF, 0xFE, 0x00];
+        let invalid_utf8 = [b'G', b'B', b'8', b'2', 0xFF, 0xFE, 0x00];
         let mut result = IbanValidationResult {
             is_valid: false,
             bank_s: 0,
