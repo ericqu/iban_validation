@@ -57,7 +57,7 @@ def ibv_enrich_df_polars(csvfile=test_csv):
             pl.col("iban_infos").list.get(2).alias("branch_code"),
         )
         .drop("iban_infos")
-        .collect(new_streaming=True)
+        .collect(engine="auto")
     )
 
     print(df)
@@ -72,7 +72,7 @@ def ipl_enrich_df_polars(csvfile=test_csv):
             .struct.rename_fields(["valid_ibans", "bank_id", "branch_id"])
         )
         .unnest("iban_infos")
-        .collect(new_streaming=True)
+        .collect(engine="auto")
     )
 
     print(df)
@@ -132,7 +132,7 @@ def sch_enrich_df_polars(csvfile=test_csv):
             pl.col("iban_infos").list.get(2).alias("branch_code"),
         )
         .drop("iban_infos")
-        .collect(new_streaming=True)
+        .collect(engine="auto")
     )
 
     print(df)
@@ -160,7 +160,7 @@ def stdnum_enrich_df_polars(csvfile=test_csv):
             pl.col("iban_infos").list.get(2).alias("branch_code"),
         )
         .drop("iban_infos")
-        .collect(new_streaming=True)
+        .collect(engine="auto")
     )
 
     print(df)

@@ -14,8 +14,8 @@ or straight from the **command line**.
 Single pass over the input, no allocation on the hot path, country structures generated from the
 official SWIFT IBAN registry (v102, Jun 2026).
 
-**28 ns per validation in Rust** — 3.8x faster than the next fastest crate, and the Polars plugin
-validates a column ~216x faster than schwifty. [Details below.](#performance)
+**28 ns per validation in Rust** — 3.5x faster than the next fastest crate, and the Polars plugin
+validates a column ~220x faster than schwifty. [Details below.](#performance)
 
 ## Quickstart
 
@@ -96,29 +96,29 @@ Validating one IBAN and extracting the bank and branch identifiers.
 | Crate | Time |
 | --- | --- |
 | **iban_validation_rs** | **28 ns** |
-| [iban_check](https://docs.rs/iban-check/latest/iban_check/) 0.1.0 | 97 ns |
-| [iban_validate](https://crates.io/crates/iban_validate) 5.0 | 106 ns |
-| [iban](https://crates.io/crates/iban) 0.2.0 | 143 ns |
-| [use_iban](https://github.com/RustUse/use-finance) 0.1.0 | 150 ns |
-| [iban_parser](https://crates.io/crates/iban_parser) 0.2.2 | 796 ns |
-| [schwifty](https://crates.io/crates/schwifty) 0.3.2 | 43,443 ns |
+| [iban_check](https://docs.rs/iban-check/latest/iban_check/) 0.1.0 | 99 ns |
+| [iban_validate](https://crates.io/crates/iban_validate) 5.0 | 108 ns |
+| [iban](https://crates.io/crates/iban) 0.2.0 | 130 ns |
+| [use_iban](https://github.com/RustUse/use-finance) 0.1.0 | 157 ns |
+| [iban_parser](https://crates.io/crates/iban_parser) 0.2.2 | 786 ns |
+| [schwifty](https://crates.io/crates/schwifty) 0.3.2 | 43,798 ns |
 
 **Python, single call** (pytest-benchmark):
 
 | Library | Time | Relative |
 | --- | --- | --- |
-| **iban_validation_py** | **124 ns** | 1.0x |
-| [schwifty](https://github.com/mdomke/schwifty) | 6,163 ns | 50x slower |
-| [python-stdnum](https://arthurdejong.org/python-stdnum/) | 8,530 ns | 69x slower |
+| **iban_validation_py** | **135 ns** | 1.0x |
+| [schwifty](https://github.com/mdomke/schwifty) | 6,519 ns | 48x slower |
+| [python-stdnum](https://arthurdejong.org/python-stdnum/) | 8,765 ns | 65x slower |
 
 **Whole Polars column** — this is what the plugin exists for:
 
 | Approach | Time | Relative |
 | --- | --- | --- |
-| **iban_validation_polars** (plugin) | **4.9 ms** | 1.0x |
-| iban_validation_py via `map_elements` | 279 ms | 57x slower |
-| schwifty | 1,065 ms | 216x slower |
-| python-stdnum | 1,322 ms | 268x slower |
+| **iban_validation_polars** (plugin) | **5.3 ms** | 1.0x |
+| iban_validation_py via `map_elements` | 326 ms | 61x slower |
+| schwifty | 1,176 ms | 220x slower |
+| python-stdnum | 1,427 ms | 267x slower |
 
 Full methodology and raw output: [Rust benchmarks](iban_validation_bench_rs/README.md),
 [Python benchmarks](iban_validation_bench_py/README.md). These numbers come from one machine and
