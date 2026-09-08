@@ -4,6 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "iban_validation_polars"
+dynamic = ["version"]
 description = "A package to facilitate validation of IBANs and selecting Bank identifier and Branch identifier as a Polars plugin"
 long_description = "A package to facilitate validation of IBANs and selecting Bank identifier and Branch identifier as a Polars plugin"
 readme = "README.md"
