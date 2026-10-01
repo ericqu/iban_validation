@@ -105,6 +105,7 @@ one of the non-registry countries. Passing `0` for `flags` (or using the
 original, non-`_ex` functions) keeps the existing registry-only behavior.
 
 ## Changes
+ - 0.1.30: updated to registry version 103 (a change to Brazil IBAN definition). rust updated to 1.99.0.
  - 0.1.29: added `_ex` variants (`iban_validate_short_ex`, `iban_validate_optimized_ex`, `iban_validate_span_ex`, `iban_get_view_ex`) accepting an `IBAN_ALLOW_NON_REGISTRY` flag, their `*Ex` result structs reporting `IBAN_RESULT_NON_REGISTRY`, and `iban_country_is_non_registry`.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1

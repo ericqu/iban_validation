@@ -121,6 +121,7 @@ the non-registry countries (always `false` when the feature is off), and
 `NON_REGISTRY_COUNTRIES` (available only with the feature on) lists them.
 
 # Changes
+ - 0.1.30: updated to registry version 103 (a change to Brazil IBAN definition). rust updated to 1.99.0.
  - 0.1.29: `non_registry` countries are now a runtime opt-in (`CountrySet`, `validate_iban_str_with`, `validate_iban_str_print_with`, `Iban::new_with`) rather than folded into the default lookup whenever the feature is compiled in; added `is_non_registry_country` and `NON_REGISTRY_COUNTRIES`. Upgrade to polars 0.55.2 and rust 1.98.1.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1

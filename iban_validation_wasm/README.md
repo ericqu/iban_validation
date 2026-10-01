@@ -21,6 +21,7 @@ non_registry_countries_js(); // ["AO", "BF", ...]
 The argument defaults to `false`/omitted, so existing calls are unaffected.
 
 ## Changes
+ - 0.1.30: updated to registry version 103 (a change to Brazil IBAN definition). rust updated to 1.99.0.
  - 0.1.29: added an opt-in `allow_non_registry` argument (default `false`) to `validate_iban_js` and `parse_iban_js`, plus `JsIban.is_non_registry` and `non_registry_countries_js()`.
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.27: upgraded to polars 0.53.0, rust 1.93.1

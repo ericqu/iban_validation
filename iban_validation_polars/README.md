@@ -105,6 +105,7 @@ This pluging does not raise exception under normal operation.
 Cheers to the [pyo3-polars project](https://github.com/pola-rs/pyo3-polars)! It made this library possible.
 
 ## Changes
+ - 0.1.30: updated to registry version 103 (a change to Brazil IBAN definition). rust updated to 1.99.0.
  - 0.1.29: added opt-in `allow_non_registry` keyword argument (default `False`) to `process_ibans`, plus a new `country_status` expression classifying IBANs as "registry" / "non_registry" / "invalid".
  - 0.1.28: upgraded to polars 0.54.4, rust 1.96.1, update to iban registry version 102 from Jun 2026 (no significant changes for this package)
  - 0.1.26: added user_friendly iban validation (handle spaces), added compile time checks, and updated to rust 1.93, dropping python 3.9, adding python 3.14

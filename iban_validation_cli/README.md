@@ -74,4 +74,5 @@ community-sourced rather than SWIFT-registered and are therefore opt-in, matchin
 `CountrySet` behaviour of the other wrappers.
 
 ## Changes
+ - 0.1.30: updated to registry version 103 (a change to Brazil IBAN definition). rust updated to 1.99.0.
  - 0.1.29: initial release.

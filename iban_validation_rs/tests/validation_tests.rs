@@ -321,7 +321,7 @@ fn validate_iban_to_nums() {
 
 #[test]
 fn test_filename() {
-    assert_eq!(get_source_file(), "iban_registry_v102.txt");
+    assert_eq!(get_source_file(), "iban_registry_v103.txt");
 }
 
 #[test]
@@ -414,6 +414,11 @@ fn validate_iban_tostruc_additional() {
     let the_test = Iban::new("BR1800360305000010009795493C1").unwrap();
     assert_eq!(the_test.get_iban(), "BR1800360305000010009795493C1");
     assert_eq!(the_test.iban_bank_id.unwrap(), "00360305");
+    assert_eq!(the_test.iban_branch_id.unwrap(), "00001");
+
+    let the_test = Iban::new("BR6699999A03000010009795493C1").unwrap();
+    assert_eq!(the_test.get_iban(), "BR6699999A03000010009795493C1");
+    assert_eq!(the_test.iban_bank_id.unwrap(), "99999A03");
     assert_eq!(the_test.iban_branch_id.unwrap(), "00001");
 
     let the_test = Iban::new("BY13NBRB3600900000002Z00AB00").unwrap();
